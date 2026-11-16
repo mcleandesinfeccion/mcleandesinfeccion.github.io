@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#16285a">
 <meta name="description" content="M Clean Desinfección y Limpieza: agenda en 60 segundos tu limpieza profunda a vapor. 28 ciudades de Colombia y Panamá.">
 <title>M Clean – Agenda tu servicio</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="M Clean">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -541,15 +543,17 @@ const SERV = {
   'jornada-4h': {n:'Jornada de aseo 4 h con vapor', h:4, p:370000, tag:'Hogar completo', img:'pisos.webp', d:'Cocina, baños, habitaciones y pisos, con limpieza profunda a vapor incluida.'},
   'muebles': {n:'Muebles y tapicería a vapor', h:3, p:300000, tag:'Hogar', img:'f-muebles.webp', d:'Inyección-extracción y vapor de alta temperatura: elimina manchas, ácaros y olores.'},
   'cocina-vapor': {n:'Limpieza de cocina a vapor', h:2, p:230000, tag:'Hogar', img:'f-cocina.webp', d:'Desengrasado de estufa, campana y mesones; gabinetes, electrodomésticos y pisos.'},
-  'colchones': {n:'Limpieza profunda de colchones', h:3, p:220000, tag:'Ácaros fuera', img:US('photo-1686178827149-6d55c72d81df'), alt:'f-vapor.webp', d:'Vapor e inyección-extracción para ácaros, manchas y olores. Duerme más tranquilo.'},
-  'jardineria': {n:'Servicio de jardinería', h:3, p:170000, tag:'Exteriores', img:US('photo-1617576683096-00fc8eecb3af'), alt:'exteriores.webp', d:'Poda, limpieza de zonas verdes y orden de tus exteriores.'}
+  'colchones': {n:'Limpieza profunda de colchones', h:3, p:220000, tag:'Ácaros fuera', img:'f-vapor.webp', d:'Vapor e inyección-extracción para ácaros, manchas y olores. Duerme más tranquilo.'},
+  'jardineria': {n:'Servicio de jardinería', h:3, p:170000, tag:'Exteriores', img:'exteriores.webp', d:'Poda, limpieza de zonas verdes y orden de tus exteriores.'},
+  'visita-empresarial': {n:'Visita técnica · limpieza empresarial', h:1, p:0, tag:'Empresas · sin costo', img:'ventanal.webp', d:'Un asesor visita tus oficinas o local, mide y te entrega la cotización del plan de limpieza.'},
+  'visita-obra': {n:'Visita técnica · final de obra', h:1, p:0, tag:'Constructoras · sin costo', img:'final-obra.webp', d:'Revisamos la obra, metros y estado, y te enviamos la cotización de la limpieza final.'}
 };
 const EMPRESAS = [
-  {n:'Limpieza final de obra', tag:'Constructoras', img:'final-obra.webp', d:'Polvo, residuos, vidrios y pisos: entregamos listo para habitar.'},
+  {n:'Limpieza final de obra', s:'visita-obra', tag:'Constructoras', img:'final-obra.webp', d:'Polvo, residuos, vidrios y pisos: entregamos listo para habitar.'},
   {n:'Limpieza técnica de cubiertas', tag:'Hidrolavado', img:'hidrolavado2.webp', d:'Hidrolavado a presión controlada de techos y cubiertas.'},
   {n:'Zonas húmedas y piscinas', tag:'Terrazas', img:'f-zonas-humedas.webp', d:'Lavado con pH neutro y cepillado mecánico: menos riesgo de deslizamientos.'},
   {n:'Desinfección y control de plagas', tag:'Salud', img:'desinfeccion.webp', d:'Ambientes y superficies en hogares, empresas y áreas de salud.'},
-  {n:'Limpieza empresarial', tag:'Planes programados', img:'ventanal.webp', d:'Oficinas, locales y edificios con planes programados o por evento.'}
+  {n:'Limpieza empresarial', s:'visita-empresarial', tag:'Planes programados', img:'ventanal.webp', d:'Oficinas, locales y edificios con planes programados o por evento.'}
 ];
 const PROMOS = [
   {img:'promo-cocina-bano.webp', s:'cocina-bano', t:'Cocina + un baño', p:'3 horas · $250.000'},
@@ -575,7 +579,7 @@ const CIUDADES = {"Pereira": [4.8133, -75.6961], "Dosquebradas": [4.8392, -75.66
 const POPULARES = ['Pereira','Barranquilla','Medellín','Cartagena','Santa Marta','Manizales','Armenia','Valledupar'];
 const QR_BOLD = '00020101021126320014CO.COM.RBM.LLA0510009364670349250014CO.COM.RBM.RED0103RBM50310013CO.COM.RBM.CU0110009364670351250013CO.COM.RBM.CA0104999952049999530317055020256040.005802CO5922M Clean Desinfeccion Y60056600161056600162200703000080200110363180270016CO.COM.RBM.CANAL0103APP81250015CO.COM.RBM.CIVA01020282260014CO.COM.RBM.IVA01040.0083270015CO.COM.RBM.BASE01040.0084250015CO.COM.RBM.CINC01020285260014CO.COM.RBM.INC01040.0090430016CO.COM.RBM.TRXID0119000000wQyiplOv8DZrZ91460014CO.COM.RBM.SEC0124sY8t+9mRUkucjlgPXT2NBuVv6304A2D5';
 const $ = id => document.getElementById(id);
-const pesos = n => '$' + n.toLocaleString('es-CO');
+const pesos = n => n ? '$' + n.toLocaleString('es-CO') : 'Sin costo';
 const h12 = h => (h > 12 ? h - 12 : h) + ':00 ' + (h >= 12 ? 'p. m.' : 'a. m.');
 const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
 const S = { paso:1, ciudad:'', servicio:'', fecha:'', hora:null, pin:null, movido:false };
@@ -602,11 +606,11 @@ document.addEventListener('click', e => { const a = e.target.closest('[data-s]')
 /* ---- contenido ---- */
 function tarjeta(k){ const s = SERV[k];
   return `<div class="svc"><div class="ph" style="${bg(s.img, s.alt)}"></div>${LOGO}<div class="bd"><span class="tag">${s.tag}</span><h3>${s.n}</h3><p>${s.d}</p>
-  <div class="row"><span class="precio">${pesos(s.p)}<small>${s.h} h aprox. · pagas al terminar</small></span><a class="pill y" href="#reservar" data-s="${k}">Reservar</a></div></div></div>`; }
+  <div class="row"><span class="precio">${pesos(s.p)}<small>${s.p ? s.h + ' h aprox. · pagas al terminar' : 'visita de cotización'}</small></span><a class="pill y" href="#reservar" data-s="${k}">Reservar</a></div></div></div>`; }
 $('destacados').innerHTML = ['cocina-bano','vidrios','jornada-4h'].map(tarjeta).join('');
 $('lista').innerHTML = Object.keys(SERV).map(tarjeta).join('');
 $('empresas').innerHTML = EMPRESAS.map(x => `<div class="svc" style="min-height:290px"><div class="ph" style="${bg(x.img)}"></div>${LOGO}<div class="bd"><span class="tag">${x.tag}</span><h3>${x.n}</h3><p>${x.d}</p>
-  <div class="row"><span class="precio" style="font-size:15px">Cotización<small>con visita técnica</small></span><a class="pill y" target="_blank" rel="noopener" href="${WA + encodeURIComponent('Hola M Clean, quiero cotizar: ' + x.n)}">Cotizar</a></div></div></div>`).join('');
+  <div class="row"><span class="precio" style="font-size:15px">Cotización<small>con visita técnica</small></span>${x.s ? `<a class="pill y" href="#reservar" data-s="${x.s}">Agendar visita</a>` : `<a class="pill y" target="_blank" rel="noopener" href="${WA + encodeURIComponent('Hola M Clean, quiero cotizar: ' + x.n)}">Cotizar</a>`}</div></div></div>`).join('');
 $('promos').innerHTML = PROMOS.map(p => `<div class="promo"><img src="${p.img}" alt="${p.t}" loading="lazy"><div class="pb"><span><b>${p.t}</b><small>${p.p}</small></span>${p.s ? `<a class="pill y" href="#reservar" data-s="${p.s}">Reservar</a>` : `<a class="pill y" target="_blank" rel="noopener" href="${WA + encodeURIComponent('Hola M Clean, quiero cotizar limpieza de cubiertas')}">Cotizar</a>`}</div></div>`).join('');
 $('dots').innerHTML = PROMOS.map((p, i) => `<i class="${i ? '' : 'on'}"></i>`).join('');
 $('promos').addEventListener('scroll', () => { const c = $('promos'), w = c.firstElementChild.offsetWidth + 14, i = Math.round(c.scrollLeft / w);
@@ -627,10 +631,13 @@ $('servs').addEventListener('click', e => { const b = e.target.closest('.so'); i
 function elegirServicio(k){ S.servicio = k; S.hora = null; document.querySelectorAll('#servs .so').forEach(x => x.classList.toggle('sel', x.dataset.k === k)); }
 
 /* ---- paso 2 ---- */
+function festivosCO(y){const d=(m,dd)=>new Date(Date.UTC(y,m-1,dd)),lun=x=>{const w=x.getUTCDay();if(w!==1)x.setUTCDate(x.getUTCDate()+((8-w)%7));return x;},add=(x,n)=>{const z=new Date(x);z.setUTCDate(z.getUTCDate()+n);return z;};
+  const a=y%19,b=Math.floor(y/100),c=y%100,dd=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-dd-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),p=d(Math.floor((h+l-7*m+114)/31),((h+l-7*m+114)%31)+1);
+  return [d(1,1),d(5,1),d(7,20),d(8,7),d(12,8),d(12,25),lun(d(1,6)),lun(d(3,19)),lun(d(6,29)),lun(d(8,15)),lun(d(10,12)),lun(d(11,1)),lun(d(11,11)),add(p,-3),add(p,-2),add(p,43),add(p,64),add(p,71)].map(x=>x.toISOString().slice(0,10));}
 const DS = ['dom','lun','mar','mié','jue','vie','sáb'], MS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 (function(){ const base = new Date(new Date().toLocaleString('en-US', {timeZone:'America/Bogota'})); let html = '', n = 0;
-  for (let i = 0; n < 21 && i < 30; i++) { const d = new Date(base); d.setDate(base.getDate() + i); if (d.getDay() === 0) continue; n++;
-    const f = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  for (let i = 0; n < 21 && i < 30; i++) { const d = new Date(base); d.setDate(base.getDate() + i); const f = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    if (d.getDay() === 0 || festivosCO(d.getFullYear()).indexOf(f) >= 0) continue; n++;
     html += `<button type="button" class="dia" data-f="${f}"><small>${i === 0 ? 'hoy' : i === 1 ? 'mañana' : DS[d.getDay()]}</small><b>${d.getDate()}</b><i>${MS[d.getMonth()]}</i></button>`; }
   $('dias').innerHTML = html; })();
 $('dias').addEventListener('click', e => { const b = e.target.closest('.dia'); if (!b) return; S.fecha = b.dataset.f; S.hora = null;
@@ -705,7 +712,7 @@ function direccion(){ return $('via').value + ' ' + $('num').value.trim() + ' # 
 function resumen(){
   const s = SERV[S.servicio]; if (!s) return;
   const d = new Date(S.fecha + 'T12:00:00').toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long'});
-  $('resumen').innerHTML = `<b>${s.n}</b><br>${d} · ${S.hora ? h12(S.hora) : ''}<br>${direccion()} · ${S.ciudad}<br><b>${pesos(s.p)}</b> · pagas al terminar`;
+  $('resumen').innerHTML = `<b>${s.n}</b><br>${d} · ${S.hora ? h12(S.hora) : ''}<br>${direccion()} · ${S.ciudad}<br><b>${pesos(s.p)}</b>${s.p ? ' · pagas al terminar' : ' · visita de cotización'}`;
 }
 $('bAtras').addEventListener('click', () => irPaso(Math.max(1, S.paso - 1)));
 $('bSig').addEventListener('click', async () => {

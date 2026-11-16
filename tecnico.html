@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#16285a">
-<title>M Clean · Técnico aliado</title>
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-180.png">
+<title>Técnicos M Clean</title>
+<link rel="manifest" href="manifest-tecnico.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Técnicos M Clean">
+<link rel="icon" href="icon-tec-192.png">
+<link rel="apple-touch-icon" href="icon-tec-180.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#16285a;--yel:#f6d046;--blue:#2c66b8;--bg:#f3f5fa;--line:#e3e8f2;--txt:#1b2540;--mut:#6b7590;--ok:#1f9d63;--err:#c0392b}
@@ -184,6 +187,7 @@ function evento(ev, id, forzar, nota) {
       if (!j.ok) { toast(j.error); return; }
       toast(ev === 'salida' ? '¡Buen viaje! Registramos tu salida.' : ev === 'llegada' ? 'Llegada registrada.' : '¡Servicio terminado! Gracias.');
       cargar();
+      if (j.wa) { $('hoja').innerHTML = '<h2>' + (ev === 'salida' ? 'Avisa al cliente que vas en camino' : 'Avisa al cliente que llegaste') + '</h2><p style="font-size:14px;color:#6b7590">Toca el botón y envía el mensaje que ya está escrito por WhatsApp.</p><div class="acc"><button class="btn b3" onclick="cerrar()">Ahora no</button><a class="btn b1" style="background:#25d366;color:#fff;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="' + j.wa + '" onclick="setTimeout(cerrar,500)">Avisar por WhatsApp</a></div>'; $('modal').classList.add('on'); }
     });
   });
 }

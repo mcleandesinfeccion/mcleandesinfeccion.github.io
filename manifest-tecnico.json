@@ -1,0 +1,29 @@
+{
+ "id": "./tecnico.html",
+ "name": "Técnicos M Clean",
+ "short_name": "Técnicos M Clean",
+ "start_url": "./tecnico.html",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#FFD100",
+ "theme_color": "#0D2C54",
+ "lang": "es-CO",
+ "icons": [
+  {
+   "src": "icon-tec-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-tec-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-tec-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

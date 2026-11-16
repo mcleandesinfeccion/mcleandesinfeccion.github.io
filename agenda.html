@@ -5,9 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#16285a">
-<title>Agenda nacional · M Clean</title>
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-180.png">
+<title>Gerencia M Clean</title>
+<link rel="manifest" href="manifest-gerencia.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Gerencia M Clean">
+<link rel="icon" href="icon-ger-192.png">
+<link rel="apple-touch-icon" href="icon-ger-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -87,13 +90,28 @@ main{max-width:1100px;margin:0 auto;padding:14px 14px 90px}
 .pie{font-size:11px;color:var(--mut);text-align:center;margin-top:16px}
 @media(max-width:520px){.kpi b{font-size:18px}.kpi{padding:8px}.cel{min-height:56px}.pill{display:none}.cel .dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}.cel .dots i{width:7px;height:7px;border-radius:50%}}
 @media(min-width:521px){.cel .dots{display:none}}
+.fab{position:fixed;right:18px;bottom:20px;z-index:40;background:var(--yel);color:var(--navy);border:0;border-radius:18px;padding:14px 20px;font-weight:800;font-size:15px;box-shadow:0 8px 24px rgba(13,44,84,.35);cursor:pointer}
+.frm label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:10px 0 4px}
+.frm input,.frm select,.frm textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:14px;font-family:inherit;background:#fff;color:var(--txt)}
+.frm textarea{min-height:70px;resize:vertical}
+.frm .dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.frm .sec{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);font-size:13px;font-weight:800;color:var(--navy)}
+.frm details{background:var(--bg);border-radius:14px;padding:10px 12px;margin-top:10px}
+.frm summary{font-weight:700;font-size:13px;color:var(--navy);cursor:pointer}
+.frm .chk{display:flex;gap:8px;align-items:center;font-size:13px;margin-top:10px;color:var(--txt);font-weight:500}
+.frm .chk input{width:auto}
+.frm .prev{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.frm .prev img{width:70px;height:70px;object-fit:cover;border-radius:10px;border:1px solid var(--line)}
+.frm .err{color:#c0392b;font-size:13px;margin-top:10px;min-height:16px}
+.okbox{background:#eaf8f0;border-radius:14px;padding:14px;font-size:14px;margin:10px 0}
+.nov{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.nov button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px;font-weight:700;font-size:12px;color:var(--navy);cursor:pointer}
 </style>
 </head>
 <body>
 <div id="login">
   <div class="caja">
     <img src="logo-dark.webp" alt="M Clean">
-    <h1>Agenda nacional</h1>
+    <h1>Gerencia M Clean</h1>
     <p>Acceso solo para gerencia</p>
     <input id="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••">
     <button id="entrar">Entrar</button>
@@ -104,7 +122,7 @@ main{max-width:1100px;margin:0 auto;padding:14px 14px 90px}
 <header>
   <div class="hrow">
     <img src="logo-dark.webp" alt="M Clean">
-    <div class="htit"><b>Agenda nacional</b><small id="act">Todos los tableros</small></div>
+    <div class="htit"><b>Gerencia M Clean</b><small id="act">Todos los tableros</small></div>
     <button class="ibtn" id="recargar" title="Actualizar">⟳</button>
     <button class="ibtn" id="salir" title="Salir">⏻</button>
   </div>
@@ -131,6 +149,7 @@ main{max-width:1100px;margin:0 auto;padding:14px 14px 90px}
   <div class="pie">Datos de Trello · se actualizan cada 10 minutos</div>
 </main>
 
+<button class="fab" id="nuevoBtn">＋ Agendar servicio</button>
 <div class="modal" id="modal"><div class="hoja" id="hoja"></div></div>
 
 <script>
@@ -243,7 +262,8 @@ function detalle(x){
     '<div class="acc">'+(x.url?'<a class="a1" href="'+esc(x.url)+'" target="_blank" rel="noopener">Abrir en Trello</a>':'')+
     (cel?'<a class="a2" href="https://wa.me/'+(cel.length===10?'57':'')+cel+'" target="_blank" rel="noopener">WhatsApp cliente</a>':'')+
     (mapa?'<a class="a3" href="'+mapa+'" target="_blank" rel="noopener">Ver en mapa</a>':'')+
-    '<button class="a4" onclick="cerrar()">Cerrar</button></div>';
+    '<button class="a4" onclick="cerrar()">Cerrar</button></div>'+
+    '<div class="sub" style="margin-top:14px;font-weight:700;color:var(--navy)">Novedades</div><div class="nov"><button onclick="novedad('+VIS.indexOf(x)+',\'retraso\')">⏱ Retraso</button><button onclick="novedad('+VIS.indexOf(x)+',\'reprogramar\')">📅 Reprogramar</button><button onclick="novedad('+VIS.indexOf(x)+',\'fallido\')">🔴 Fallido</button><button onclick="novedad('+VIS.indexOf(x)+',\'asignado\')">📨 Confirmar asignación</button></div>';
   $('modal').classList.add('on');
 }
 function verDia(k){
@@ -279,6 +299,84 @@ $('pin').addEventListener('keydown', e => { if (e.key==='Enter') entrar(); });
 const guardada = store.get('mc_agenda');
 if (guardada) { S.clave = guardada; $('login').style.display='none'; cargar(); } else { setTimeout(()=>$('pin').focus(), 200); }
 setInterval(() => { if (S.clave && document.visibilityState==='visible') { S.rango=null; cargar(); } }, 10*60*1000);
+
+/* ================= Gerencia M Clean: agendar y novedades ================= */
+let OPC = null;
+async function gapi(body){
+  const r = await fetch(API, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({clave:S.clave}, body)) });
+  const j = await r.json(); if (!j.ok && !j.duplicado) throw new Error(j.error || 'Error'); return j;
+}
+async function opciones(){ if (!OPC) OPC = await gapi({accion:'gerOpciones'}); return OPC; }
+function comprimir(file){ return new Promise((res, rej) => { const url = URL.createObjectURL(file), im = new Image();
+  im.onload = () => { const k = Math.min(1, 1600 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width*k); c.height = Math.round(im.height*k);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.82)); };
+  im.onerror = () => rej(new Error('No se pudo leer la imagen.')); im.src = url; }); }
+function leerIGS(t){ const g = re => { const m = t.match(re); return m ? m[1].trim() : ''; }, tit = s => s.toLowerCase().replace(/(^|\s)\S/g, m => m.toUpperCase());
+  const d = { expediente: g(/EXPEDIENTE\s*:?\s*(\d{5,})/i), afiliado: tit(g(/AFILIADO\s*:?\s*([^\n]+)/i)), celular: g(/CELULAR\s*:?\s*([\d\s]{7,})/i).replace(/\s/g,''),
+    campana: tit(g(/CUENTA\s*:?\s*([^\n]+)/i)), ciudad: tit(g(/CIUDAD\s*:\s*([^\n]*)/i)), direccion: tit(g(/DIRECCI[OÓ]N\s*:\s*([^\n]*)/i)), tipo: ((t.match(/SERVICIO\s+DE\s+[^\n]+/i)||[''])[0]).trim() };
+  if (d.tipo) d.tipo = d.tipo.charAt(0) + d.tipo.slice(1).toLowerCase();
+  const disp = t.match(/DISPONIBILIDAD\s*:?\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i); if (disp) d.fecha = disp[3]+'-'+disp[2].padStart(2,'0')+'-'+disp[1].padStart(2,'0');
+  return d; }
+async function nuevoServicio(){
+  $('hoja').innerHTML = '<h2>Agendar servicio</h2><div class="sub">Se crea la tarjeta en Trello con la ficha completa</div><div class="cargando">Cargando opciones…</div>';
+  $('modal').classList.add('on');
+  let o; try { o = await opciones(); } catch (e) { $('hoja').innerHTML = '<h2>Agendar servicio</h2><div class="okbox" style="background:#fdecea">'+esc(e.message)+'</div><div class="acc"><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>'; return; }
+  const ciud = Object.keys(o.ciudades).map(c=>'<option value="'+esc(c)+'">').join('');
+  const tecs = o.tecnicos.map(t=>'<option value="'+esc(t.nombre)+'">'+esc(t.nombre)+' · '+esc(t.zona)+'</option>').join('');
+  $('hoja').innerHTML = '<h2>Agendar servicio</h2><div class="sub">Se crea la tarjeta en Trello con la ficha completa</div><form class="frm" id="fNuevo" autocomplete="off">'+
+   '<details open><summary>📋 Pegar mensaje de asignación (WhatsApp de IGS)</summary><textarea id="nMsg" placeholder="Pega aquí el mensaje con EXPEDIENTE, AFILIADO, CELULAR, CIUDAD, DIRECCIÓN…"></textarea><button type="button" class="chip" id="nLeer" style="margin-top:8px">Llenar campos con el mensaje</button></details>'+
+   '<label>📸 Captura de la asignación (evidencia)</label><input type="file" id="nEv" accept="image/*" multiple><div class="prev" id="nPrev"></div>'+
+   '<div class="sec">Servicio</div>'+
+   '<div class="dos"><div><label>Expediente</label><input id="n_expediente" inputmode="numeric" placeholder="Vacío = particular"></div><div><label>Campaña (empresa IGS)</label><input id="n_campana" placeholder="Ej. Coomeva"></div></div>'+
+   '<label>Tipo de servicio</label><input id="n_tipo" list="lServ" required><datalist id="lServ">'+o.servicios.map(s=>'<option value="'+esc(s)+'">').join('')+'<option value="Limpieza de muebles"><option value="Lavado de colchón"><option value="Limpieza profunda de cocina y baño"><option value="Desinfección"><option value="Limpieza final de obra"></datalist>'+
+   '<label>Detalle (elementos, medidas, material)</label><textarea id="n_detalle"></textarea>'+
+   '<label class="chk"><input type="checkbox" id="n_vapor"> Requiere máquina a vapor</label>'+
+   '<div class="sec">Usuario</div>'+
+   '<label>Afiliado / usuario</label><input id="n_afiliado" required>'+
+   '<div class="dos"><div><label>Celular</label><input id="n_celular" inputmode="tel"></div><div><label>Ciudad</label><input id="n_ciudad" list="lCiu" required><datalist id="lCiu">'+ciud+'</datalist></div></div>'+
+   '<label>Dirección</label><input id="n_direccion">'+
+   '<label>Tablero</label><select id="n_tablero"><option value="">Automático según la ciudad</option>'+o.tableros.map(t=>'<option>'+esc(t)+'</option>').join('')+'</select>'+
+   '<div class="sec">Agenda</div>'+
+   '<div class="dos"><div><label>Fecha</label><input type="date" id="n_fecha" required></div><div><label>Hora</label><input type="time" id="n_hora" value="08:00" step="900"></div></div>'+
+   '<div class="dos"><div><label>Horario</label><select id="n_horario"><option>Diurno</option><option>Nocturno</option><option>Festivo</option></select></div><div><label>Técnico</label><select id="n_tecnico"><option value="">Ofertar a técnicos aliados</option>'+tecs+'</select></div></div>'+
+   '<details><summary>Valor y observaciones</summary><div class="dos"><div><label>Valor total</label><input id="n_valor" inputmode="numeric"></div><div><label>Adicionales</label><input id="n_adicionales" placeholder="Ninguno"></div></div><label>Observaciones</label><textarea id="n_observaciones"></textarea></details>'+
+   '<label class="chk"><input type="checkbox" id="n_avisar" checked> Si hay técnico: preparar aviso de asignación (borrador a IGS + WhatsApp al usuario)</label>'+
+   '<div class="err" id="nErr"></div>'+
+   '<div class="acc"><button type="button" class="a4" onclick="cerrar()">Cancelar</button><button type="submit" class="a1" id="nOk">Agendar</button></div></form>';
+  const EV = [];
+  $('nEv').onchange = async e => { for (const f of e.target.files) { try { EV.push(await comprimir(f)); } catch (x) {} } $('nPrev').innerHTML = EV.map(u=>'<img src="'+u+'">').join(''); };
+  $('nLeer').onclick = () => { const d = leerIGS($('nMsg').value); let n = 0; Object.keys(d).forEach(k => { if (d[k] && $('n_'+k)) { $('n_'+k).value = d[k]; n++; } }); $('nErr').style.color = n ? '#1f9d63' : ''; $('nErr').textContent = n ? '✓ '+n+' campos llenados. Revisa fecha, hora y técnico.' : 'No encontré datos de IGS en el mensaje.'; };
+  $('n_fecha').onchange = e => { if (o.festivos.indexOf(e.target.value) >= 0) $('n_horario').value = 'Festivo'; };
+  let forzar = false;
+  $('fNuevo').onsubmit = async ev => { ev.preventDefault(); const b = $('nOk'); $('nErr').style.color=''; $('nErr').textContent='';
+    const d = { accion:'gerCrear', mensaje: $('nMsg').value, evidencias: EV, vapor: $('n_vapor').checked, avisar: $('n_avisar').checked, forzar: forzar };
+    ['expediente','campana','tipo','detalle','afiliado','celular','ciudad','direccion','tablero','fecha','hora','horario','tecnico','valor','adicionales','observaciones'].forEach(k => d[k] = $('n_'+k).value);
+    if (!d.ciudad || !d.fecha || !d.tipo || !d.afiliado) { $('nErr').textContent = 'Completa tipo de servicio, usuario, ciudad y fecha.'; return; }
+    b.disabled = true; b.textContent = 'Agendando…';
+    try { const j = await gapi(d);
+      if (j.duplicado) { forzar = true; $('nErr').textContent = j.error; b.disabled = false; b.textContent = 'Agendar igual'; return; }
+      $('hoja').innerHTML = '<h2>✅ Servicio agendado</h2><div class="sub">Expediente '+esc(j.expediente)+' · tablero '+esc(j.tablero)+'</div>'+
+        '<div class="okbox">La tarjeta quedó en “1. Próximo servicio”'+(EV.length?' con '+EV.length+' captura(s) como evidencia':'')+'.'+(j.aviso&&j.aviso.borrador?'<br>Se creó el borrador de confirmación a IGS en Gmail.':'')+(d.tecnico?'':'<br>Se ofrecerá a los técnicos aliados de la zona en los próximos 10 minutos.')+'</div>'+
+        '<div class="acc"><a class="a1" href="'+esc(j.url)+'" target="_blank" rel="noopener">Abrir en Trello</a>'+(j.aviso&&j.aviso.wa?'<a class="a2" href="'+esc(j.aviso.wa)+'" target="_blank" rel="noopener">Avisar al usuario</a>':'<button class="a3" onclick="nuevoServicio()">Agendar otro</button>')+'<button class="a4" style="grid-column:1/3" onclick="cerrar();S.rango=null;cargar()">Listo</button></div>';
+    } catch (e) { $('nErr').textContent = e.message; b.disabled = false; b.textContent = 'Agendar'; }
+  };
+}
+function novedad(i, tipo){
+  const x = VIS[i]; if (!x) return;
+  const T = {retraso:'Reportar retraso', reprogramar:'Reprogramar servicio', fallido:'Servicio fallido', asignado:'Enviar confirmación de asignación'};
+  $('hoja').innerHTML = '<h2>'+T[tipo]+'</h2><div class="sub">'+esc((x.exp?'Exp. '+x.exp+' · ':'')+(x.cliente||'')+' · '+(x.ciudad||x.tablero))+'</div><form class="frm" id="fNov">'+
+    (tipo==='reprogramar' ? '<div class="dos"><div><label>Nueva fecha</label><input type="date" id="vF" required></div><div><label>Nueva hora</label><input type="time" id="vH" value="08:00" step="900"></div></div>' : '')+
+    (tipo!=='asignado' ? '<label>'+(tipo==='retraso'?'Motivo y tiempo estimado':'Motivo / novedad')+'</label><textarea id="vM" placeholder="'+(tipo==='retraso'?'Ej. Trancón en la autopista, llega en 30 minutos':tipo==='fallido'?'Ej. El usuario no estaba en el domicilio':'Ej. A solicitud del usuario')+'"></textarea>' : '<div class="okbox">Se prepara el borrador de confirmación a IGS (si aplica) y el mensaje de WhatsApp para el usuario con el técnico asignado.</div>')+
+    (tipo==='fallido' ? '<div class="okbox" style="background:#fff6e0">El servicio queda abierto con la etiqueta “⏳ Espera nueva fecha”. El reporte de fallido a IGS se prepara como siempre en Borradores.</div>' : '')+
+    '<div class="err" id="vErr"></div><div class="acc"><button type="button" class="a4" onclick="cerrar()">Cancelar</button><button type="submit" class="a1" id="vOk">Confirmar</button></div></form>';
+  $('fNov').onsubmit = async ev => { ev.preventDefault(); const b = $('vOk'); b.disabled = true; b.textContent = 'Enviando…';
+    try { const j = await gapi({ accion:'gerNovedad', id:x.id, tipo:tipo, motivo: $('vM') ? $('vM').value : '', fecha: $('vF') ? $('vF').value : '', hora: $('vH') ? $('vH').value : '' });
+      const a = j.aviso || {};
+      $('hoja').innerHTML = '<h2>✅ Novedad registrada</h2><div class="okbox">Quedó el comentario en la tarjeta de Trello.'+(a.borrador?'<br>Borrador a IGS listo en Gmail para revisar y enviar.':'')+(a.correo?'<br>Se envió correo al cliente.':'')+'</div>'+
+        '<div class="acc">'+(a.wa?'<a class="a2" href="'+esc(a.wa)+'" target="_blank" rel="noopener">Avisar al usuario por WhatsApp</a>':'')+(x.url?'<a class="a1" href="'+esc(x.url)+'" target="_blank" rel="noopener">Abrir en Trello</a>':'')+'<button class="a4" style="grid-column:1/3" onclick="cerrar();S.rango=null;cargar()">Listo</button></div>';
+    } catch (e) { $('vErr').textContent = e.message; b.disabled = false; b.textContent = 'Confirmar'; } };
+}
+$('nuevoBtn').onclick = nuevoServicio;
 </script>
 </body>
 </html>
