@@ -55,6 +55,28 @@ textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10
 @keyframes g{to{transform:rotate(360deg)}}
 .toast{position:fixed;left:16px;right:16px;bottom:20px;max-width:528px;margin:0 auto;background:var(--navy);color:#fff;border-radius:14px;padding:13px 16px;font-size:14px;z-index:70;display:none}
 .toast.on{display:block}
+.full{position:fixed;inset:0;background:var(--bg);z-index:55;display:none;flex-direction:column}
+.full.on{display:flex}
+.fhead{background:var(--navy);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px}
+.fhead b{flex:1;font-size:15px}.fhead small{display:block;font-size:11px;opacity:.75;font-weight:500}
+.fbody{flex:1;overflow:auto;padding:16px;max-width:560px;width:100%;margin:0 auto}
+.fpie{background:#fff;border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+.fpie div{max-width:560px;margin:0 auto;display:flex;gap:10px}.fpie .b3{flex:0 0 34%}
+.grupo{margin-bottom:14px}.grupo h4{font-size:13px;color:var(--navy);margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font:600 12.5px Poppins;cursor:pointer;color:var(--txt)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.fotob{display:flex;align-items:center;gap:12px;background:#fff;border:2px dashed #c8d2e6;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer}
+.fotob .n{margin-left:auto;background:var(--navy);color:#fff;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
+.fotob.ok{border-style:solid;border-color:var(--ok)}
+.ev{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.ev .o{display:flex;gap:6px}.ev .o button{width:36px;height:36px;border-radius:50%;border:1.5px solid #e07a2e;background:#fff;color:#e07a2e;font:800 13px Poppins;cursor:pointer}
+.ev .o button.on{background:#e07a2e;color:#fff}
+.pad{background:#fff;border:1.5px solid var(--line);border-radius:14px;position:relative;touch-action:none;margin-bottom:6px}
+.pad canvas{width:100%;height:160px;display:block}
+.pad .ph{position:absolute;left:0;right:0;bottom:10px;text-align:center;font-size:11px;color:var(--mut);pointer-events:none}
+.inp{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:11px;font:14px Poppins;margin-bottom:8px}
+.lnk{background:none;border:0;color:var(--err);font:700 13px Poppins;cursor:pointer;padding:8px 0;text-decoration:underline}
 .wa{position:fixed;right:16px;bottom:18px;width:56px;height:56px;border-radius:50%;background:#25d366;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;text-decoration:none;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:30}
 </style>
 </head>
@@ -68,6 +90,8 @@ textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10
 <div class="modal" id="modal"><div class="hoja" id="hoja"></div></div>
 <div class="carga" id="carga"><div class="spin"></div><div id="cargaTxt">Un momento…</div></div>
 <div class="toast" id="toast"></div>
+<div class="full" id="acta"><div class="fhead"><b id="aTit">Acta del servicio<small id="aSub"></small></b><button class="ib" id="aCerrar">✕</button></div><div class="fbody" id="aBody"></div><div class="fpie"><div><button class="btn b3" id="aAtras">Atrás</button><button class="btn b1" id="aSig">Siguiente</button></div></div></div>
+<input type="file" id="aFile" accept="image/*" capture="environment" style="display:none">
 <script>
 var API = 'https://script.google.com/macros/s/AKfycbwmj3prBAsOb77b5QTqPoY673GXdsZhBn0ef_ZaqDuX-9xzFoMCJFAs3Nq2tOeFoz2N/exec';
 var st = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { } } };
@@ -119,7 +143,7 @@ function pintar() {
         '<div class="acc" style="margin-bottom:10px"><a class="btn b3" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=' + dest + '&travelmode=driving">🗺️ Google Maps</a><a class="btn b3" target="_blank" href="https://waze.com/ul?' + (s.lat ? 'll=' + s.lat + ',' + s.lng : 'q=' + encodeURIComponent(s.direccion + ', ' + s.ciudad)) + '&navigate=yes">🚙 Waze</a></div>' +
         (!s.salida ? '<button class="btn b2" data-ev="salida" data-id="' + s.id + '"' + (s.puedeSalir ? '' : ' disabled') + '>🚗 Salgo hacia el servicio</button>' + (s.puedeSalir ? '' : '<p style="font-size:12px;color:#6b7590;text-align:center;margin-top:6px">Disponible desde una hora antes del servicio</p>') :
           !s.llegada ? '<button class="btn b1" data-ev="llegada" data-id="' + s.id + '">📍 Llegué al sitio</button>' :
-            !s.terminado ? '<button class="btn b4" data-ev="terminado" data-id="' + s.id + '">✅ Terminé el servicio</button>' : '<p style="text-align:center;color:#1f9d63;font-weight:700">Servicio terminado ✔</p>') + '</div>';
+            !s.terminado ? '<button class="btn b4" data-acta="' + s.id + '">📝 Completar acta y terminar</button>' : '<p style="text-align:center;color:#1f9d63;font-weight:700">Servicio terminado ✔</p>') + '</div>';
     });
   } else {
     h += '<div class="card" style="text-align:center"><h3>Mi carnet</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 14px">Tu carnet con foto, QR y sello de M Clean.</p><a class="btn b1" href="carnet.html#t=' + TOKEN + '">Abrir mi carnet</a></div>' +
@@ -131,6 +155,7 @@ document.addEventListener('click', function (e) {
   var t = e.target.closest('.tabs button'); if (t) { TAB = t.getAttribute('data-t'); Array.prototype.forEach.call(document.querySelectorAll('.tabs button'), function (b) { b.classList.toggle('on', b === t); }); pintar(); window.scrollTo(0, 0); return; }
   var a = e.target.closest('[data-acep]'); if (a) return abrirAceptar(a.getAttribute('data-acep'));
   var r = e.target.closest('[data-rech]'); if (r) { var id = r.getAttribute('data-rech'); carga(true, 'Un momento…'); api({ accion: 'rechazarOferta', oferta: id }).then(function () { carga(false); toast('Listo, no te mostraremos esta oferta.'); cargar(); }); return; }
+  var ac = e.target.closest('[data-acta]'); if (ac) return abrirActa(ac.getAttribute('data-acta'));
   var v = e.target.closest('[data-ev]'); if (v) return evento(v.getAttribute('data-ev'), v.getAttribute('data-id'));
   if (e.target.id === 'modal') cerrar();
 });
@@ -177,6 +202,119 @@ function seguir() {
     }, function () { }, { enableHighAccuracy: true, maximumAge: 60000 });
   } else if (!enCamino && watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
 }
+
+/* ======== Acta de calidad (fase 3) ======== */
+var A = null;
+function chipsHtml(k, lista) { return '<div class="chips">' + lista.map(function (v) { return '<button class="chip' + (A.sel[k].indexOf(v) >= 0 ? ' on' : '') + '" data-k="' + k + '" data-v="' + esc(v) + '">' + esc(v) + '</button>'; }).join('') + '</div>'; }
+function abrirActa(id) {
+  carga(true, 'Preparando el acta…');
+  api({ accion: 'actaInfo', oferta: id }).then(function (j) {
+    carga(false); if (!j.ok) { toast(j.error); return; }
+    A = { id: id, info: j, paso: 0, sel: { diagnostico: [], causa: [], trabajo: [], acabados: [], precauciones: [] }, ev: {}, negativa: null, nAntes: j.fotosAntes, nDesp: j.fotosDespues, nEvid: j.evidencia ? 1 : 0, pads: {} };
+    $('acta').classList.add('on'); pasoActa();
+  });
+}
+function cerrarActa() { $('acta').classList.remove('on'); A = null; }
+$('aCerrar').onclick = cerrarActa;
+var TIT = ['Fotos del servicio', 'Diagnóstico y trabajo', 'Usuario: revisión y firma', 'Tu firma'];
+function pasoActa() {
+  var j = A.info, h = '';
+  $('aTit').firstChild.textContent = TIT[A.paso]; $('aSub').textContent = 'Paso ' + (A.paso + 1) + ' de 4';
+  $('aAtras').style.visibility = A.paso ? 'visible' : 'hidden';
+  $('aSig').textContent = A.paso === 3 ? 'Enviar acta y terminar' : 'Siguiente';
+  if (A.paso === 0) {
+    h = '<p style="font-size:13px;color:#6b7590;margin-bottom:12px">Toma fotos claras del antes y del después. Se guardan al instante.</p>' +
+      '<div class="fotob' + (A.nAntes ? ' ok' : '') + '" data-foto="antes"><span style="font-size:28px">📸</span><div><b>Fotos de ANTES</b><br><small>Mínimo 1 · máximo 6</small></div><span class="n">' + A.nAntes + '</span></div>' +
+      '<div class="fotob' + (A.nDesp ? ' ok' : '') + '" data-foto="despues"><span style="font-size:28px">✨</span><div><b>Fotos de DESPUÉS</b><br><small>Mínimo 1 · máximo 6</small></div><span class="n">' + A.nDesp + '</span></div>';
+  } else if (A.paso === 1) {
+    var tits = { diagnostico: 'Diagnóstico inicial', causa: 'Causa', trabajo: 'Trabajo realizado', acabados: 'Diagnóstico de acabados', precauciones: 'Precauciones para el usuario' };
+    Object.keys(tits).forEach(function (k) { h += '<div class="grupo"><h4>' + tits[k] + '</h4>' + chipsHtml(k, j.opciones[k]) + '</div>'; });
+    h += '<div class="grupo"><h4>Observaciones (opcional · puedes dictar con el micrófono del teclado)</h4><textarea class="inp" id="aNota" rows="3">' + esc(A.nota || '') + '</textarea></div>';
+  } else if (A.paso === 2) {
+    if (!A.negativa) {
+      h = '<p style="font-size:13px;color:#6b7590;margin-bottom:10px">Entrega el celular al usuario para que revise, califique y firme.</p>' +
+        '<input class="inp" id="uNom" placeholder="Nombre completo del usuario" value="' + esc(A.uNom || '') + '"><input class="inp" id="uCed" inputmode="numeric" placeholder="Número de cédula" value="' + esc(A.uCed || '') + '">' +
+        '<div class="decl">Yo, el usuario identificado arriba, ' + esc(j.textos.inicial) + '</div><div class="grupo"><h4>Evaluación del servicio</h4>' +
+        [['tiempo', 'Tiempo de respuesta'], ['resultado', 'Resultado del trabajo'], ['presentacion', 'Presentación personal']].map(function (r) { return '<div class="ev"><span>' + r[1] + '</span><span class="o">' + ['E', 'B', 'R', 'M'].map(function (v) { return '<button data-e="' + r[0] + '" data-v="' + v + '" class="' + (A.ev[r[0]] === v ? 'on' : '') + '">' + v + '</button>'; }).join('') + '</span></div>'; }).join('') +
+        '<div class="ev"><span>Uso de elementos de seguridad</span><span class="o">' + ['S', 'N'].map(function (v) { return '<button data-e="seguridad" data-v="' + v + '" class="' + (A.ev.seguridad === v ? 'on' : '') + '">' + v + '</button>'; }).join('') + '</span></div>' +
+        '<p style="font-size:11px;color:#6b7590;margin-top:6px">E: Excelente · B: Bueno · R: Regular · M: Malo</p></div>' +
+        '<div class="decl">' + esc(j.textos.final) + '</div><h4 style="font-size:13px;color:#16285a;margin:10px 0 6px">Firma del usuario</h4><div class="pad"><canvas id="padU"></canvas><div class="ph">Firme aquí con el dedo</div></div><button class="mini lnk" style="color:#2c66b8;text-decoration:none" id="borrarU">Borrar firma</button><br>' +
+        '<button class="lnk" id="noFirma">El usuario no quiso firmar</button>';
+    } else {
+      h = '<div class="aviso r">Se dejará constancia de que el usuario no firmó, con tu ubicación y la hora.</div><div class="grupo"><h4>Motivo</h4><div class="chips">' + j.negativa.map(function (v) { return '<button class="chip' + (A.negativa.motivo === v ? ' on' : '') + '" data-neg="' + esc(v) + '">' + esc(v) + '</button>'; }).join('') + '</div></div>' +
+        '<textarea class="inp" id="negNota" rows="2" placeholder="Detalle (opcional)">' + esc(A.negativa.nota || '') + '</textarea>' +
+        '<div class="fotob' + (A.nEvid ? ' ok' : '') + '" data-foto="evidencia"><span style="font-size:28px">📷</span><div><b>Foto de evidencia del trabajo terminado</b><br><small>Obligatoria</small></div><span class="n">' + A.nEvid + '</span></div>' +
+        '<button class="lnk" style="color:#2c66b8" id="siFirma">Volver: el usuario sí va a firmar</button>';
+    }
+  } else {
+    h = '<p style="font-size:13px;color:#6b7590;margin-bottom:10px">Firma para cerrar el servicio. Se generará el formato de calidad en PDF.</p><div class="pad"><canvas id="padT"></canvas><div class="ph">Tu firma</div></div><button class="mini lnk" style="color:#2c66b8;text-decoration:none" id="borrarT">Borrar firma</button>';
+  }
+  $('aBody').innerHTML = h; $('aBody').scrollTop = 0;
+  if ($('padU')) A.pads.u = pad($('padU'), A.pads.u); if ($('padT')) A.pads.t = pad($('padT'), A.pads.t);
+  if ($('borrarU')) $('borrarU').onclick = function () { A.pads.u.limpiar(); };
+  if ($('borrarT')) $('borrarT').onclick = function () { A.pads.t.limpiar(); };
+  if ($('noFirma')) $('noFirma').onclick = function () { guardarU(); A.negativa = { motivo: '', nota: '' }; pasoActa(); };
+  if ($('siFirma')) $('siFirma').onclick = function () { A.negativa = null; pasoActa(); };
+}
+function pad(cv, prev) {
+  var r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1, x = cv.getContext('2d'), dib = false, o = { firmado: false };
+  cv.width = r.width * dpr; cv.height = r.height * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0); x.lineWidth = 2.6; x.lineCap = 'round'; x.lineJoin = 'round'; x.strokeStyle = '#0d2a6b';
+  if (prev && prev.firmado) { var im = new Image(); im.onload = function () { x.drawImage(im, 0, 0, r.width, r.height); }; im.src = prev.png(); o.firmado = true; }
+  function p(e) { var b = cv.getBoundingClientRect(); return { x: e.clientX - b.left, y: e.clientY - b.top }; }
+  cv.addEventListener('pointerdown', function (e) { dib = true; cv.setPointerCapture(e.pointerId); var q = p(e); x.beginPath(); x.moveTo(q.x, q.y); });
+  cv.addEventListener('pointermove', function (e) { if (!dib) return; var q = p(e); x.lineTo(q.x, q.y); x.stroke(); o.firmado = true; });
+  cv.addEventListener('pointerup', function () { dib = false; });
+  o.limpiar = function () { x.clearRect(0, 0, cv.width, cv.height); o.firmado = false; };
+  o.png = function () { var c = document.createElement('canvas'); c.width = cv.width; c.height = cv.height; var y = c.getContext('2d'); y.fillStyle = '#fff'; y.fillRect(0, 0, c.width, c.height); y.drawImage(cv, 0, 0); return c.toDataURL('image/png'); };
+  return o;
+}
+function guardarU() { if ($('uNom')) { A.uNom = $('uNom').value.trim(); A.uCed = $('uCed').value.trim(); } if ($('aNota')) A.nota = $('aNota').value.trim(); if ($('negNota') && A.negativa) A.negativa.nota = $('negNota').value.trim(); }
+$('aBody').addEventListener('click', function (e) {
+  var c = e.target.closest('.chip[data-k]'); if (c) { var k = c.getAttribute('data-k'), v = c.getAttribute('data-v'), i = A.sel[k].indexOf(v); if (i >= 0) A.sel[k].splice(i, 1); else A.sel[k].push(v); c.classList.toggle('on'); return; }
+  var ev = e.target.closest('[data-e]'); if (ev) { A.ev[ev.getAttribute('data-e')] = ev.getAttribute('data-v'); Array.prototype.forEach.call(ev.parentNode.children, function (b) { b.classList.toggle('on', b === ev); }); return; }
+  var ng = e.target.closest('[data-neg]'); if (ng) { A.negativa.motivo = ng.getAttribute('data-neg'); Array.prototype.forEach.call(ng.parentNode.children, function (b) { b.classList.toggle('on', b === ng); }); return; }
+  var f = e.target.closest('[data-foto]'); if (f) { A.tipoFoto = f.getAttribute('data-foto'); guardarU(); $('aFile').value = ''; $('aFile').click(); }
+});
+$('aFile').onchange = function () {
+  var file = this.files && this.files[0]; if (!file || !A) return;
+  carga(true, 'Subiendo foto…');
+  var u = URL.createObjectURL(file), im = new Image();
+  im.onload = function () {
+    var s = Math.min(1, 1280 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = im.width * s; c.height = im.height * s; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    api({ accion: 'fotoServicio', oferta: A.id, tipo: A.tipoFoto, foto: c.toDataURL('image/jpeg', 0.8) }).then(function (j) {
+      carga(false); if (!j.ok) { toast(j.error); return; }
+      if (A.tipoFoto === 'antes') A.nAntes = j.total; else if (A.tipoFoto === 'despues') A.nDesp = j.total; else A.nEvid = j.total;
+      toast('Foto guardada ✔'); pasoActa();
+    }).catch(function () { carga(false); toast('No se pudo subir. Revisa tu señal e inténtalo de nuevo.'); });
+  };
+  im.src = u;
+};
+$('aAtras').onclick = function () { guardarU(); if (A.paso) { A.paso--; pasoActa(); } };
+$('aSig').onclick = function () {
+  guardarU();
+  if (A.paso === 0 && (!A.nAntes || !A.nDesp)) return toast('Sube al menos una foto de antes y una de después.');
+  if (A.paso === 1 && (!A.sel.diagnostico.length || !A.sel.trabajo.length)) return toast('Marca el diagnóstico y el trabajo realizado.');
+  if (A.paso === 2) {
+    if (A.negativa) { if (!A.negativa.motivo) return toast('Elige el motivo.'); if (!A.nEvid) return toast('Toma la foto de evidencia.'); }
+    else {
+      if (!A.uNom || (A.uCed || '').replace(/\D/g, '').length < 5) return toast('Escribe el nombre y la cédula del usuario.');
+      if (!A.ev.tiempo || !A.ev.resultado || !A.ev.presentacion || !A.ev.seguridad) return toast('El usuario debe completar la evaluación.');
+      if (!A.pads.u || !A.pads.u.firmado) return toast('Falta la firma del usuario.');
+      A.firmaU = A.pads.u.png();
+    }
+  }
+  if (A.paso < 3) { A.paso++; pasoActa(); return; }
+  if (!A.pads.t || !A.pads.t.firmado) return toast('Falta tu firma.');
+  var b = { accion: 'actaServicio', oferta: A.id, nota: A.nota || '', firmaTecnico: A.pads.t.png() };
+  Object.keys(A.sel).forEach(function (k) { b[k] = A.sel[k]; });
+  if (A.negativa) b.negativa = A.negativa; else { b.usuarioNombre = A.uNom; b.usuarioCedula = A.uCed; b.evaluacion = A.ev; b.firmaUsuario = A.firmaU; }
+  carga(true, 'Generando el formato de calidad…');
+  geo().then(function (g) { b.geo = g; return api(b); }).then(function (j) {
+    carga(false); if (!j.ok) { toast(j.error); return; }
+    cerrarActa(); toast('¡Servicio terminado! Formato Nº ' + j.numero + ' enviado a M Clean.'); cargar();
+  }).catch(function () { carga(false); toast('No se pudo enviar. Revisa tu señal e inténtalo de nuevo.'); });
+};
+
 $('rec').onclick = function () { cargar(); };
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && TOKEN) cargar(); });
 if (!TOKEN) $('app').innerHTML = '<div class="vacio"><div class="ic">🔑</div>Abre el enlace personal que te enviamos por correo al aprobar tu registro.</div>'; else cargar();
