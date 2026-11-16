@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#16285a">
+<title>Agenda nacional · M Clean</title>
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#16285a;--navy2:#0f1d44;--yel:#f6d046;--blue:#2c66b8;--bg:#f3f5fa;--line:#e3e8f2;--txt:#1b2540;--mut:#6b7590;--ok:#1f9d63;--warn:#e2a400}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Poppins,system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+button,select,input{font-family:inherit}
+header{background:var(--navy);color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:20;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+.hrow{display:flex;align-items:center;gap:10px;max-width:1100px;margin:0 auto}
+.hrow img{height:34px;background:#fff;border-radius:10px;padding:3px 6px}
+.htit{flex:1}.htit b{display:block;font-size:16px;font-weight:700}.htit small{font-size:11px;opacity:.75}
+.ibtn{background:rgba(255,255,255,.12);border:0;color:#fff;width:38px;height:38px;border-radius:12px;font-size:17px;cursor:pointer}
+main{max-width:1100px;margin:0 auto;padding:14px 14px 90px}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.seg{display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:9px;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer}
+.seg button.on{background:var(--navy);color:#fff}
+.nav{display:flex;align-items:center;gap:6px;margin-left:auto}
+.nav button{border:1px solid var(--line);background:#fff;border-radius:10px;height:36px;min-width:36px;padding:0 10px;font-weight:600;cursor:pointer;color:var(--navy)}
+.rango{font-weight:700;font-size:15px;color:var(--navy);text-transform:capitalize;width:100%}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+.kpi b{font-size:22px;font-weight:800;color:var(--navy);display:block;line-height:1.1}
+.kpi span{font-size:11px;color:var(--mut)}
+.kpi.alerta b{color:#c0392b}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--txt);cursor:pointer;display:flex;align-items:center;gap:6px}
+.chip i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.filtros{display:flex;gap:8px;margin-bottom:12px}
+.filtros select,.filtros input{flex:1;min-width:0;border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 10px;font-size:13px;color:var(--txt)}
+.dia{margin-bottom:14px}
+.dia h3{font-size:13px;font-weight:700;color:var(--navy);text-transform:capitalize;margin:0 2px 6px;display:flex;justify-content:space-between}
+.dia h3 span{color:var(--mut);font-weight:500}
+.dia.hoy h3{color:var(--blue)}
+.dia.hoy h3::before{content:"HOY · ";color:var(--blue)}
+.vacio{background:#fff;border:1px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:12px;color:var(--mut)}
+.srv{background:#fff;border:1px solid var(--line);border-left:5px solid var(--c,#999);border-radius:14px;padding:10px 12px;margin-bottom:6px;display:flex;gap:12px;align-items:flex-start;cursor:pointer}
+.srv .h{font-weight:800;font-size:14px;color:var(--navy);min-width:62px}
+.srv .b{flex:1;min-width:0}
+.srv .t1{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srv .t2{font-size:12px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.est{font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap;align-self:center}
+.e1{background:#e6eefb;color:var(--blue)}.e2{background:#fff6d6;color:#9a7300}.e3{background:#e2f6ec;color:var(--ok)}.e4{background:#eceef3;color:var(--mut)}
+.sint{color:#c0392b;font-weight:600}
+.mes{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.mes .dn{font-size:11px;font-weight:700;color:var(--mut);text-align:center;padding:4px 0}
+.cel{background:#fff;border:1px solid var(--line);border-radius:10px;min-height:74px;padding:5px;cursor:pointer;overflow:hidden}
+.cel.fuera{opacity:.4}
+.cel.hoy{border:2px solid var(--blue)}
+.cel .n{font-size:12px;font-weight:700;color:var(--navy)}
+.cel .n em{float:right;font-style:normal;background:var(--navy);color:#fff;border-radius:999px;font-size:10px;padding:0 6px}
+.pill{font-size:10px;line-height:1.35;border-radius:5px;padding:1px 4px;margin-top:2px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mas{font-size:10px;color:var(--mut);margin-top:2px}
+.modal{position:fixed;inset:0;background:rgba(10,18,40,.55);display:none;align-items:flex-end;justify-content:center;z-index:50}
+.modal.on{display:flex}
+.hoja{background:#fff;width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:22px 22px 0 0;padding:18px 18px 26px}
+@media(min-width:700px){.modal{align-items:center}.hoja{border-radius:22px}}
+.hoja h2{font-size:17px;color:var(--navy);margin-bottom:2px}
+.hoja .sub{font-size:12px;color:var(--mut);margin-bottom:12px}
+.fila{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.fila b{min-width:96px;color:var(--mut);font-weight:500}
+.acc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.acc a,.acc button{display:block;text-align:center;text-decoration:none;border:0;border-radius:12px;padding:11px;font-weight:700;font-size:13px;cursor:pointer}
+.a1{background:var(--navy);color:#fff}.a2{background:#25d366;color:#fff}.a3{background:var(--yel);color:var(--navy)}.a4{background:var(--bg);color:var(--navy)}
+#login{position:fixed;inset:0;background:linear-gradient(160deg,var(--navy),var(--blue));display:flex;align-items:center;justify-content:center;z-index:60;padding:20px}
+.caja{background:#fff;border-radius:24px;padding:26px 22px;width:100%;max-width:360px;text-align:center}
+.caja img{height:56px;margin-bottom:10px}
+.caja h1{font-size:19px;color:var(--navy)}
+.caja p{font-size:13px;color:var(--mut);margin:4px 0 16px}
+.caja input{width:100%;font-size:26px;letter-spacing:10px;text-align:center;border:2px solid var(--line);border-radius:14px;padding:12px;outline:none}
+.caja input:focus{border-color:var(--blue)}
+.caja button{width:100%;margin-top:12px;background:var(--yel);color:var(--navy);border:0;border-radius:14px;padding:13px;font-size:15px;font-weight:800;cursor:pointer}
+.err{color:#c0392b;font-size:12px;min-height:18px;margin-top:8px}
+.cargando{text-align:center;color:var(--mut);font-size:13px;padding:30px}
+.pie{font-size:11px;color:var(--mut);text-align:center;margin-top:16px}
+@media(max-width:520px){.kpi b{font-size:18px}.kpi{padding:8px}.cel{min-height:56px}.pill{display:none}.cel .dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:4px}.cel .dots i{width:7px;height:7px;border-radius:50%}}
+@media(min-width:521px){.cel .dots{display:none}}
+</style>
+</head>
+<body>
+<div id="login">
+  <div class="caja">
+    <img src="logo-dark.webp" alt="M Clean">
+    <h1>Agenda nacional</h1>
+    <p>Acceso solo para gerencia</p>
+    <input id="pin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••">
+    <button id="entrar">Entrar</button>
+    <div class="err" id="perr"></div>
+  </div>
+</div>
+
+<header>
+  <div class="hrow">
+    <img src="logo-dark.webp" alt="M Clean">
+    <div class="htit"><b>Agenda nacional</b><small id="act">Todos los tableros</small></div>
+    <button class="ibtn" id="recargar" title="Actualizar">⟳</button>
+    <button class="ibtn" id="salir" title="Salir">⏻</button>
+  </div>
+</header>
+
+<main>
+  <div class="bar">
+    <div class="seg"><button data-v="semana" class="on">Semana</button><button data-v="mes">Mes</button><button data-v="lista">Próximos</button></div>
+    <div class="nav"><button id="prev">‹</button><button id="hoyb">Hoy</button><button id="next">›</button></div>
+    <div class="rango" id="rango"></div>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="kHoy">–</b><span>Hoy</span></div>
+    <div class="kpi"><b id="kMan">–</b><span>Mañana</span></div>
+    <div class="kpi"><b id="kRango">–</b><span id="kRangoT">En la vista</span></div>
+    <div class="kpi alerta"><b id="kSin">–</b><span>Sin técnico</span></div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="filtros">
+    <select id="fTec"><option value="">Todos los técnicos</option></select>
+    <select id="fEst"><option value="">Todos los estados</option><option value="1">Próximo</option><option value="2">En proceso</option><option value="3">Terminado</option><option value="4">Pagado</option></select>
+  </div>
+  <div id="vista"><div class="cargando">Cargando…</div></div>
+  <div class="pie">Datos de Trello · se actualizan cada 10 minutos</div>
+</main>
+
+<div class="modal" id="modal"><div class="hoja" id="hoja"></div></div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbwmj3prBAsOb77b5QTqPoY673GXdsZhBn0ef_ZaqDuX-9xzFoMCJFAs3Nq2tOeFoz2N/exec';
+const COLORES = {'Valle de Aburrá':'#2c66b8','Eje Cafetero':'#1f9d63','Barranquilla':'#e67e22','Cartagena':'#8e44ad','Santa Marta':'#16a5b8','Bucaramanga':'#c0392b','Córdoba':'#d4a017','Apartadó':'#5d6d7e','Quibdó':'#27ae60','Otras ciudades':'#16285a'};
+const DIAS = ['dom','lun','mar','mié','jue','vie','sáb'];
+const S = { clave:'', vista:'semana', ref:new Date(), datos:[], tab:'', tec:'', est:'', rango:null };
+const $ = id => document.getElementById(id);
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}, del(k){try{localStorage.removeItem(k)}catch(e){}} };
+
+const ymd = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const addD = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const lunes = d => { const x = new Date(d); const w = (x.getDay()+6)%7; x.setDate(x.getDate()-w); x.setHours(0,0,0,0); return x; };
+const minutos = h => { const m = String(h||'').match(/(\d{1,2})(?::(\d{2}))?\s*([ap])?/i); if(!m) return 9999; let H=+m[1]; const M=+(m[2]||0); if(m[3]){const pm=/p/i.test(m[3]); if(pm&&H<12)H+=12; if(!pm&&H===12)H=0;} return H*60+M; };
+const hora12 = h => { const t = minutos(h); if(t===9999) return '—'; let H=Math.floor(t/60), M=t%60; const ap = H>=12?'p. m.':'a. m.'; H = H%12||12; return H+(M?':'+String(M).padStart(2,'0'):'')+' '+ap; };
+const estado = l => { const m = String(l).match(/^(\d)\./); return m ? m[1] : '1'; };
+const ESTN = {'1':'Próximo','2':'En proceso','3':'Terminado','4':'Pagado'};
+const color = t => COLORES[t] || '#7f8c8d';
+const esc = s => String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const tecnicoDe = x => x.tecnico || ((String(x.lista).match(/Técnico:\s*(.+)$/)||[])[1]||'');
+
+function rangoVista(){
+  if (S.vista==='semana'){ const a = lunes(S.ref); return [a, addD(a,6)]; }
+  if (S.vista==='mes'){ const a = new Date(S.ref.getFullYear(), S.ref.getMonth(), 1); const b = new Date(S.ref.getFullYear(), S.ref.getMonth()+1, 0); return [lunes(a), addD(lunes(addD(b,7)),-1)]; }
+  const h = new Date(); h.setHours(0,0,0,0); return [h, addD(h,30)];
+}
+
+async function cargar(){
+  const [a,b] = rangoVista();
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const desde = ymd(a < hoy ? a : hoy), hasta = ymd(b > addD(hoy,1) ? b : addD(hoy,1));
+  if (S.rango && S.rango[0] <= desde && S.rango[1] >= hasta) { pintar(); return; }
+  $('vista').innerHTML = '<div class="cargando">Cargando agenda…</div>';
+  try {
+    const r = await fetch(API, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ accion:'agenda', clave:S.clave, desde:desde, hasta:hasta }) });
+    const j = await r.json();
+    if (!j.ok) { if (/clave/i.test(j.error||'')) { salir(); $('perr').textContent = j.error; return; } throw new Error(j.error||'Error'); }
+    S.datos = j.servicios || []; S.rango = [desde, hasta];
+    $('act').textContent = 'Actualizado ' + (j.actualizado || 'ahora');
+    llenarFiltros(); pintar();
+  } catch (e) { $('vista').innerHTML = '<div class="cargando">No se pudo cargar: ' + esc(e.message) + '<br><br><button class="chip" onclick="S.rango=null;cargar()">Reintentar</button></div>'; }
+}
+
+function llenarFiltros(){
+  const tabs = Object.keys(COLORES).filter(t => S.datos.some(x=>x.tablero===t)).concat([...new Set(S.datos.map(x=>x.tablero))].filter(t=>!COLORES[t]));
+  $('chips').innerHTML = '<button class="chip'+(S.tab?'':' on')+'" data-t="">Todas las ciudades</button>' + tabs.map(t=>'<button class="chip'+(S.tab===t?' on':'')+'" data-t="'+esc(t)+'"><i style="background:'+color(t)+'"></i>'+esc(t)+'</button>').join('');
+  const tecs = [...new Set(S.datos.map(tecnicoDe).filter(Boolean))].sort();
+  $('fTec').innerHTML = '<option value="">Todos los técnicos</option><option value="__sin">⚠ Sin técnico</option>' + tecs.map(t=>'<option'+(S.tec===t?' selected':'')+'>'+esc(t)+'</option>').join('');
+  if (S.tec==='__sin') $('fTec').value='__sin';
+}
+
+function filtrados(){
+  return S.datos.filter(x => (!S.tab || x.tablero===S.tab) && (!S.est || estado(x.lista)===S.est) && (!S.tec || (S.tec==='__sin' ? !tecnicoDe(x) : tecnicoDe(x)===S.tec)))
+    .sort((a,b) => a.fecha.localeCompare(b.fecha) || minutos(a.hora)-minutos(b.hora));
+}
+
+function tarjeta(x, i){
+  const e = estado(x.lista), t = tecnicoDe(x);
+  return '<div class="srv" style="--c:'+color(x.tablero)+'" data-i="'+i+'"><div class="h">'+hora12(x.hora)+'</div><div class="b">'+
+    '<div class="t1">'+esc(x.ciudad||x.tablero)+' · '+esc(x.tipo||'Servicio')+'</div>'+
+    '<div class="t2">'+(x.exp?'Exp. '+esc(x.exp)+' · ':'')+(t?'Téc. '+esc(t):'<span class="sint">Sin técnico</span>')+'</div></div>'+
+    '<span class="est e'+e+'">'+ESTN[e]+'</span></div>';
+}
+
+let VIS = [];
+function pintar(){
+  const [a,b] = rangoVista(), hoy = ymd(new Date()), man = ymd(addD(new Date(),1));
+  const L = filtrados(); VIS = L;
+  const enR = L.filter(x => x.fecha >= ymd(a) && x.fecha <= ymd(b));
+  $('kHoy').textContent = L.filter(x=>x.fecha===hoy).length;
+  $('kMan').textContent = L.filter(x=>x.fecha===man).length;
+  $('kRango').textContent = enR.length;
+  $('kRangoT').textContent = S.vista==='semana'?'Esta semana':S.vista==='mes'?'En el mes':'Próx. 30 días';
+  $('kSin').textContent = enR.filter(x=>!tecnicoDe(x) && estado(x.lista)==='1').length;
+  const fmt = d => d.toLocaleDateString('es-CO',{day:'numeric',month:'short'});
+  $('rango').textContent = S.vista==='mes' ? S.ref.toLocaleDateString('es-CO',{month:'long',year:'numeric'}) : fmt(a)+' – '+fmt(b)+' '+b.getFullYear();
+  document.querySelector('.nav').style.visibility = S.vista==='lista' ? 'hidden' : 'visible';
+
+  if (S.vista==='mes') {
+    const mes = S.ref.getMonth(); let h = '<div class="mes">' + ['lun','mar','mié','jue','vie','sáb','dom'].map(d=>'<div class="dn">'+d+'</div>').join('');
+    for (let d = new Date(a); d <= b; d = addD(d,1)) {
+      const k = ymd(d), del = L.filter(x=>x.fecha===k);
+      h += '<div class="cel'+(d.getMonth()!==mes?' fuera':'')+(k===hoy?' hoy':'')+'" data-d="'+k+'"><div class="n">'+d.getDate()+(del.length?'<em>'+del.length+'</em>':'')+'</div>'+
+        del.slice(0,3).map(x=>'<div class="pill" style="background:'+color(x.tablero)+'">'+hora12(x.hora).replace(/ [ap]\. m\./,'')+' '+esc(x.ciudad||x.tablero)+'</div>').join('')+
+        (del.length>3?'<div class="mas">+'+(del.length-3)+' más</div>':'')+
+        '<div class="dots">'+del.slice(0,8).map(x=>'<i style="background:'+color(x.tablero)+'"></i>').join('')+'</div></div>';
+    }
+    $('vista').innerHTML = h + '</div>';
+    return;
+  }
+  const dias = []; for (let d = new Date(a); d <= b; d = addD(d,1)) dias.push(ymd(d));
+  let h = '';
+  dias.forEach(k => {
+    const del = L.filter(x=>x.fecha===k);
+    if (S.vista==='lista' && !del.length) return;
+    const d = parse(k);
+    h += '<div class="dia'+(k===hoy?' hoy':'')+'"><h3>'+DIAS[d.getDay()]+' '+d.getDate()+' '+d.toLocaleDateString('es-CO',{month:'short'})+'<span>'+(del.length?del.length+' servicio'+(del.length>1?'s':''):'')+'</span></h3>'+
+      (del.length ? del.map(x=>tarjeta(x, L.indexOf(x))).join('') : '<div class="vacio">Sin servicios</div>')+'</div>';
+  });
+  $('vista').innerHTML = h || '<div class="cargando">No hay servicios con estos filtros.</div>';
+}
+
+function detalle(x){
+  const t = tecnicoDe(x), e = estado(x.lista), cel = String(x.cel||'').replace(/\D/g,'');
+  const filas = [['Fecha', parse(x.fecha).toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'})+' · '+hora12(x.hora)],['Estado',ESTN[e]],['Expediente',x.exp],['Cliente',x.cliente],['Campaña',x.emp],['Servicio',x.tipo],['Dirección',x.dir],['Ciudad',x.ciudad],['Tablero',x.tablero],['Técnico',t||'⚠ Sin asignar'],['Horario',x.horario]]
+    .filter(f=>f[1]).map(f=>'<div class="fila"><b>'+f[0]+'</b><span>'+esc(f[1])+'</span></div>').join('');
+  const mapa = x.dir ? 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(x.dir+', '+(x.ciudad||'')+', Colombia') : '';
+  $('hoja').innerHTML = '<h2>'+esc(x.tipo||'Servicio')+'</h2><div class="sub" style="color:'+color(x.tablero)+'">● '+esc(x.ciudad||x.tablero)+'</div>'+filas+
+    '<div class="acc">'+(x.url?'<a class="a1" href="'+esc(x.url)+'" target="_blank" rel="noopener">Abrir en Trello</a>':'')+
+    (cel?'<a class="a2" href="https://wa.me/'+(cel.length===10?'57':'')+cel+'" target="_blank" rel="noopener">WhatsApp cliente</a>':'')+
+    (mapa?'<a class="a3" href="'+mapa+'" target="_blank" rel="noopener">Ver en mapa</a>':'')+
+    '<button class="a4" onclick="cerrar()">Cerrar</button></div>';
+  $('modal').classList.add('on');
+}
+function verDia(k){
+  const del = VIS.filter(x=>x.fecha===k), d = parse(k);
+  $('hoja').innerHTML = '<h2 style="text-transform:capitalize">'+d.toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'})+'</h2><div class="sub">'+del.length+' servicio(s)</div>'+
+    (del.length ? del.map(x=>tarjeta(x, VIS.indexOf(x))).join('') : '<div class="vacio">Sin servicios</div>')+'<div class="acc"><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>';
+  $('modal').classList.add('on');
+}
+function cerrar(){ $('modal').classList.remove('on'); }
+
+document.addEventListener('click', ev => {
+  const s = ev.target.closest('.srv'); if (s) { detalle(VIS[+s.dataset.i]); return; }
+  const c = ev.target.closest('.cel'); if (c) { verDia(c.dataset.d); return; }
+  const ch = ev.target.closest('.chip[data-t]'); if (ch) { S.tab = ch.dataset.t; llenarFiltros(); pintar(); return; }
+  const v = ev.target.closest('.seg button'); if (v) { document.querySelectorAll('.seg button').forEach(b=>b.classList.toggle('on', b===v)); S.vista = v.dataset.v; cargar(); }
+});
+$('modal').addEventListener('click', e => { if (e.target.id==='modal') cerrar(); });
+$('prev').onclick = () => { S.ref = S.vista==='mes' ? new Date(S.ref.getFullYear(), S.ref.getMonth()-1, 1) : addD(S.ref,-7); cargar(); };
+$('next').onclick = () => { S.ref = S.vista==='mes' ? new Date(S.ref.getFullYear(), S.ref.getMonth()+1, 1) : addD(S.ref,7); cargar(); };
+$('hoyb').onclick = () => { S.ref = new Date(); cargar(); };
+$('recargar').onclick = () => { S.rango = null; cargar(); };
+$('fTec').onchange = e => { S.tec = e.target.value; pintar(); };
+$('fEst').onchange = e => { S.est = e.target.value; pintar(); };
+
+function salir(){ store.del('mc_agenda'); S.clave=''; S.rango=null; $('login').style.display='flex'; $('pin').value=''; }
+$('salir').onclick = salir;
+async function entrar(){
+  const v = $('pin').value.trim(); if (!/^\d{6}$/.test(v)) { $('perr').textContent = 'Escribe la clave de 6 dígitos.'; return; }
+  $('perr').textContent = ''; S.clave = v; store.set('mc_agenda', v); $('login').style.display='none'; S.rango=null; cargar();
+}
+$('entrar').onclick = entrar;
+$('pin').addEventListener('keydown', e => { if (e.key==='Enter') entrar(); });
+const guardada = store.get('mc_agenda');
+if (guardada) { S.clave = guardada; $('login').style.display='none'; cargar(); } else { setTimeout(()=>$('pin').focus(), 200); }
+setInterval(() => { if (S.clave && document.visibilityState==='visible') { S.rango=null; cargar(); } }, 10*60*1000);
+</script>
+</body>
+</html>
