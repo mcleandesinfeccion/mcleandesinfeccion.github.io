@@ -12,7 +12,7 @@
 <style>
 :root{--navy:#16285a;--yel:#f6d046;--blue:#2c66b8;--bg:#f3f5fa;--line:#e3e8f2;--txt:#1b2540;--mut:#6b7590;--ok:#1f9d63;--err:#c0392b}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Poppins,system-ui,sans-serif;background:linear-gradient(170deg,#16285a 0,#2c66b8 340px,var(--bg) 340px);min-height:100vh;color:var(--txt)}
+body{font-family:Poppins,system-ui,sans-serif;background:linear-gradient(180deg,#16285a 0,#2c66b8 300px,var(--bg) 300px);min-height:100vh;color:var(--txt)}
 main{max-width:420px;margin:0 auto;padding:18px 16px 50px}
 h1{color:#fff;font-size:18px;text-align:center;margin-bottom:12px}
 canvas#c{width:100%;border-radius:22px;box-shadow:0 18px 40px rgba(10,20,50,.35);display:block;background:#fff}
@@ -49,7 +49,7 @@ function dibujar(c) {
   var W = 640, H = 1010, cv = document.getElementById('c'); cv.width = W; cv.height = H; var x = cv.getContext('2d');
   document.getElementById('qr').innerHTML = '';
   new QRCode(document.getElementById('qr'), { text: c.verificar, width: 360, height: 360, colorDark: '#16285a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
-  return Promise.all([img('logo-dark.webp'), img(c.foto), img(c.sello), document.fonts ? document.fonts.load('800 30px Poppins').then(function () { return document.fonts.load('500 20px Poppins'); }) : null]).then(function (r) {
+  return Promise.all([img('logo-dark.webp'), img(c.foto), img(c.sello), document.fonts ? Promise.all(['500 20px Poppins', '600 18px Poppins', '700 19px Poppins', '800 30px Poppins'].map(function (f) { return document.fonts.load(f); })) : null]).then(function (r) {
     var logo = r[0], foto = r[1], sello = r[2];
     x.save(); rr(x, 0, 0, W, H, 36); x.clip();
     x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
