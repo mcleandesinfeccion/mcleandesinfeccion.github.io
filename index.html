@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16285a">
+<meta name="description" content="M Clean Desinfección y Limpieza: agenda en 60 segundos tu limpieza profunda a vapor. 28 ciudades de Colombia y Panamá.">
+<title>M Clean – Agenda tu servicio</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{
+  --navy:#16285a;--navy2:#0d1a40;--blue:#2c66b8;--blue2:#3b82d6;--sky:#e9f1fb;--yel:#f6d046;--yel2:#e8bd20;--cyan:#7fe3ef;
+  --tx:#16285a;--gr:#5b6b86;--line:#dde6f2;--bg:#f4f7fb;--wa:#25d366;--ok:#1aa37a;
+  --r:28px;--sh:0 14px 34px rgba(22,40,90,.12);--f:'Poppins',system-ui,-apple-system,sans-serif
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font-family:var(--f);color:var(--tx);background:var(--bg);padding-bottom:calc(92px + env(safe-area-inset-bottom));overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+svg.i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.vista{display:none}.vista.on{display:block;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.wrap{max-width:560px;margin:0 auto;padding:0 20px}
+.hp{position:absolute;left:-9999px;height:0;opacity:0}
+
+/* ---------- barra superior y encabezado ---------- */
+.aviso{background:var(--navy);color:#fff;font-size:12.5px;padding:calc(8px + env(safe-area-inset-top)) 20px 8px;line-height:1.5}
+.aviso b{color:var(--yel)}.aviso a{color:#fff;font-weight:600}
+.head{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.head .wrap{display:flex;align-items:center;gap:10px;height:66px}
+.head .logo{height:48px;width:auto;display:block}
+.head .sp{flex:1}
+.circ{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line);color:var(--navy);text-decoration:none;background:#fff}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:12px 18px;font:700 14px var(--f);text-decoration:none;cursor:pointer;white-space:nowrap}
+.pill.y{background:var(--yel);color:var(--navy)}
+.btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;border:0;border-radius:999px;padding:17px 22px;font:700 16px var(--f);cursor:pointer;text-decoration:none;transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.btn.y{background:var(--yel);color:var(--navy);box-shadow:0 10px 24px rgba(246,208,70,.35)}
+.btn.o{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.9)}
+.btn.n{background:var(--navy);color:#fff}
+.btn.b{background:var(--blue);color:#fff}
+.btn.w{background:#fff;color:var(--navy);border:2px solid var(--line)}
+.btn.wa{background:var(--wa);color:#fff}
+.btn:disabled{opacity:.55}
+
+/* ---------- portada ---------- */
+.hero{position:relative;overflow:hidden;color:#fff;background:linear-gradient(170deg,#2a5fae 0%,#2e6cc0 55%,#3576c8 100%);padding:34px 0 30px}
+.hero::before{content:"";position:absolute;width:820px;height:820px;border-radius:50%;background:#24539c;left:-420px;top:-260px;opacity:.75}
+.hero::after{content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:var(--yel);right:-140px;bottom:-150px;opacity:.95}
+.hero .wrap{position:relative;z-index:1}
+.chip{display:inline-block;border:1.5px solid rgba(255,255,255,.35);background:rgba(255,255,255,.1);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:600}
+.hero h1{font-weight:900;font-size:clamp(38px,11.5vw,56px);line-height:.98;letter-spacing:-1.5px;margin:20px 0 16px;text-transform:uppercase}
+.hero h1 span{color:var(--yel)}
+.hero p{font-size:16px;line-height:1.55;opacity:.95;margin:0 0 22px}
+.hero .cta{display:grid;gap:12px}
+.reel{position:relative;margin:26px auto 0;width:min(78%,300px);aspect-ratio:9/16;border-radius:30px;overflow:hidden;border:6px solid rgba(255,255,255,.9);box-shadow:0 26px 50px rgba(0,0,0,.35);background:#0d1a40}
+.reel video,.reel img{width:100%;height:100%;object-fit:cover;display:block}
+.reel .tag{position:absolute;left:12px;top:12px;background:var(--yel);color:var(--navy);font-size:11.5px;font-weight:800;padding:6px 11px;border-radius:999px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:26px}
+.stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:14px 10px;text-align:center}
+.stat b{display:block;font-size:26px;font-weight:900;line-height:1}
+.stat small{display:block;font-size:11px;opacity:.9;margin-top:6px;line-height:1.3}
+
+/* ---------- títulos de sección ---------- */
+.sec{padding:34px 0 8px}
+.kicker{display:inline-block;background:var(--yel);color:var(--navy);font-weight:800;font-size:12px;padding:6px 12px;border-radius:999px;letter-spacing:.3px;text-transform:uppercase}
+.sec h2{font-size:28px;line-height:1.1;font-weight:800;margin:12px 0 6px;letter-spacing:-.5px}
+.sec p.lead{color:var(--gr);margin:0 0 18px;font-size:15px;line-height:1.5}
+.carr{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 20px 18px;margin:0 -20px;scrollbar-width:none}
+.carr::-webkit-scrollbar{display:none}
+
+/* ---------- promociones ---------- */
+.promo{scroll-snap-align:center;flex:0 0 82%;max-width:360px;border-radius:24px;overflow:hidden;background:#fff;box-shadow:var(--sh);display:flex;flex-direction:column}
+.promo img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
+.promo .pb{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px}
+.promo .pb b{font-size:15px}.promo .pb small{display:block;color:var(--gr);font-size:12px;font-weight:500}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:-6px}.dots i{width:7px;height:7px;border-radius:9px;background:#c9d6ea}.dots i.on{width:22px;background:var(--navy)}
+
+/* ---------- por qué elegirnos ---------- */
+.amarillo{background:var(--yel);margin-top:34px;padding:34px 0 30px;position:relative;overflow:hidden}
+.amarillo::after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.25);right:-120px;top:-110px}
+.amarillo h2{position:relative;z-index:1;margin-top:0}
+.ventajas{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.vt{background:#fff;border-radius:24px;padding:18px 16px}
+.vt .ic{width:52px;height:52px;border-radius:16px;background:var(--navy);color:var(--yel);display:grid;place-items:center;margin-bottom:12px}
+.vt .ic svg{width:26px;height:26px}
+.vt b{display:block;font-size:15.5px;line-height:1.2;font-weight:800}
+.vt small{display:block;color:var(--gr);font-size:12.5px;line-height:1.45;margin-top:6px}
+
+/* ---------- tarjetas de servicio con foto ---------- */
+.svc{position:relative;border-radius:var(--r);overflow:hidden;min-height:330px;display:flex;flex-direction:column;justify-content:flex-end;color:#fff;margin-bottom:16px;box-shadow:var(--sh);background:var(--navy)}
+.svc .ph{position:absolute;inset:0;background-size:cover;background-position:center}
+.svc::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(22,40,90,0) 18%,rgba(22,40,90,.55) 50%,rgba(16,30,70,.96) 82%)}
+.svc .bd{position:relative;z-index:1;padding:20px 20px 18px}
+.tag{display:inline-block;background:var(--yel);color:var(--navy);font-weight:700;font-size:12.5px;padding:6px 13px;border-radius:999px}
+.svc h3{font-size:23px;line-height:1.15;font-weight:800;margin:10px 0 6px}
+.svc p{margin:0;font-size:14px;line-height:1.5;opacity:.92}
+.svc .row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.svc .precio{font-size:22px;font-weight:800}.svc .precio small{display:block;font-size:11.5px;font-weight:500;opacity:.8}
+.svc .lg{position:absolute;right:14px;top:14px;z-index:1;background:#fff;border-radius:14px;padding:5px 7px;box-shadow:0 6px 14px rgba(0,0,0,.18)}
+.svc .lg img{height:30px;display:block}
+
+/* ---------- así trabajamos ---------- */
+.foto{scroll-snap-align:start;flex:0 0 68%;max-width:290px;position:relative;border-radius:24px;overflow:hidden;aspect-ratio:3/4;box-shadow:var(--sh);background:var(--navy)}
+.foto img,.foto video{width:100%;height:100%;object-fit:cover;display:block}
+.foto.vid::after{display:none}.foto.vid .lg,.foto.vid .tx b,.foto.vid .tx small{display:none}.foto::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(14,28,66,.92) 100%)}
+.foto .lg{position:absolute;right:0;top:0;z-index:1;background:#fff;border-bottom-left-radius:22px;padding:8px 10px}
+.foto .lg img{height:34px;width:auto}
+.foto.vid .tx{top:14px;bottom:auto}.foto .tx{position:absolute;left:14px;right:14px;bottom:14px;z-index:1;color:#fff}
+.foto .tx b{display:block;font-size:18px;line-height:1.2;font-weight:800;margin-top:8px}
+.foto .tx small{display:block;font-size:12.5px;opacity:.9;margin-top:4px}
+
+/* ---------- banda azul ---------- */
+.banda{position:relative;overflow:hidden;background:var(--blue);color:#fff;border-radius:var(--r);padding:26px 22px;margin:22px 0}
+.banda::after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:var(--yel);right:-80px;top:-90px}
+.banda h3{position:relative;z-index:1;font-size:24px;font-weight:800;margin:10px 0 8px;line-height:1.15}
+.banda p{position:relative;z-index:1;margin:0 0 16px;opacity:.92;font-size:14.5px}
+.banda .btn{position:relative;z-index:1}
+
+/* ---------- encabezado interno ---------- */
+.cab{background:linear-gradient(170deg,#2a5fae,#2e6cc0);color:#fff;padding:26px 0 54px;position:relative;overflow:hidden}
+.cab::after{content:"";position:absolute;width:200px;height:200px;border-radius:50%;background:var(--yel);right:-120px;top:-130px}
+.cab h2{position:relative;z-index:1;font-size:28px;max-width:80%;font-weight:900;text-transform:uppercase;letter-spacing:-.8px;line-height:1;margin:10px 0 6px}
+.cab h2 span{color:var(--yel)}
+.cab p{position:relative;z-index:1;margin:0;opacity:.92;font-size:14.5px}
+.sube{margin-top:-34px;position:relative;z-index:2}
+
+/* ---------- reserva ---------- */
+.card{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--sh);margin-bottom:14px}
+.card h3{margin:0 0 4px;font-size:20px;font-weight:800}
+.ayuda{color:var(--gr);font-size:13.5px;margin:0 0 14px}
+.pasos{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.paso{text-align:center}
+.paso .bar{height:6px;border-radius:6px;background:var(--line);margin-bottom:8px;transition:.3s}
+.paso small{font-size:11.5px;font-weight:700;color:#9aa8bf}
+.paso.hecho .bar{background:var(--blue)}.paso.act .bar{background:var(--yel)}
+.paso.hecho small,.paso.act small{color:var(--navy)}
+label.l{display:block;font-weight:700;font-size:13px;margin:16px 0 7px}
+input,select,textarea{width:100%;padding:15px 16px;border:1.5px solid var(--line);border-radius:16px;font:500 15px var(--f);background:#fafcff;color:var(--tx)}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--blue2);background:#fff}
+.chs{display:flex;flex-wrap:wrap;gap:8px}
+.ch{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:10px 15px;font:600 13.5px var(--f);color:var(--tx);cursor:pointer}
+.ch.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+.servs{display:grid;gap:10px}
+.so{display:flex;align-items:center;gap:12px;border:1.5px solid var(--line);border-radius:20px;padding:10px;background:#fff;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.so .mini{width:58px;height:58px;border-radius:16px;background-size:cover;background-position:center;flex:none;background-color:var(--sky)}
+.so b{display:block;font-size:14.5px;line-height:1.25;font-weight:700}.so small{color:var(--gr);font-size:12px}
+.so .p{margin-left:auto;font-weight:800;font-size:15px;white-space:nowrap;padding-right:4px}
+.so.sel{border-color:var(--navy);background:var(--sky);box-shadow:0 0 0 3px rgba(22,40,90,.1)}
+.dias{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}.dias::-webkit-scrollbar{display:none}
+.dia{flex:0 0 64px;border:1.5px solid var(--line);background:#fff;border-radius:18px;padding:10px 4px;text-align:center;cursor:pointer;font:inherit;color:inherit}
+.dia small{display:block;font-size:10.5px;color:var(--gr);font-weight:700;text-transform:uppercase}.dia b{display:block;font-size:22px;font-weight:800;line-height:1.25}.dia i{font-style:normal;font-size:11px;color:var(--gr)}
+.dia.sel{background:var(--navy);border-color:var(--navy)}.dia.sel *{color:#fff!important}
+.horas{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hora{border:1.5px solid var(--line);background:#fff;border-radius:18px;padding:14px 4px;font:800 17px var(--f);color:var(--navy);cursor:pointer}
+.hora small{display:block;font:600 11px var(--f);color:var(--gr)}
+.hora.sel{background:var(--yel);border-color:var(--yel)}
+.hora:disabled{opacity:.35;text-decoration:line-through;cursor:default}
+.nota{font-size:12.5px;color:var(--gr);margin:10px 0 0;line-height:1.45}
+.dir{display:grid;grid-template-columns:1.25fr .9fr;gap:8px}
+.dir2{display:grid;grid-template-columns:auto 1fr auto 1fr;gap:8px;align-items:center;margin-top:8px}.dir2 span{font-weight:800;color:var(--gr);font-size:18px}
+#mapa{height:240px;border-radius:20px;margin-top:10px;z-index:0;border:1.5px solid var(--line)}
+.gps{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;border:1.5px dashed var(--blue2);background:var(--sky);color:var(--blue);border-radius:16px;padding:13px;font:700 14px var(--f);cursor:pointer}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin-top:16px;line-height:1.5}
+.chk input{width:24px;height:24px;flex:none;margin-top:1px;accent-color:var(--navy)}
+.chk a{color:var(--blue);font-weight:700}
+.resumen{border-radius:20px;padding:14px 16px;background:var(--sky);font-size:14px;line-height:1.75}
+.resumen b{font-weight:800}
+.err{color:#d23a52;font-weight:700;font-size:13.5px;min-height:18px;margin:10px 0 0}
+.nav2{display:grid;grid-template-columns:58px 1fr;gap:10px;margin-top:14px}
+.atras{border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--navy);cursor:pointer;display:grid;place-items:center}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid rgba(22,40,90,.25);border-top-color:var(--navy);border-radius:50%;animation:gg 1s linear infinite}@keyframes gg{to{transform:rotate(360deg)}}
+
+/* ---------- confirmación ---------- */
+.ok{text-align:center}
+.ok .sello{width:92px;height:92px;margin:4px auto 12px;border-radius:50%;display:grid;place-items:center;background:var(--yel);color:var(--navy);animation:pop .6s cubic-bezier(.2,1.6,.4,1)}
+.ok .sello svg{width:46px;height:46px;stroke-width:3}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.exp{font-size:32px;font-weight:900;letter-spacing:2px;color:var(--navy);background:var(--sky);border:2px dashed var(--blue2);border-radius:20px;padding:12px;margin:10px 0 14px}
+
+/* ---------- pagos ---------- */
+.qrcard{border-radius:var(--r);padding:22px;text-align:center;color:#fff;background:linear-gradient(160deg,var(--blue),var(--navy));position:relative;overflow:hidden}
+.qrcard::after{content:"";position:absolute;width:200px;height:200px;border-radius:50%;background:var(--yel);right:-100px;top:-100px;opacity:.9}
+.qrcard>*{position:relative;z-index:1}
+.qrcard h3{margin:0 0 2px;font-size:21px;font-weight:800}.qrcard p{margin:0 0 14px;opacity:.9;font-size:13px}
+#qr{background:#fff;border-radius:22px;padding:14px;display:inline-block;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+#qr img,#qr canvas{width:220px!important;height:220px!important;display:block}
+.qrcard .tit{margin-top:12px;font-weight:700;font-size:14px}
+.qrbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.qrbtns .pill{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.45)}
+.llave{display:flex;align-items:center;gap:10px;border-radius:20px;padding:12px 14px;background:var(--sky)}
+.llave b{font-size:23px;font-weight:900;letter-spacing:1px;flex:1}
+ol.pp{padding-left:20px;font-size:14px;line-height:1.75;margin:14px 0}
+.alerta{display:flex;gap:10px;font-size:12.5px;line-height:1.5;color:#6d5300;background:#fff6d6;border-radius:16px;padding:12px 14px;margin-top:12px}
+
+/* ---------- nosotros / legal ---------- */
+.legal{font-size:14px;line-height:1.65}.legal h3{font-size:16.5px;margin:18px 0 6px;font-weight:800}.legal p,.legal li{margin:0 0 8px}.legal a{color:var(--blue);font-weight:700}
+.legal .btn{margin-top:8px}
+.datos{display:grid;gap:12px;font-size:14.5px}
+.dato{display:flex;gap:12px;align-items:flex-start}.dato .ic{width:40px;height:40px;border-radius:12px;background:var(--navy);color:var(--yel);display:grid;place-items:center;flex:none}
+.dato .ic svg{width:20px;height:20px}
+.fila{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pie{background:var(--navy);color:#c8d3ea;text-align:center;font-size:12px;line-height:1.8;padding:24px 20px 26px;margin-top:30px}
+.pie img{height:44px;margin-bottom:8px;background:#fff;border-radius:12px;padding:5px 8px}
+.pie a{color:#fff;font-weight:600}
+
+/* ---------- menú inferior y WhatsApp ---------- */
+nav.menu{position:fixed;left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:40;max-width:520px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-around;padding:8px 6px;border-radius:26px;background:var(--navy);box-shadow:0 14px 34px rgba(13,26,64,.4)}
+nav.menu button{flex:1;background:0;border:0;color:#8fa0c4;font:600 10.5px var(--f);display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 0}
+nav.menu button.on{color:#fff}nav.menu button.on svg{color:var(--yel)}
+nav.menu .centro{color:#fff}
+nav.menu .centro span{width:58px;height:58px;margin-top:-32px;border-radius:50%;display:grid;place-items:center;background:var(--yel);color:var(--navy);border:5px solid var(--bg);box-shadow:0 10px 20px rgba(0,0,0,.25)}
+nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--navy)!important}
+.fwa{position:fixed;right:16px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:39;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:var(--wa);box-shadow:0 12px 24px rgba(37,211,102,.45);text-decoration:none}
+.fwa svg{width:30px;height:30px;fill:#fff}
+.toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;background:var(--navy);color:#fff;padding:11px 18px;border-radius:999px;font-weight:600;font-size:13.5px;z-index:50;transition:.3s;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.demo{background:#fff3cd;color:#7a5200;text-align:center;font-size:12px;font-weight:600;padding:6px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/><path d="M8.5 14.5l2.3 2.3 4.7-4.7"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v6M12 7.5h.01"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M21 16.5v3a2 2 0 0 1-2.2 2A19 19 0 0 1 2.5 5.2 2 2 0 0 1 4.5 3h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.4 10.9a16 16 0 0 0 4.7 4.7l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.5 3.3-5.5 6.5-5.5s5.9 2 6.5 5.5"/><path d="M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.8c2 .7 3.4 2.4 3.9 5.2"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 7v5l3.5 2"/></symbol>
+  <symbol id="i-tool" viewBox="0 0 24 24"><path d="M14.7 6.3a4.5 4.5 0 0 0 5.7 5.7l-8.6 8.6a2.3 2.3 0 0 1-3.3-3.3l8.6-8.6a4.5 4.5 0 0 0-2.4-2.4z"/><path d="M14.7 6.3 17 4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21.5s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2.5" y="4.5" width="19" height="15" rx="3"/><path d="m3 6 9 7 9-7"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M4.5 12.5 9.5 17.5 19.5 6.5"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5 8 12l7 7"/></symbol>
+  <symbol id="i-gps" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="8"/><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3.5v12M7 11l5 5 5-5"/><path d="M4 20.5h16"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="12" height="12" rx="2.5"/><path d="M15.5 8.5V5.5a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3"/></symbol>
+</svg>
+<div id="demo" class="demo" hidden>Vista previa: las reservas no se envían a Trello.</div>
+
+<div class="aviso"><b>Oferta:</b> limpieza de vidrios hasta 12 piezas por $250.000 · <a href="#reservar" data-s="vidrios">Reservar</a></div>
+<header class="head"><div class="wrap">
+  <a href="#inicio"><img class="logo" src="logo-dark.webp" alt="M Clean Desinfección y Limpieza"></a>
+  <span class="sp"></span>
+  <a class="circ" href="tel:+573226895212" aria-label="Llamar"><svg class="i"><use href="#i-phone"/></svg></a>
+  <a class="pill y" href="#reservar">Agendar</a>
+</div></header>
+
+<!-- =================== INICIO =================== -->
+<section id="v-inicio" class="vista on">
+  <div class="hero"><div class="wrap">
+    <span class="chip">Limpieza y desinfección profesional · Colombia y Panamá</span>
+    <h1>Limpieza y desinfección <span>de sus espacios</span></h1>
+    <p>Hogares, empresas e instituciones. Personal capacitado, equipos a vapor y agenda en línea con confirmación al instante.</p>
+    <div class="cta">
+      <a class="btn y" href="#reservar">Agendar en 60 segundos</a>
+      <a class="btn o" href="https://wa.me/573226895212?text=Hola%20M%20Clean%2C%20quiero%20una%20cotizaci%C3%B3n" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+    </div>
+    <div class="reel"><span class="tag">● Así trabajamos</span>
+      <video src="reel-hero.mp4" poster="reel-hero.jpg" autoplay muted loop playsinline preload="metadata"></video></div>
+    <div class="stats">
+      <div class="stat"><b>28</b><small>ciudades en Colombia</small></div>
+      <div class="stat"><b style="font-size:19px;line-height:26px">Panamá</b><small>sede en Ciudad de Panamá</small></div>
+      <div class="stat"><b>100%</b><small>evaluación SG-SST · ARL SURA</small></div>
+    </div>
+  </div></div>
+
+  <div class="wrap sec">
+    <span class="kicker">Promociones</span>
+    <h2>Precios claros, sin sorpresas</h2>
+    <p class="lead">Insumos y equipos incluidos. Pagas al terminar el servicio.</p>
+    <div class="carr" id="promos"></div>
+    <div class="dots" id="dots"></div>
+  </div>
+
+  <div class="amarillo"><div class="wrap">
+    <h2 class="fh" style="font-size:28px;font-weight:800;line-height:1.1;letter-spacing:-.5px;margin-bottom:18px">¿Por qué elegirnos?</h2>
+    <div class="ventajas">
+      <div class="vt"><div class="ic"><svg class="i"><use href="#i-users"/></svg></div><b>Personal altamente calificado</b><small>Capacitado en protocolos de limpieza y desinfección, con dotación y protección.</small></div>
+      <div class="vt"><div class="ic"><svg class="i"><use href="#i-clock"/></svg></div><b>Horarios personalizados</b><small>Agenda en línea a la hora que te sirve, de lunes a sábado.</small></div>
+      <div class="vt"><div class="ic"><svg class="i"><use href="#i-tool"/></svg></div><b>Productos y equipos especializados</b><small>Vapor, inyección-extracción y productos según cada superficie.</small></div>
+      <div class="vt"><div class="ic"><svg class="i"><use href="#i-shield"/></svg></div><b>Limpieza y desinfección garantizada</b><small>Revisión final contigo y garantía en cada servicio.</small></div>
+    </div>
+  </div></div>
+
+  <div class="wrap sec">
+    <span class="kicker">Hogar</span>
+    <h2>Servicios más pedidos</h2>
+    <p class="lead">Reserva en línea y recibe tu número de servicio al instante.</p>
+    <div id="destacados"></div>
+    <a class="btn w" href="#servicios">Ver todos los servicios</a>
+  </div>
+
+  <div class="wrap sec">
+    <span class="kicker">Nuestro equipo</span>
+    <h2>Así trabajamos</h2>
+    <p class="lead">Fotos reales de nuestros servicios en hogares, edificios y empresas.</p>
+    <div class="carr" id="galeria"></div>
+  </div>
+
+  <div class="wrap">
+    <div class="banda"><span class="tag">Empresas y constructoras</span>
+      <h3>Un solo aliado para todos sus espacios</h3>
+      <p>Limpieza empresarial programada, final de obra, cubiertas y desinfección. Cotizamos con visita técnica.</p>
+      <a class="btn y" href="#servicios">Ver servicios empresariales</a>
+    </div>
+  </div>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
+</section>
+
+<!-- =================== SERVICIOS =================== -->
+<section id="v-servicios" class="vista">
+  <div class="cab"><div class="wrap"><span class="tag">Servicios</span><h2>Todo lo que <span>limpiamos</span></h2><p>Precios finales por servicio en pesos colombianos.</p></div></div>
+  <div class="wrap sube"><div id="lista"></div>
+    <div class="sec" style="padding-top:10px"><span class="kicker">Empresas</span><h2>Empresas, obras y desinfección</h2><p class="lead">Cotización con visita técnica, sin compromiso.</p></div>
+    <div id="empresas"></div>
+  </div>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
+</section>
+
+<!-- =================== RESERVAR =================== -->
+<section id="v-reservar" class="vista">
+  <div class="cab"><div class="wrap"><span class="tag">Agenda en línea</span><h2>Reserva tu <span>servicio</span></h2><p>Solo te mostramos horarios disponibles.</p></div></div>
+  <div class="wrap sube">
+    <div class="card" style="padding:16px 18px 12px">
+      <div class="pasos" id="pasos">
+        <div class="paso" data-p="1"><div class="bar"></div><small>Servicio</small></div>
+        <div class="paso" data-p="2"><div class="bar"></div><small>Fecha</small></div>
+        <div class="paso" data-p="3"><div class="bar"></div><small>Dirección</small></div>
+        <div class="paso" data-p="4"><div class="bar"></div><small>Datos</small></div>
+      </div>
+    </div>
+    <form id="f" novalidate>
+      <div class="card paso-c" data-p="1">
+        <h3>¿Dónde y qué necesitas?</h3><p class="ayuda">Escribe tu ciudad y elige el servicio.</p>
+        <label class="l">Ciudad o municipio</label>
+        <input id="ciudad" list="lciudades" placeholder="Ej. Pereira" autocomplete="off" maxlength="40"><datalist id="lciudades"></datalist>
+        <div class="chs" id="ciudades" style="margin-top:10px"></div>
+        <p class="nota">Atendemos en 28 ciudades de Colombia. Si la tuya no aparece, escríbela igual.</p>
+        <label class="l">Servicio</label><div class="servs" id="servs"></div>
+      </div>
+      <div class="card paso-c" data-p="2" hidden>
+        <h3>¿Cuándo te visitamos?</h3><p class="ayuda">Lunes a sábado · llegada a las 8:00 a. m., 11:00 a. m. o 2:00 p. m.</p>
+        <label class="l">Día</label><div class="dias" id="dias"></div>
+        <label class="l">Hora de llegada</label><div class="horas" id="horas"></div>
+        <p class="nota" id="nHoras">Elige un día para ver los horarios libres.</p>
+      </div>
+      <div class="card paso-c" data-p="3" hidden>
+        <h3>¿A dónde llegamos?</h3><p class="ayuda">Escribe la dirección y marca tu casa en el mapa.</p>
+        <div class="dir">
+          <select id="via"><option>Calle</option><option>Carrera</option><option>Avenida</option><option>Avenida Calle</option><option>Avenida Carrera</option><option>Diagonal</option><option>Transversal</option><option>Circular</option><option>Autopista</option><option>Kilómetro</option><option>Vereda</option></select>
+          <input id="num" placeholder="Ej. 70A Sur" maxlength="10" autocomplete="off">
+        </div>
+        <div class="dir2"><span>#</span><input id="cruce" placeholder="35" maxlength="10"><span>–</span><input id="placa" placeholder="51" maxlength="10"></div>
+        <input id="comp" placeholder="Torre, apto, casa, conjunto…" maxlength="80" style="margin-top:8px">
+        <input id="barrio" placeholder="Barrio" maxlength="60" style="margin-top:8px">
+        <button type="button" class="gps" id="bGps"><svg class="i"><use href="#i-gps"/></svg>Usar mi ubicación actual</button>
+        <div id="mapa"></div>
+        <p class="nota" id="nMapa">Toca el mapa o arrastra el pin hasta la puerta de tu casa.</p>
+      </div>
+      <div class="card paso-c" data-p="4" hidden>
+        <h3>Tus datos</h3><p class="ayuda">Para confirmarte y que el técnico te contacte.</p>
+        <input id="nombre" placeholder="Nombre completo" autocomplete="name" maxlength="80">
+        <input id="celular" placeholder="Celular (10 dígitos)" inputmode="numeric" autocomplete="tel" maxlength="13" style="margin-top:8px">
+        <input id="correo" type="email" placeholder="Correo (opcional)" autocomplete="email" maxlength="80" style="margin-top:8px">
+        <textarea id="detalle" rows="3" maxlength="300" placeholder="Detalles (opcional): tamaño de colchones, sofá en tela, mascotas…" style="margin-top:8px"></textarea>
+        <input id="web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label class="l">Resumen</label><div class="resumen" id="resumen"></div>
+        <label class="chk"><input type="checkbox" id="acepta"><span>Autorizo a M Clean Desinfección y Limpieza S.A.S. a tratar mis datos personales para gestionar este servicio, según la <a href="#privacidad">Política de tratamiento de datos</a>, y acepto los <a href="#terminos">Términos y condiciones</a>.</span></label>
+      </div>
+      <p class="err" id="err"></p>
+      <div class="nav2"><button type="button" class="atras" id="bAtras" aria-label="Atrás"><svg class="i"><use href="#i-left"/></svg></button><button type="button" class="btn y" id="bSig">Continuar</button></div>
+    </form>
+  </div>
+</section>
+
+<!-- =================== CONFIRMACIÓN =================== -->
+<section id="v-ok" class="vista">
+  <div class="cab" style="padding-bottom:70px"><div class="wrap"><span class="tag">Listo</span><h2>¡Reserva <span>confirmada!</span></h2></div></div>
+  <div class="wrap sube" style="margin-top:-50px">
+    <div class="card ok">
+      <div class="sello"><svg class="i"><use href="#i-check"/></svg></div>
+      <p style="color:var(--gr);margin:0">Tu número de servicio es</p>
+      <div class="exp" id="okExp"></div>
+      <div class="resumen" id="okRes" style="text-align:left"></div>
+      <p class="nota">Te escribiremos por WhatsApp con el nombre del técnico asignado. Guarda tu número de servicio.</p>
+      <a class="btn wa" id="okWa" target="_blank" rel="noopener" style="margin-top:14px">Escribir a M Clean por WhatsApp</a>
+      <a class="btn n" href="#pagos" style="margin-top:10px">Ver medios de pago</a>
+      <button class="btn w" type="button" id="bNueva" style="margin-top:10px">Hacer otra reserva</button>
+    </div>
+  </div>
+</section>
+
+<!-- =================== PAGOS =================== -->
+<section id="v-pagos" class="vista">
+  <div class="cab"><div class="wrap"><span class="tag">Pagos</span><h2>Paga tu <span>servicio</span></h2><p>Al terminar: efectivo al técnico, QR o llave Bre-B.</p></div></div>
+  <div class="wrap sube">
+    <div class="qrcard">
+      <h3>Escanea y paga</h3><p>Bre-B · desde la app de cualquier banco o billetera</p>
+      <div id="qr"></div><div class="tit">M Clean Desinfección y Limpieza</div>
+      <div class="qrbtns"><a class="pill" id="bGuardar" href="#" download="QR-M-Clean.png"><svg class="i"><use href="#i-down"/></svg>Guardar QR</a><button type="button" class="pill" id="bCopiar2"><svg class="i"><use href="#i-copy"/></svg>Copiar llave</button></div>
+    </div>
+    <p class="nota" style="text-align:center">¿Vas a pagar desde este mismo celular? Toca <b>Guardar QR</b> y súbelo en la opción "Pagar con QR" de tu banco, o copia la llave.</p>
+    <div class="card" style="margin-top:14px">
+      <label class="l" style="margin-top:0">Llave Bre-B</label>
+      <div class="llave"><b id="llaveTxt">3226895212</b><button type="button" class="pill y" id="bCopiar">Copiar</button></div>
+      <p class="nota">Titular: M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5</p>
+      <ol class="pp"><li>Abre la app de tu banco o billetera.</li><li>Escanea o sube el QR, o pega la llave.</li><li>Verifica que el titular sea <b>M Clean Desinfección y Limpieza</b>.</li><li>Envíanos el comprobante con tu número de servicio.</li></ol>
+      <input id="pagoExp" placeholder="Tu número de servicio (ej. MDYL007)" maxlength="12" style="text-transform:uppercase">
+      <a class="btn wa" id="bComp" href="#" target="_blank" rel="noopener" style="margin-top:10px">Enviar comprobante por WhatsApp</a>
+      <div class="alerta"><span>⚠</span><span>Solo recibimos pagos en estos medios oficiales. M Clean nunca te pedirá pagar a otra cuenta ni adelantar dinero por llamada o mensaje.</span></div>
+    </div>
+  </div>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
+</section>
+
+<!-- =================== NOSOTROS =================== -->
+<section id="v-nosotros" class="vista">
+  <div class="cab"><div class="wrap"><span class="tag">Nosotros</span><h2>Un solo aliado para <span>todos sus espacios</span></h2><p>Comprometidos con la limpieza de sus espacios.</p></div></div>
+  <div class="wrap sube">
+    <div class="card legal">
+      <h3 style="margin-top:0">Misión</h3><p>Gestionar el servicio de limpieza y mantenimiento integral para contribuir a la calidad de vida, la comodidad de los usuarios y la seguridad y conservación de las instalaciones, generando valor para nuestros clientes.</p>
+      <h3>Visión</h3><p>Ser la compañía que más contribuya a brindar soluciones integrales a hogares e industrias: oportuna, innovadora, flexible y con servicios de alta calidad que impulsen el crecimiento de nuestros clientes y colaboradores.</p>
+    </div>
+    <div class="card">
+      <h3>Contacto</h3>
+      <div class="datos" style="margin-top:12px">
+        <div class="dato"><span class="ic"><svg class="i"><use href="#i-phone"/></svg></span><span><b>322 689 5212</b><br><small style="color:var(--gr)">Llamadas y WhatsApp</small></span></div>
+        <div class="dato"><span class="ic"><svg class="i"><use href="#i-mail"/></svg></span><span><b>mcleandesinfeccion@gmail.com</b></span></div>
+        <div class="dato"><span class="ic"><svg class="i"><use href="#i-pin"/></svg></span><span><b>Sede principal</b><br><small style="color:var(--gr)">Calle 7 Sur # 42-145, of. 13-135 (WeWork), El Poblado, Medellín</small></span></div>
+        <div class="dato"><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><span><b>Lunes a sábado</b><br><small style="color:var(--gr)">8:00 a. m. – 6:00 p. m.</small></span></div>
+      </div>
+      <a class="btn wa" href="https://wa.me/573226895212" target="_blank" rel="noopener" style="margin-top:16px">WhatsApp 322 689 5212</a>
+      <div class="fila"><a class="btn w" href="https://www.instagram.com/m_clean_desinfeccion/" target="_blank" rel="noopener">Instagram</a><a class="btn w" href="https://www.mclean.com.co" target="_blank" rel="noopener">mclean.com.co</a></div>
+      <div class="fila"><a class="btn w" href="#terminos">Términos</a><a class="btn w" href="#privacidad">Privacidad</a></div>
+      <a class="btn w" href="#pqrs" style="margin-top:12px">PQRS y garantía</a>
+    </div>
+  </div>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
+</section>
+
+<section id="v-terminos" class="vista"><div class="cab"><div class="wrap"><span class="tag">Legal</span><h2>Términos y <span>condiciones</span></h2></div></div>
+  <div class="wrap sube"><div class="card legal">
+<p><i>Última actualización: 16/11/2026</i></p>
+<h3>1. Quiénes somos</h3>
+<p>Esta aplicación es operada por <b>M Clean Desinfección y Limpieza S.A.S.</b>, NIT 901.380.963-5, con sede principal en Calle 7 Sur # 42-145, oficina 13-135 (WeWork), El Poblado, Medellín, Antioquia, teléfono y WhatsApp 322 689 5212, correo mcleandesinfeccion@gmail.com, sitio web www.mclean.com.co (en adelante, “M Clean”). Esta información se publica en cumplimiento de la Ley 527 de 1999 y del artículo 50 de la Ley 1480 de 2011 (Estatuto del Consumidor).</p>
+<h3>2. Aceptación</h3>
+<p>Al usar la aplicación y confirmar una reserva, aceptas estos términos. Debes ser mayor de 18 años y tener capacidad legal para contratar. Si no estás de acuerdo, no uses la aplicación.</p>
+<h3>3. Servicios, precios y pago</h3>
+<ul>
+<li>La aplicación muestra los servicios de limpieza y desinfección para hogares con su duración estimada y su precio total en pesos colombianos, que incluye todos los impuestos aplicables (art. 26 Ley 1480 de 2011).</li>
+<li>Los servicios para empresas, limpieza final de obra y desinfección se cotizan aparte.</li>
+<li>Si en la visita el técnico encuentra condiciones distintas a las informadas (por ejemplo, más elementos, mayor tamaño o suciedad excesiva), te informará el valor adicional <b>antes</b> de prestarlo; solo se cobra si lo aceptas.</li>
+<li>El pago se hace al terminar el servicio, directamente al técnico o por los medios oficiales de M Clean publicados en la sección Pagos de esta aplicación. La aplicación no cobra en línea ni guarda datos de tarjetas o cuentas. Nunca pagues a cuentas distintas a las publicadas.</li>
+</ul>
+<h3>4. Reservas</h3>
+<ul>
+<li>Atendemos de lunes a sábado, con horas de llegada a las 8:00 a. m., 11:00 a. m. y 2:00 p. m., según disponibilidad de cada ciudad.</li>
+<li>La reserva queda confirmada al recibir tu número de servicio (MDYL…). La hora es de llegada aproximada; podría variar por causas de tránsito o fuerza mayor, caso en el que te avisaremos.</li>
+<li>Debes dar datos verdaderos y garantizar que en el lugar haya un adulto que permita el ingreso, acceso a agua y energía y un espacio despejado para trabajar.</li>
+</ul>
+<h3>5. Cancelaciones, cambios y derecho de retracto</h3>
+<ul>
+<li>Puedes cancelar o cambiar tu reserva sin costo avisando por WhatsApp con al menos 24 horas de anticipación.</li>
+<li>Por tratarse de una venta a distancia, tienes <b>derecho de retracto</b> dentro de los cinco (5) días hábiles siguientes a la reserva (art. 47 Ley 1480 de 2011). Este derecho no aplica una vez el servicio ha comenzado a prestarse con tu acuerdo. Si ya pagaste, te devolvemos el dinero dentro de los 30 días calendario siguientes.</li>
+<li>Si el técnico llega y no puede prestar el servicio por causas atribuibles al cliente (nadie atiende, no se permite el ingreso), M Clean podrá cobrar el desplazamiento, lo cual se te informará previamente.</li>
+<li>Si M Clean debe cancelar o reprogramar, te avisaremos lo antes posible y podrás elegir una nueva fecha o la devolución de lo pagado.</li>
+</ul>
+<h3>6. Garantía</h3>
+<p>M Clean responde por la calidad e idoneidad del servicio (arts. 7 y siguientes Ley 1480 de 2011). Si no quedas satisfecho, infórmanos dentro de las 48 horas siguientes con fotos por WhatsApp o correo; revisaremos el caso y, si procede, repetiremos la parte del servicio sin costo. Los resultados pueden variar según el estado previo, el tipo de material y la antigüedad de las manchas; te lo informaremos antes de empezar.</p>
+<h3>7. Responsabilidades</h3>
+<p>M Clean responde por los daños que su personal cause por culpa en la prestación del servicio. No responde por daños derivados de defectos previos de los elementos, de instrucciones falsas del cliente, ni de objetos de valor no informados o no retirados del área de trabajo. Recomendamos guardar dinero, joyas y objetos de valor antes del servicio.</p>
+<h3>8. Uso de la aplicación</h3>
+<p>Se prohíbe hacer reservas falsas, suplantar a otra persona o intentar afectar el funcionamiento de la aplicación. M Clean podrá anular reservas que incumplan estos términos. El contenido, la marca y el logo de M Clean son de su propiedad y no pueden usarse sin autorización. La aplicación usa mapas de OpenStreetMap y servicios de Google para funcionar.</p>
+<h3>9. PQRS</h3>
+<p>Puedes presentar peticiones, quejas, reclamos o sugerencias por WhatsApp 322 689 5212 o al correo mcleandesinfeccion@gmail.com. Responderemos dentro de los quince (15) días hábiles siguientes. También puedes acudir a la Superintendencia de Industria y Comercio (www.sic.gov.co).</p>
+<h3>10. Cambios y ley aplicable</h3>
+<p>M Clean puede actualizar estos términos; la versión vigente es la publicada en la aplicación. Se rigen por las leyes de la República de Colombia.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
+<section id="v-privacidad" class="vista"><div class="cab"><div class="wrap"><span class="tag">Ley 1581 de 2012</span><h2>Tratamiento de <span>datos</span></h2></div></div>
+  <div class="wrap sube"><div class="card legal">
+<p><i>Ley 1581 de 2012 y Decreto 1377 de 2013 (compilado en el Decreto 1074 de 2015). Última actualización: 16/11/2026</i></p>
+<h3>1. Responsable</h3>
+<p><b>M Clean Desinfección y Limpieza S.A.S.</b>, NIT 901.380.963-5, sede principal Calle 7 Sur # 42-145, oficina 13-135 (WeWork), El Poblado, Medellín, Antioquia, correo mcleandesinfeccion@gmail.com, teléfono 322 689 5212.</p>
+<h3>2. Datos que recogemos</h3>
+<p>Nombre, celular, correo (opcional), dirección y ubicación en el mapa del lugar del servicio, servicio solicitado, fecha y hora, y los detalles que escribas. No pedimos datos sensibles ni datos de menores de edad. Si escribes información de otra persona, declaras tener su autorización.</p>
+<h3>3. Para qué los usamos (finalidades)</h3>
+<ul>
+<li>Agendar, prestar, facturar y hacer seguimiento al servicio, incluido compartir con el técnico asignado tu nombre, celular, dirección y ubicación.</li>
+<li>Contactarte por WhatsApp, llamada o correo sobre tu reserva, garantías y PQRS.</li>
+<li>Medir la calidad del servicio y cumplir obligaciones legales, contables y tributarias.</li>
+<li>Enviarte información comercial de M Clean, solo si no te opones; puedes pedir que no te la enviemos en cualquier momento.</li>
+</ul>
+<h3>4. Tus derechos</h3>
+<p>Como titular puedes: conocer, actualizar y rectificar tus datos; pedir prueba de esta autorización; ser informado del uso que les damos; presentar quejas ante la Superintendencia de Industria y Comercio; revocar la autorización y pedir la supresión de los datos cuando no exista un deber legal o contractual de conservarlos; y acceder gratis a tus datos (art. 8 Ley 1581 de 2012).</p>
+<h3>5. Cómo ejercerlos</h3>
+<p>Escribe a mcleandesinfeccion@gmail.com o al WhatsApp 322 689 5212 indicando tu nombre, celular y lo que solicitas. Las consultas se responden en máximo 10 días hábiles y los reclamos en máximo 15 días hábiles (arts. 14 y 15 Ley 1581 de 2012).</p>
+<h3>6. Seguridad, encargados y transferencias</h3>
+<p>Tus datos se guardan en herramientas de terceros que actúan como encargados del tratamiento: Google (servidores, correo y hojas de cálculo) y Trello/Atlassian (agenda de servicios), cuyos servidores pueden estar fuera de Colombia, con medidas de seguridad adecuadas. No vendemos ni cedemos tus datos. Solo el personal autorizado y el técnico asignado acceden a ellos.</p>
+<h3>7. Conservación</h3>
+<p>Conservamos los datos mientras dure la relación comercial y por el tiempo que exijan las normas contables y tributarias; luego se eliminan.</p>
+<h3>8. Autorización</h3>
+<p>Al marcar la casilla de autorización en el formulario de reserva otorgas tu consentimiento previo, expreso e informado para el tratamiento descrito. M Clean conserva registro de la fecha y hora de esa autorización.</p>
+<h3>9. Vigencia</h3>
+<p>Esta política rige desde su publicación. Cualquier cambio importante se informará en esta aplicación.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
+<section id="v-pqrs" class="vista"><div class="cab"><div class="wrap"><span class="tag">Atención al cliente</span><h2>PQRS y <span>garantía</span></h2></div></div>
+  <div class="wrap sube"><div class="card legal">
+<p>¿Tienes una petición, queja, reclamo, sugerencia o quieres hacer válida la garantía? Escríbenos con tu número de servicio (MDYL…).</p>
+<a class="btn wa" rel="noopener" href="https://wa.me/573226895212?text=Hola%20M%20Clean%2C%20quiero%20radicar%20una%20PQRS.%20Mi%20n%C3%BAmero%20de%20servicio%20es%3A%20" target="_blank">Radicar PQRS por WhatsApp</a>
+<p style="margin-top:12px">También al correo <b>mcleandesinfeccion@gmail.com</b>. Respondemos en máximo 15 días hábiles. Si no quedas conforme, puedes acudir a la Superintendencia de Industria y Comercio: www.sic.gov.co.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
+
+<a class="fwa" href="https://wa.me/573226895212?text=Hola%20M%20Clean" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 32 32"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-2.6-1.6 9.7 9.7 0 0 1-1.8-2.2c-.2-.3 0-.5.1-.7l.5-.6.3-.5a.6.6 0 0 0 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2.7 1.1 2.7.7 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.6-.3z"/></svg></a>
+
+<nav class="menu">
+  <button data-v="inicio" class="on"><svg class="i"><use href="#i-home"/></svg>Inicio</button>
+  <button data-v="servicios"><svg class="i"><use href="#i-spark"/></svg>Servicios</button>
+  <button data-v="reservar" class="centro"><span><svg class="i"><use href="#i-cal"/></svg></span>Reservar</button>
+  <button data-v="pagos"><svg class="i"><use href="#i-card"/></svg>Pagar</button>
+  <button data-v="nosotros"><svg class="i"><use href="#i-info"/></svg>Nosotros</button>
+</nav>
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+'use strict';
+const API = 'https://script.google.com/macros/s/AKfycbwmj3prBAsOb77b5QTqPoY673GXdsZhBn0ef_ZaqDuX-9xzFoMCJFAs3Nq2tOeFoz2N/exec';
+const DEMO = !/^https?:/.test(location.protocol) || /claude|anthropic|localhost/.test(location.hostname);
+const WA = 'https://wa.me/573226895212?text=';
+const US = id => 'https://images.unsplash.com/' + id + '?auto=format&fit=crop&w=900&q=70';
+const SERV = {
+  'cocina-bano': {n:'Cocina + un baño a vapor', h:3, p:250000, tag:'Más pedido', img:'f-cocina-bano.webp', d:'Limpieza profunda a vapor de alta temperatura, desengrase de cocina y desincrustación de sarro.'},
+  'vidrios': {n:'Limpieza de vidrios', h:2, p:250000, tag:'Oferta · 12 vidrios', img:'vidrios.webp', d:'Hasta 12 vidrios por servicio: vidrios, marcos, rieles y alfajías, sin marcas ni rayas.'},
+  'jornada-4h': {n:'Jornada de aseo 4 h con vapor', h:4, p:370000, tag:'Hogar completo', img:'pisos.webp', d:'Cocina, baños, habitaciones y pisos, con limpieza profunda a vapor incluida.'},
+  'muebles': {n:'Muebles y tapicería a vapor', h:3, p:300000, tag:'Hogar', img:'f-muebles.webp', d:'Inyección-extracción y vapor de alta temperatura: elimina manchas, ácaros y olores.'},
+  'cocina-vapor': {n:'Limpieza de cocina a vapor', h:2, p:230000, tag:'Hogar', img:'f-cocina.webp', d:'Desengrasado de estufa, campana y mesones; gabinetes, electrodomésticos y pisos.'},
+  'colchones': {n:'Limpieza profunda de colchones', h:3, p:220000, tag:'Ácaros fuera', img:US('photo-1686178827149-6d55c72d81df'), alt:'f-vapor.webp', d:'Vapor e inyección-extracción para ácaros, manchas y olores. Duerme más tranquilo.'},
+  'jardineria': {n:'Servicio de jardinería', h:3, p:170000, tag:'Exteriores', img:US('photo-1617576683096-00fc8eecb3af'), alt:'exteriores.webp', d:'Poda, limpieza de zonas verdes y orden de tus exteriores.'}
+};
+const EMPRESAS = [
+  {n:'Limpieza final de obra', tag:'Constructoras', img:'final-obra.webp', d:'Polvo, residuos, vidrios y pisos: entregamos listo para habitar.'},
+  {n:'Limpieza técnica de cubiertas', tag:'Hidrolavado', img:'hidrolavado2.webp', d:'Hidrolavado a presión controlada de techos y cubiertas.'},
+  {n:'Zonas húmedas y piscinas', tag:'Terrazas', img:'f-zonas-humedas.webp', d:'Lavado con pH neutro y cepillado mecánico: menos riesgo de deslizamientos.'},
+  {n:'Desinfección y control de plagas', tag:'Salud', img:'desinfeccion.webp', d:'Ambientes y superficies en hogares, empresas y áreas de salud.'},
+  {n:'Limpieza empresarial', tag:'Planes programados', img:'ventanal.webp', d:'Oficinas, locales y edificios con planes programados o por evento.'}
+];
+const PROMOS = [
+  {img:'promo-cocina-bano.webp', s:'cocina-bano', t:'Cocina + un baño', p:'3 horas · $250.000'},
+  {img:'promo-vidrios.webp', s:'vidrios', t:'Limpieza de vidrios', p:'12 vidrios · $250.000'},
+  {img:'promo-jornada.webp', s:'jornada-4h', t:'Jornada de aseo', p:'4 horas · $370.000'},
+  {img:'promo-muebles.webp', s:'muebles', t:'Muebles y tapicería', p:'A vapor · $300.000'},
+  {img:'promo-cocina.webp', s:'cocina-vapor', t:'Limpieza de cocina', p:'2 horas · $230.000'},
+  {img:'promo-cubiertas.webp', s:'', t:'Cubiertas y techos', p:'Cotiza con visita técnica'}
+];
+const GALERIA = [
+  {v:'reel.mp4', poster:'reel.jpg', tag:'Video', t:'Final de obra y zonas húmedas', s:'Así queda tu espacio'},
+  {img:'bano-vapor.webp', tag:'Baños', t:'Desinfección a vapor', s:'Alta temperatura, cero químicos agresivos'},
+  {img:'vidrios.webp', tag:'Vidrios', t:'Brillo sin rayas', s:'Ventanales, marcos y rieles'},
+  {img:'cocina-vapor2.webp', tag:'Desinfección', t:'Protocolo de bioseguridad', s:'Traje, protección y equipo certificado'},
+  {img:'hidrolavado.webp', tag:'Cubiertas', t:'Hidrolavado técnico', s:'Presión controlada en altura'},
+  {img:'pisos.webp', tag:'Pisos', t:'Pisos que brillan', s:'Porcelanato, cerámica y madera'},
+  {img:'final-obra.webp', tag:'Final de obra', t:'Listo para habitar', s:'Aspirado industrial y soplado'},
+  {img:'ventanal.webp', tag:'Altura', t:'Ventanales con vista', s:'Seguridad y detalle'},
+  {img:'f-equipo.webp', tag:'Equipo', t:'Personal uniformado', s:'Capacitado y verificado'},
+  {img:'exteriores.webp', tag:'Exteriores', t:'Garajes y zonas comunes', s:'Detalle en cada rincón'}
+];
+const CIUDADES = {"Pereira": [4.8133, -75.6961], "Dosquebradas": [4.8392, -75.6673], "Santa Rosa de Cabal": [4.8687, -75.6214], "Manizales": [5.0703, -75.5138], "Villamaría": [5.0447, -75.5148], "Chinchiná": [4.9826, -75.6036], "Armenia": [4.5339, -75.6811], "Calarcá": [4.5297, -75.6411], "La Tebaida": [4.4521, -75.7883], "Montenegro": [4.5664, -75.7505], "Cartago": [4.7464, -75.9117], "Tuluá": [4.0847, -76.1954], "Medellín": [6.2442, -75.5812], "Envigado": [6.1759, -75.5917], "Itagüí": [6.1719, -75.611], "Bello": [6.3373, -75.5579], "Sabaneta": [6.1515, -75.6166], "La Estrella": [6.1576, -75.643], "Rionegro": [6.1551, -75.3737], "Barranquilla": [10.9685, -74.7813], "Soledad": [10.9184, -74.7646], "Puerto Colombia": [10.9878, -74.9547], "Malambo": [10.8597, -74.7739], "Galapa": [10.896, -74.886], "Cartagena": [10.391, -75.4794], "Santa Marta": [11.2408, -74.199], "Bucaramanga": [7.1193, -73.1227], "Floridablanca": [7.0647, -73.0898], "Girón": [7.0682, -73.1698], "Piedecuesta": [6.9879, -73.0499], "Montería": [8.7479, -75.8814], "Sincelejo": [9.3047, -75.3978], "Lorica": [9.2394, -75.8139], "Corozal": [9.3172, -75.2933], "Magangué": [9.2414, -74.7547], "Apartadó": [7.8829, -76.6258], "Carepa": [7.7585, -76.6553], "Turbo": [8.0926, -76.7282], "Chigorodó": [7.6697, -76.6812], "Quibdó": [5.6947, -76.6611], "Valledupar": [10.4631, -73.2532], "Riohacha": [11.5444, -72.9072], "Bogotá": [4.711, -74.0721], "Cali": [3.4516, -76.532], "Neiva": [2.9273, -75.2819], "Tunja": [5.5353, -73.3678], "Villavicencio": [4.142, -73.6266], "Popayán": [2.4448, -76.6147], "San Andrés": [12.5847, -81.7006], "Ibagué": [4.4389, -75.2322], "Pasto": [1.2136, -77.2811], "Cúcuta": [7.8939, -72.5078]};
+const POPULARES = ['Pereira','Barranquilla','Medellín','Cartagena','Santa Marta','Manizales','Armenia','Valledupar'];
+const QR_BOLD = '00020101021126320014CO.COM.RBM.LLA0510009364670349250014CO.COM.RBM.RED0103RBM50310013CO.COM.RBM.CU0110009364670351250013CO.COM.RBM.CA0104999952049999530317055020256040.005802CO5922M Clean Desinfeccion Y60056600161056600162200703000080200110363180270016CO.COM.RBM.CANAL0103APP81250015CO.COM.RBM.CIVA01020282260014CO.COM.RBM.IVA01040.0083270015CO.COM.RBM.BASE01040.0084250015CO.COM.RBM.CINC01020285260014CO.COM.RBM.INC01040.0090430016CO.COM.RBM.TRXID0119000000wQyiplOv8DZrZ91460014CO.COM.RBM.SEC0124sY8t+9mRUkucjlgPXT2NBuVv6304A2D5';
+const $ = id => document.getElementById(id);
+const pesos = n => '$' + n.toLocaleString('es-CO');
+const h12 = h => (h > 12 ? h - 12 : h) + ':00 ' + (h >= 12 ? 'p. m.' : 'a. m.');
+const norm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+const S = { paso:1, ciudad:'', servicio:'', fecha:'', hora:null, pin:null, movido:false };
+let mapa = null, qrHecho = false;
+if (DEMO) $('demo').hidden = false;
+const LOGO = '<span class="lg"><img src="logo-dark.webp" alt=""></span>';
+function bg(url, alt){ return `background-image:url('${url}')${alt ? `,url('${alt}')` : ''}`; }
+
+/* ---- navegación ---- */
+const VISTAS = ['inicio','servicios','reservar','ok','pagos','nosotros','terminos','privacidad','pqrs'];
+function mostrar(){
+  const v = (location.hash || '#inicio').slice(1), vista = VISTAS.includes(v) ? v : 'inicio';
+  document.querySelectorAll('.vista').forEach(s => s.classList.toggle('on', s.id === 'v-' + vista));
+  document.querySelectorAll('nav.menu button').forEach(b => b.classList.toggle('on', b.dataset.v === vista));
+  document.querySelector('.fwa').style.display = ['inicio','nosotros','ok','servicios'].includes(vista) ? '' : 'none';
+  window.scrollTo(0, 0);
+  if (vista === 'reservar' && S.paso === 3) setTimeout(iniciarMapa, 80);
+  if (vista === 'pagos') pintarQR();
+}
+window.addEventListener('hashchange', mostrar);
+document.querySelectorAll('nav.menu button').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.v; }));
+document.addEventListener('click', e => { const a = e.target.closest('[data-s]'); if (a && a.dataset.s) { elegirServicio(a.dataset.s); irPaso(1, true); } });
+
+/* ---- contenido ---- */
+function tarjeta(k){ const s = SERV[k];
+  return `<div class="svc"><div class="ph" style="${bg(s.img, s.alt)}"></div>${LOGO}<div class="bd"><span class="tag">${s.tag}</span><h3>${s.n}</h3><p>${s.d}</p>
+  <div class="row"><span class="precio">${pesos(s.p)}<small>${s.h} h aprox. · pagas al terminar</small></span><a class="pill y" href="#reservar" data-s="${k}">Reservar</a></div></div></div>`; }
+$('destacados').innerHTML = ['cocina-bano','vidrios','jornada-4h'].map(tarjeta).join('');
+$('lista').innerHTML = Object.keys(SERV).map(tarjeta).join('');
+$('empresas').innerHTML = EMPRESAS.map(x => `<div class="svc" style="min-height:290px"><div class="ph" style="${bg(x.img)}"></div>${LOGO}<div class="bd"><span class="tag">${x.tag}</span><h3>${x.n}</h3><p>${x.d}</p>
+  <div class="row"><span class="precio" style="font-size:15px">Cotización<small>con visita técnica</small></span><a class="pill y" target="_blank" rel="noopener" href="${WA + encodeURIComponent('Hola M Clean, quiero cotizar: ' + x.n)}">Cotizar</a></div></div></div>`).join('');
+$('promos').innerHTML = PROMOS.map(p => `<div class="promo"><img src="${p.img}" alt="${p.t}" loading="lazy"><div class="pb"><span><b>${p.t}</b><small>${p.p}</small></span>${p.s ? `<a class="pill y" href="#reservar" data-s="${p.s}">Reservar</a>` : `<a class="pill y" target="_blank" rel="noopener" href="${WA + encodeURIComponent('Hola M Clean, quiero cotizar limpieza de cubiertas')}">Cotizar</a>`}</div></div>`).join('');
+$('dots').innerHTML = PROMOS.map((p, i) => `<i class="${i ? '' : 'on'}"></i>`).join('');
+$('promos').addEventListener('scroll', () => { const c = $('promos'), w = c.firstElementChild.offsetWidth + 14, i = Math.round(c.scrollLeft / w);
+  document.querySelectorAll('#dots i').forEach((d, j) => d.classList.toggle('on', j === i)); }, {passive:true});
+$('galeria').innerHTML = GALERIA.map(g => `<div class="foto${g.v ? ' vid' : ''}">${g.v ? `<video src="${g.v}" poster="${g.poster}" muted loop playsinline autoplay preload="none"></video>` : `<img src="${g.img}" alt="${g.t}" loading="lazy">`}${LOGO}<div class="tx"><span class="tag">${g.tag}</span><b>${g.t}</b><small>${g.s}</small></div></div>`).join('');
+
+/* ---- paso 1 ---- */
+$('lciudades').innerHTML = Object.keys(CIUDADES).map(c => `<option value="${c}">`).join('');
+$('ciudades').innerHTML = POPULARES.map(c => `<button type="button" class="ch" data-c="${c}">${c}</button>`).join('');
+function ciudadCanon(v){ const n = norm(v); return Object.keys(CIUDADES).find(c => norm(c) === n) || (v||'').trim().replace(/\s+/g,' ').replace(/(^|\s)\S/g, m => m.toUpperCase()); }
+function ponerCiudad(v){ S.ciudad = v.length >= 3 ? ciudadCanon(v) : ''; S.hora = null;
+  document.querySelectorAll('#ciudades .ch').forEach(x => x.classList.toggle('sel', x.dataset.c === S.ciudad)); centrarMapa(); }
+$('ciudades').addEventListener('click', e => { const b = e.target.closest('.ch'); if (!b) return; $('ciudad').value = b.dataset.c; ponerCiudad(b.dataset.c); });
+$('ciudad').addEventListener('input', e => ponerCiudad(e.target.value));
+$('servs').innerHTML = Object.keys(SERV).map(k => { const s = SERV[k];
+  return `<button type="button" class="so" data-k="${k}"><span class="mini" style="${bg(s.img, s.alt)}"></span><span><b>${s.n}</b><small>${s.h} h aprox.</small></span><span class="p">${pesos(s.p)}</span></button>`; }).join('');
+$('servs').addEventListener('click', e => { const b = e.target.closest('.so'); if (b) elegirServicio(b.dataset.k); });
+function elegirServicio(k){ S.servicio = k; S.hora = null; document.querySelectorAll('#servs .so').forEach(x => x.classList.toggle('sel', x.dataset.k === k)); }
+
+/* ---- paso 2 ---- */
+const DS = ['dom','lun','mar','mié','jue','vie','sáb'], MS = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+(function(){ const base = new Date(new Date().toLocaleString('en-US', {timeZone:'America/Bogota'})); let html = '', n = 0;
+  for (let i = 0; n < 21 && i < 30; i++) { const d = new Date(base); d.setDate(base.getDate() + i); if (d.getDay() === 0) continue; n++;
+    const f = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    html += `<button type="button" class="dia" data-f="${f}"><small>${i === 0 ? 'hoy' : i === 1 ? 'mañana' : DS[d.getDay()]}</small><b>${d.getDate()}</b><i>${MS[d.getMonth()]}</i></button>`; }
+  $('dias').innerHTML = html; })();
+$('dias').addEventListener('click', e => { const b = e.target.closest('.dia'); if (!b) return; S.fecha = b.dataset.f; S.hora = null;
+  document.querySelectorAll('#dias .dia').forEach(x => x.classList.toggle('sel', x === b)); cargarHoras(); });
+function pintarHoras(libres, msg){
+  $('horas').innerHTML = [8,11,14].map(h => `<button type="button" class="hora${S.hora===h?' sel':''}" data-h="${h}" ${libres.includes(h)?'':'disabled'}>${(h>12?h-12:h)}:00<small>${h>=12?'p. m.':'a. m.'}</small></button>`).join('');
+  $('nHoras').textContent = msg || (libres.length ? 'Toca la hora de llegada que prefieras.' : 'Elige un día para ver los horarios libres.');
+}
+$('horas').addEventListener('click', e => { const b = e.target.closest('.hora'); if (!b || b.disabled) return; S.hora = +b.dataset.h;
+  document.querySelectorAll('#horas .hora').forEach(x => x.classList.toggle('sel', x === b)); });
+async function cargarHoras(){
+  if (!S.fecha) return pintarHoras([], '');
+  pintarHoras([], 'Consultando horarios libres…');
+  const pedido = S.fecha + S.ciudad + S.servicio;
+  try {
+    let r;
+    if (DEMO) { await new Promise(t => setTimeout(t, 500)); r = {ok:true, libres: S.servicio === 'jornada-4h' ? [8,11] : [8,11,14].filter((h,i) => (+S.fecha.slice(-1) + i) % 4 !== 0)}; }
+    else r = await (await fetch(API + '?accion=disponibilidad&ciudad=' + encodeURIComponent(S.ciudad) + '&fecha=' + S.fecha + '&servicio=' + S.servicio)).json();
+    if (pedido !== S.fecha + S.ciudad + S.servicio) return;
+    if (!r.ok) return pintarHoras([], r.error || 'No pudimos consultar.');
+    pintarHoras(r.libres, r.motivo);
+  } catch (e) { pintarHoras([], 'No pudimos consultar los horarios. Revisa tu conexión.'); }
+}
+
+/* ---- paso 3 ---- */
+function iniciarMapa(){
+  if (typeof L === 'undefined') return;
+  if (mapa) { mapa.invalidateSize(); return; }
+  const c = CIUDADES[S.ciudad] || [4.6,-74.08];
+  mapa = L.map('mapa').setView(c, CIUDADES[S.ciudad] ? 13 : 6);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(mapa);
+  S.pin = L.marker(c, {draggable:true}).addTo(mapa);
+  const ok = () => { S.movido = true; $('nMapa').textContent = '✓ Ubicación marcada. Puedes ajustarla si hace falta.'; };
+  S.pin.on('dragend', ok); mapa.on('click', e => { S.pin.setLatLng(e.latlng); ok(); });
+}
+function centrarMapa(){ if (mapa && !S.movido && CIUDADES[S.ciudad]) { mapa.setView(CIUDADES[S.ciudad], 13); S.pin.setLatLng(CIUDADES[S.ciudad]); } }
+$('bGps').addEventListener('click', () => {
+  if (!navigator.geolocation) { $('nMapa').textContent = 'Tu teléfono no permite compartir ubicación. Marca tu casa en el mapa.'; return; }
+  $('nMapa').textContent = 'Buscando tu ubicación…';
+  navigator.geolocation.getCurrentPosition(p => { iniciarMapa(); const ll = [p.coords.latitude, p.coords.longitude];
+    mapa.setView(ll, 17); S.pin.setLatLng(ll); S.movido = true; $('nMapa').textContent = '✓ Te encontramos. Ajusta el pin si no quedó exacto.'; },
+    () => { $('nMapa').textContent = 'No pudimos obtener tu ubicación. Toca el mapa para marcar tu casa.'; }, {enableHighAccuracy:true, timeout:12000});
+});
+
+/* ---- asistente ---- */
+function irPaso(p, irA){
+  S.paso = p;
+  document.querySelectorAll('.paso-c').forEach(c => c.hidden = +c.dataset.p !== p);
+  document.querySelectorAll('#pasos .paso').forEach(x => { const n = +x.dataset.p; x.classList.toggle('hecho', n < p); x.classList.toggle('act', n === p); });
+  $('bAtras').style.visibility = p === 1 ? 'hidden' : 'visible';
+  $('bSig').textContent = p === 4 ? 'Confirmar reserva' : 'Continuar';
+  $('err').textContent = '';
+  if (p === 2 && S.fecha) cargarHoras();
+  if (p === 3) setTimeout(iniciarMapa, 80);
+  if (p === 4) resumen();
+  if (irA === false) return;
+  if (location.hash !== '#reservar') location.hash = 'reservar'; else window.scrollTo({top:0, behavior:'smooth'});
+}
+function error(m){ $('err').textContent = m; return false; }
+function celular(){ return $('celular').value.replace(/\D/g, '').replace(/^57(?=3\d{9}$)/, ''); }
+function valida(p){
+  if (p === 1) { if (!S.ciudad) return error('Escribe tu ciudad o municipio.'); if (!S.servicio) return error('Elige el servicio.'); }
+  if (p === 2) { if (!S.fecha) return error('Elige el día.'); if (!S.hora) return error('Elige la hora de llegada.'); }
+  if (p === 3) { if (!$('num').value.trim() || !$('cruce').value.trim() || !$('placa').value.trim()) return error('Completa la dirección: vía, número, # y –.');
+                 if (!S.movido) return error('Marca tu casa en el mapa o usa “Usar mi ubicación actual”.'); }
+  if (p === 4) { if ($('nombre').value.trim().length < 3) return error('Escribe tu nombre completo.');
+                 if (!/^3\d{9}$/.test(celular())) return error('El celular debe tener 10 dígitos y empezar por 3.');
+                 if (!$('acepta').checked) return error('Para reservar debes autorizar el tratamiento de datos y aceptar los términos.'); }
+  return true;
+}
+function direccion(){ return $('via').value + ' ' + $('num').value.trim() + ' # ' + $('cruce').value.trim() + ' – ' + $('placa').value.trim() + ($('comp').value.trim() ? ', ' + $('comp').value.trim() : '') + ($('barrio').value.trim() ? ', barrio ' + $('barrio').value.trim() : ''); }
+function resumen(){
+  const s = SERV[S.servicio]; if (!s) return;
+  const d = new Date(S.fecha + 'T12:00:00').toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long'});
+  $('resumen').innerHTML = `<b>${s.n}</b><br>${d} · ${S.hora ? h12(S.hora) : ''}<br>${direccion()} · ${S.ciudad}<br><b>${pesos(s.p)}</b> · pagas al terminar`;
+}
+$('bAtras').addEventListener('click', () => irPaso(Math.max(1, S.paso - 1)));
+$('bSig').addEventListener('click', async () => {
+  if (!valida(S.paso)) return;
+  if (S.paso < 4) return irPaso(S.paso + 1);
+  const b = $('bSig'); b.disabled = true; b.innerHTML = '<span class="spin"></span> Confirmando…';
+  const ll = S.pin ? S.pin.getLatLng() : {lat:0, lng:0};
+  const d = { ciudad:S.ciudad, servicio:S.servicio, fecha:S.fecha, hora:S.hora, nombre:$('nombre').value, celular:celular(), correo:$('correo').value,
+    web:$('web').value, detalle:$('detalle').value, lat:ll.lat, lng:ll.lng, acepta:true, version:'16/11/2026',
+    direccion:{ via:$('via').value, numero:$('num').value, cruce:$('cruce').value, placa:$('placa').value, complemento:$('comp').value, barrio:$('barrio').value } };
+  try {
+    let r;
+    if (DEMO) { await new Promise(t => setTimeout(t, 900)); r = {ok:true, expediente:'MDYL007', servicio:SERV[S.servicio].n, fecha:S.fecha, hora:h12(S.hora), ciudad:S.ciudad}; }
+    else r = await (await fetch(API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(d)})).json();
+    b.disabled = false; b.textContent = 'Confirmar reserva';
+    if (!r.ok) { error(r.error || 'No pudimos registrar la reserva.'); if (r.ocupado) { S.hora = null; irPaso(2); } return; }
+    $('okExp').textContent = r.expediente; $('okRes').innerHTML = $('resumen').innerHTML; $('pagoExp').value = r.expediente; enlaceComp();
+    $('okWa').href = WA + encodeURIComponent('Hola M Clean, hice la reserva ' + r.expediente + ' (' + r.servicio + ', ' + r.fecha + ' ' + r.hora + ', ' + r.ciudad + ').');
+    location.hash = 'ok';
+  } catch (e) { b.disabled = false; b.textContent = 'Confirmar reserva'; error('No pudimos enviar la reserva. Revisa tu conexión o escríbenos por WhatsApp.'); }
+});
+$('bNueva').addEventListener('click', () => { $('f').reset(); Object.assign(S, {ciudad:'', servicio:'', fecha:'', hora:null, movido:false});
+  document.querySelectorAll('.sel').forEach(x => x.classList.remove('sel')); irPaso(1); });
+
+/* ---- pagos ---- */
+function pintarQR(){ if (qrHecho || typeof QRCode === 'undefined') return;
+  new QRCode($('qr'), {text:QR_BOLD, width:600, height:600, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M}); qrHecho = true;
+  setTimeout(() => { const c = $('qr').querySelector('canvas'); if (!c) return;
+    const o = document.createElement('canvas'), m = 40; o.width = c.width + m*2; o.height = c.height + m*2 + 70; const x = o.getContext('2d');
+    x.fillStyle = '#fff'; x.fillRect(0, 0, o.width, o.height); x.drawImage(c, m, m);
+    x.fillStyle = '#16285a'; x.font = 'bold 30px Poppins, sans-serif'; x.textAlign = 'center'; x.fillText('M Clean Desinfección y Limpieza', o.width/2, c.height + m + 50);
+    $('bGuardar').href = o.toDataURL('image/png'); }, 300); }
+function toast(m){ const t = $('toast'); t.textContent = m; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2200); }
+function copiar(){ const ok = () => toast('✓ Llave copiada: 3226895212');
+  const sel = () => { const r = document.createRange(); r.selectNodeContents($('llaveTxt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy'); ok(); } catch (e) {} };
+  try { navigator.clipboard.writeText('3226895212').then(ok, sel); } catch (e) { sel(); } }
+$('bCopiar').addEventListener('click', copiar); $('bCopiar2').addEventListener('click', copiar);
+function enlaceComp(){ const e = $('pagoExp').value.trim().toUpperCase(); $('bComp').href = WA + encodeURIComponent('Hola M Clean, adjunto el comprobante de pago' + (e ? ' del servicio ' + e : '') + '.'); }
+$('pagoExp').addEventListener('input', enlaceComp); enlaceComp();
+
+irPaso(1, false); if (!location.hash) history.replaceState(null, '', '#inicio'); mostrar();
+if ('serviceWorker' in navigator && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>
