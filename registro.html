@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16285a">
+<title>Registro de técnicos aliados · M Clean</title>
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#16285a;--yel:#f6d046;--blue:#2c66b8;--bg:#f3f5fa;--line:#e3e8f2;--txt:#1b2540;--mut:#6b7590;--ok:#1f9d63;--err:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Poppins,system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+button,input,select{font-family:inherit;font-size:15px}
+header{background:var(--navy);color:#fff;padding:14px 16px 16px;position:sticky;top:0;z-index:10}
+.hrow{display:flex;align-items:center;gap:10px;max-width:560px;margin:0 auto}
+.hrow img{height:34px;background:#fff;border-radius:10px;padding:3px 6px}
+.hrow b{font-size:15px;display:block}.hrow small{font-size:11px;opacity:.75}
+.prog{max-width:560px;margin:12px auto 0;height:6px;background:rgba(255,255,255,.18);border-radius:9px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--yel);width:0;transition:width .3s}
+main{max-width:560px;margin:0 auto;padding:18px 16px 120px}
+.paso{display:none}.paso.on{display:block;animation:ap .25s}
+@keyframes ap{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+h1{font-size:22px;color:var(--navy);line-height:1.2;margin-bottom:4px}
+.sub{color:var(--mut);font-size:13px;margin-bottom:16px}
+label.l{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:12px 0 5px}
+input.c,select.c{width:100%;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px;color:var(--txt);outline:none}
+input.c:focus,select.c:focus{border-color:var(--blue)}
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--txt)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.grande .chip{flex:1 1 45%;border-radius:14px;padding:14px 10px;text-align:center}
+.foto{background:#fff;border:2px dashed #c8d2e6;border-radius:18px;padding:18px;text-align:center;cursor:pointer;margin-bottom:12px;position:relative}
+.foto img{max-width:100%;max-height:240px;border-radius:12px;display:none;margin:0 auto 8px}
+.foto.selfie img{width:180px;height:180px;object-fit:cover;border-radius:50%;border:4px solid var(--yel)}
+.foto.lista{border-style:solid;border-color:var(--ok)}
+.foto.lista img{display:block}
+.foto .ic{font-size:38px}
+.foto b{display:block;color:var(--navy);margin-top:4px}
+.foto span{font-size:12px;color:var(--mut)}
+.tip{background:#eaf1fd;border-radius:12px;padding:10px 12px;font-size:12px;color:#244b8a;margin-bottom:14px}
+.legal{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;max-height:260px;overflow:auto;font-size:12px;line-height:1.55;margin-bottom:10px}
+.legal h3{font-size:13px;color:var(--navy);margin:0 0 8px}.legal p{margin-bottom:8px;text-align:justify}
+.chk{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin:6px 0 16px;cursor:pointer}
+.chk input{width:22px;height:22px;flex:none;accent-color:var(--navy);margin-top:1px}
+.pad{background:#fff;border:1.5px solid var(--line);border-radius:14px;position:relative;touch-action:none}
+.pad canvas{width:100%;height:170px;display:block}
+.pad .ln{position:absolute;left:16px;right:16px;bottom:38px;border-top:1px dashed #b8c2d8;pointer-events:none}
+.pad .ph{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:11px;color:var(--mut);pointer-events:none}
+.mini{background:none;border:0;color:var(--blue);font-weight:600;font-size:13px;cursor:pointer;padding:6px 0}
+.otp{display:flex;gap:8px;margin-top:10px}
+.otp input{flex:1;text-align:center;letter-spacing:6px;font-size:20px;font-weight:700}
+.otp button{flex:none}
+.btn{width:100%;border:0;border-radius:14px;padding:15px;font-weight:800;font-size:16px;cursor:pointer}
+.b1{background:var(--yel);color:var(--navy)}.b2{background:var(--navy);color:#fff}.b3{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+.btn:disabled{opacity:.5}
+.pie{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 16px calc(12px + env(safe-area-inset-bottom));z-index:9}
+.pie div{max-width:560px;margin:0 auto;display:flex;gap:10px}
+.pie .b3{flex:0 0 34%}
+.err{color:var(--err);font-size:13px;font-weight:600;min-height:20px;margin-top:10px}
+.lista li{margin:0 0 8px 18px;font-size:14px}
+.ok{text-align:center;padding-top:30px}
+.ok .ic{font-size:64px}
+.cargando{position:fixed;inset:0;background:rgba(22,40,90,.85);color:#fff;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:50;text-align:center;padding:30px}
+.cargando.on{display:flex}
+.spin{width:46px;height:46px;border:5px solid rgba(255,255,255,.25);border-top-color:var(--yel);border-radius:50%;animation:g 1s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+.hp{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow"><img src="logo-dark.webp" alt="M Clean"><div><b>Registro de técnicos aliados</b><small id="pasoTxt">Bienvenido(a)</small></div></div>
+  <div class="prog"><i id="barra"></i></div>
+</header>
+<main>
+  <section class="paso on" data-p="0">
+    <h1>Únete como técnico aliado de M Clean</h1>
+    <p class="sub">Toma unos 5 minutos. Ten a la mano:</p>
+    <ul class="lista">
+      <li>📱 Tu celular con cámara</li>
+      <li>🪪 Tu cédula física</li>
+      <li>🏦 Tu número de cuenta o Nequi / DaviPlata</li>
+      <li>📧 Tu correo electrónico (te enviaremos un código)</li>
+      <li>📄 Tu RUT (si no lo tienes, lo subes después)</li>
+    </ul>
+    <div class="tip">Como técnico aliado eres <b>independiente</b>: tú decides qué servicios aceptas y se te paga por cada servicio realizado.</div>
+  </section>
+
+  <section class="paso" data-p="1">
+    <h1>Tus datos</h1><p class="sub">Tal como aparecen en tu documento.</p>
+    <div class="dos"><div><label class="l">Nombres</label><input class="c" id="nombres" autocomplete="given-name"></div><div><label class="l">Apellidos</label><input class="c" id="apellidos" autocomplete="family-name"></div></div>
+    <div class="dos"><div><label class="l">Tipo de documento</label><select class="c" id="tipoDoc"><option value="CC">Cédula (CC)</option><option value="CE">Cédula extranjería</option><option value="PPT">PPT</option><option value="PA">Pasaporte</option></select></div><div><label class="l">Número</label><input class="c" id="doc" inputmode="numeric"></div></div>
+    <label class="l">Fecha de nacimiento</label><input class="c" id="fechaNac" type="date">
+    <div class="dos"><div><label class="l">Celular (WhatsApp)</label><input class="c" id="celular" inputmode="tel" placeholder="3001234567"></div><div><label class="l">Correo</label><input class="c" id="correo" type="email" autocomplete="email"></div></div>
+    <label class="l">Ciudad donde vives</label><input class="c" id="ciudad">
+    <label class="l">Dirección</label><input class="c" id="direccion" placeholder="Calle 10 # 20-30, barrio">
+    <label class="l">¿En qué zona prestarás servicios?</label><div class="chips" id="zonas"></div>
+    <label class="l">Contacto de emergencia</label>
+    <div class="dos"><input class="c" id="emergNombre" placeholder="Nombre"><input class="c" id="emergTel" inputmode="tel" placeholder="Celular"></div>
+    <input class="hp" id="web" tabindex="-1" autocomplete="off">
+  </section>
+
+  <section class="paso" data-p="2">
+    <h1>Tu foto para el carnet</h1><p class="sub">Será la foto de tu carnet de técnico aliado.</p>
+    <div class="tip">☀️ Busca buena luz · 🙂 Rostro de frente, sin gafas ni gorra · 🧱 Fondo claro</div>
+    <div class="foto selfie" data-k="foto" data-cap="user"><img alt=""><div class="ic">🤳</div><b>Tomar selfie</b><span>Toca aquí para abrir la cámara</span></div>
+  </section>
+
+  <section class="paso" data-p="3">
+    <h1>Tu documento</h1><p class="sub">Toma la foto completa y que se lea bien.</p>
+    <div class="foto" data-k="cedulaFrente" data-cap="environment"><img alt=""><div class="ic">🪪</div><b>Parte de adelante</b><span>Toca para tomar la foto</span></div>
+    <div class="foto" data-k="cedulaReverso" data-cap="environment"><img alt=""><div class="ic">🔄</div><b>Parte de atrás</b><span>Toca para tomar la foto</span></div>
+  </section>
+
+  <section class="paso" data-p="4">
+    <h1>¿Qué servicios sabes hacer?</h1><p class="sub">Toca todos los que apliquen.</p>
+    <div class="chips grande" id="habilidades"></div>
+    <label class="l">Años de experiencia</label>
+    <div class="chips grande" id="experiencia"><button class="chip" data-v="Menos de 1 año">Menos de 1 año</button><button class="chip" data-v="1 a 3 años">1 a 3 años</button><button class="chip" data-v="Más de 3 años">Más de 3 años</button></div>
+    <label class="l">¿Tienes equipo propio (vaporizadora, aspiradora…)?</label>
+    <div class="chips grande" id="equipo"><button class="chip" data-v="Sí">Sí</button><button class="chip" data-v="No">No</button></div>
+  </section>
+
+  <section class="paso" data-p="5">
+    <h1>¿Dónde te pagamos?</h1><p class="sub">Te pagamos por cada servicio realizado.</p>
+    <label class="l">Banco o billetera</label>
+    <select class="c" id="banco"><option value="">Selecciona…</option><option>Bancolombia</option><option>Nequi</option><option>DaviPlata</option><option>Davivienda</option><option>Banco de Bogotá</option><option>BBVA</option><option>Banco Caja Social</option><option>Banco Popular</option><option>AV Villas</option><option>Banco de Occidente</option><option>Scotiabank Colpatria</option><option>Banco Agrario</option><option>Otro</option></select>
+    <label class="l">Tipo</label>
+    <select class="c" id="tipoCuenta"><option>Ahorros</option><option>Corriente</option><option>Nequi / DaviPlata</option><option>Llave Bre-B</option></select>
+    <label class="l">Número de cuenta, celular o llave</label><input class="c" id="cuenta" inputmode="numeric">
+    <label class="l">RUT</label>
+    <div class="foto" data-k="rut" data-cap="" data-pdf="1"><img alt=""><div class="ic">📄</div><b>Subir RUT (foto o PDF)</b><span>Si no lo tienes ahora, sigue: lo subes después</span></div>
+  </section>
+
+  <section class="paso" data-p="6">
+    <h1>Lee y firma</h1><p class="sub">Revisa los documentos, firma con tu dedo y confirma con el código que te enviaremos al correo.</p>
+    <div class="legal" id="txtDatos">Cargando…</div>
+    <label class="chk"><input type="checkbox" id="aceptaDatos"><span>Autorizo el tratamiento de mis datos personales, incluida mi foto.</span></label>
+    <div class="legal" id="txtContrato">Cargando…</div>
+    <label class="chk"><input type="checkbox" id="aceptaContrato"><span>He leído y acepto el contrato de prestación de servicios independientes.</span></label>
+    <label class="l">Tu firma</label>
+    <div class="pad"><canvas id="pad"></canvas><div class="ln"></div><div class="ph">Firma aquí con tu dedo</div></div>
+    <button class="mini" id="borrar">Borrar firma</button>
+    <label class="l">Código de verificación</label>
+    <button class="btn b3" id="enviarOtp">Enviar código a mi correo</button>
+    <div class="otp" id="otpBox" style="display:none"><input class="c" id="otp" inputmode="numeric" maxlength="6" placeholder="••••••"></div>
+  </section>
+
+  <section class="paso" data-p="7">
+    <div class="ok"><div class="ic">✅</div><h1>¡Registro enviado!</h1><p class="sub" style="margin-top:8px">Te enviamos una copia del contrato a tu correo. Nuestro equipo revisará tu registro y te avisaremos cuando sea aprobado para enviarte tu carnet.</p>
+    <a class="btn b2" style="display:block;text-decoration:none;margin-top:20px" href="https://wa.me/573226895212">Escribir a M Clean por WhatsApp</a></div>
+  </section>
+  <div class="err" id="err"></div>
+</main>
+<div class="pie" id="pie"><div><button class="btn b3" id="atras">Atrás</button><button class="btn b1" id="sig">Empezar</button></div></div>
+<div class="cargando" id="carga"><div class="spin"></div><div id="cargaTxt">Enviando…</div></div>
+<input type="file" id="archivo" accept="image/*" style="display:none">
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbwmj3prBAsOb77b5QTqPoY673GXdsZhBn0ef_ZaqDuX-9xzFoMCJFAs3Nq2tOeFoz2N/exec';
+var TOT = 6, paso = 0, IMG = {}, SEL = { zona: '', habilidades: [], experiencia: '', equipo: '' }, firmado = false, otpEnviado = false, textosDe = '';
+var TITULOS = ['Bienvenido(a)', 'Paso 1 de 6 · Datos', 'Paso 2 de 6 · Foto', 'Paso 3 de 6 · Documento', 'Paso 4 de 6 · Servicios', 'Paso 5 de 6 · Pagos', 'Paso 6 de 6 · Firma', 'Listo'];
+function $(id) { return document.getElementById(id); }
+function v(id) { return ($(id).value || '').trim(); }
+function api(b) { return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw new Error(j.error || 'Error'); return j; }); }
+function error(t) { $('err').textContent = t || ''; if (t) $('err').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+function carga(on, t) { $('carga').classList.toggle('on', !!on); if (t) $('cargaTxt').textContent = t; }
+var CAMPOS = ['nombres', 'apellidos', 'tipoDoc', 'doc', 'fechaNac', 'celular', 'correo', 'ciudad', 'direccion', 'emergNombre', 'emergTel', 'banco', 'tipoCuenta', 'cuenta'];
+function guardarBorrador() { try { var o = {}; CAMPOS.forEach(function (k) { o[k] = $(k).value; }); o.sel = SEL; localStorage.setItem('mc_reg', JSON.stringify(o)); } catch (e) { } }
+function cargarBorrador() { try { var o = JSON.parse(localStorage.getItem('mc_reg') || 'null'); if (!o) return; CAMPOS.forEach(function (k) { if (o[k]) $(k).value = o[k]; }); if (o.sel) SEL = o.sel; } catch (e) { } }
+
+function chips(cont, lista, multi, clave) {
+  cont.innerHTML = lista.map(function (x) { return '<button class="chip" data-v="' + x + '">' + x + '</button>'; }).join('');
+  marcar(cont, multi, clave);
+}
+function marcar(cont, multi, clave) {
+  Array.prototype.forEach.call(cont.querySelectorAll('.chip'), function (b) {
+    var val = b.getAttribute('data-v');
+    b.classList.toggle('on', multi ? SEL[clave].indexOf(val) >= 0 : SEL[clave] === val);
+    b.onclick = function (e) {
+      e.preventDefault();
+      if (multi) { var i = SEL[clave].indexOf(val); if (i >= 0) SEL[clave].splice(i, 1); else SEL[clave].push(val); }
+      else SEL[clave] = val;
+      marcar(cont, multi, clave); guardarBorrador();
+    };
+  });
+}
+
+function mostrar(n) {
+  paso = n;
+  Array.prototype.forEach.call(document.querySelectorAll('.paso'), function (s) { s.classList.toggle('on', +s.getAttribute('data-p') === n); });
+  $('barra').style.width = Math.min(100, Math.round(n / TOT * 100)) + '%';
+  $('pasoTxt').textContent = TITULOS[n];
+  $('atras').style.display = n > 0 && n < 7 ? '' : 'none';
+  $('sig').textContent = n === 0 ? 'Empezar' : n === 6 ? 'Firmar y enviar' : 'Siguiente';
+  $('pie').style.display = n === 7 ? 'none' : '';
+  error('');
+  window.scrollTo(0, 0);
+  if (n === 6) { ajustarPad(); cargarTextos(); }
+}
+
+function validar(n) {
+  if (n === 1) {
+    var f = [];
+    if (!v('nombres')) f.push('nombres'); if (!v('apellidos')) f.push('apellidos');
+    if (v('doc').length < 5) f.push('número de documento'); if (!v('fechaNac')) f.push('fecha de nacimiento');
+    if (v('celular').replace(/\D/g, '').length < 10) f.push('celular de 10 dígitos');
+    if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(v('correo'))) f.push('correo válido');
+    if (!v('ciudad')) f.push('ciudad'); if (!v('direccion')) f.push('dirección'); if (!SEL.zona) f.push('zona');
+    if (!v('emergNombre') || v('emergTel').replace(/\D/g, '').length < 7) f.push('contacto de emergencia');
+    if (f.length) return 'Completa: ' + f.join(', ') + '.';
+  }
+  if (n === 2 && !IMG.foto) return 'Toma tu selfie para continuar.';
+  if (n === 3 && (!IMG.cedulaFrente || !IMG.cedulaReverso)) return 'Toma las dos fotos de tu documento.';
+  if (n === 4) { if (!SEL.habilidades.length) return 'Toca al menos un servicio que sabes hacer.'; if (!SEL.experiencia) return 'Elige tus años de experiencia.'; if (!SEL.equipo) return 'Dinos si tienes equipo propio.'; }
+  if (n === 5) { if (!v('banco')) return 'Elige tu banco o billetera.'; if (v('cuenta').length < 6) return 'Escribe tu número de cuenta, celular o llave.'; }
+  return '';
+}
+
+function datos() {
+  return { nombres: v('nombres'), apellidos: v('apellidos'), tipoDoc: v('tipoDoc'), doc: v('doc'), fechaNac: v('fechaNac'), celular: v('celular'), correo: v('correo').toLowerCase(),
+    ciudad: v('ciudad'), direccion: v('direccion'), zona: SEL.zona, emergNombre: v('emergNombre'), emergTel: v('emergTel'), habilidades: SEL.habilidades,
+    experiencia: SEL.experiencia, equipo: SEL.equipo, banco: v('banco'), tipoCuenta: v('tipoCuenta'), cuenta: v('cuenta') };
+}
+function cargarTextos() {
+  var d = datos(), clave = JSON.stringify(d);
+  if (textosDe === clave) return;
+  $('txtContrato').textContent = 'Cargando contrato…';
+  var b = d; b.accion = 'contratoTecnico';
+  api(b).then(function (j) { $('txtDatos').innerHTML = j.autorizacion; $('txtContrato').innerHTML = j.contrato; textosDe = clave; })
+    .catch(function (e) { $('txtContrato').textContent = 'No se pudo cargar el contrato: ' + e.message; });
+}
+
+/* fotos */
+var destino = null;
+Array.prototype.forEach.call(document.querySelectorAll('.foto'), function (box) {
+  box.onclick = function () {
+    destino = box; var inp = $('archivo');
+    inp.value = '';
+    inp.setAttribute('accept', box.getAttribute('data-pdf') ? 'image/*,application/pdf' : 'image/*');
+    var cap = box.getAttribute('data-cap'); if (cap) inp.setAttribute('capture', cap); else inp.removeAttribute('capture');
+    inp.click();
+  };
+});
+$('archivo').onchange = function () {
+  var f = this.files && this.files[0]; if (!f || !destino) return;
+  var k = destino.getAttribute('data-k'), box = destino;
+  if (/pdf/.test(f.type)) {
+    if (f.size > 5e6) { error('El PDF pesa más de 5 MB.'); return; }
+    var r = new FileReader(); r.onload = function () { IMG[k] = r.result; box.classList.add('lista'); box.querySelector('b').textContent = '✅ ' + f.name; }; r.readAsDataURL(f); return;
+  }
+  comprimir(f, k === 'foto' ? 900 : 1400, function (url) { IMG[k] = url; var im = box.querySelector('img'); im.src = url; box.classList.add('lista'); box.querySelector('.ic').style.display = 'none'; box.querySelector('b').textContent = '✅ Lista · toca para repetir'; error(''); });
+};
+function comprimir(file, max, cb) {
+  var url = URL.createObjectURL(file), im = new Image();
+  im.onload = function () {
+    var w = im.width, h = im.height, s = Math.min(1, max / Math.max(w, h));
+    var c = document.createElement('canvas'); c.width = Math.round(w * s); c.height = Math.round(h * s);
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); cb(c.toDataURL('image/jpeg', 0.82));
+  };
+  im.onerror = function () { error('No se pudo leer la imagen. Intenta de nuevo.'); };
+  im.src = url;
+}
+
+/* firma */
+var pad = $('pad'), ctx = pad.getContext('2d'), dib = false;
+function ajustarPad() {
+  var r = pad.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  if (!r.width) return;
+  var prev = firmado ? pad.toDataURL() : null;
+  pad.width = r.width * dpr; pad.height = r.height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#0d2a6b';
+  if (prev) { var im = new Image(); im.onload = function () { ctx.drawImage(im, 0, 0, r.width, r.height); }; im.src = prev; }
+}
+function pos(e) { var r = pad.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+pad.addEventListener('pointerdown', function (e) { dib = true; pad.setPointerCapture(e.pointerId); var p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+pad.addEventListener('pointermove', function (e) { if (!dib) return; var p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); firmado = true; });
+pad.addEventListener('pointerup', function () { dib = false; });
+$('borrar').onclick = function () { ctx.clearRect(0, 0, pad.width, pad.height); firmado = false; };
+function firmaPng() {
+  var c = document.createElement('canvas'); c.width = pad.width; c.height = pad.height;
+  var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(pad, 0, 0);
+  return c.toDataURL('image/png');
+}
+
+/* código */
+$('enviarOtp').onclick = function () {
+  var b = this; b.disabled = true; error('');
+  api({ accion: 'otpTecnico', correo: v('correo') }).then(function () {
+    otpEnviado = true; $('otpBox').style.display = 'flex'; b.textContent = 'Reenviar código'; $('otp').focus();
+    error(''); $('err').style.color = '#1f9d63'; $('err').textContent = 'Te enviamos un código a ' + v('correo') + '. Revisa también Spam.';
+    setTimeout(function () { b.disabled = false; $('err').style.color = ''; }, 30000);
+  }).catch(function (e) { b.disabled = false; error(e.message); });
+};
+
+function ubicacion() {
+  return new Promise(function (res) {
+    if (!navigator.geolocation) return res(null);
+    var t = setTimeout(function () { res(null); }, 7000);
+    navigator.geolocation.getCurrentPosition(function (p) { clearTimeout(t); res({ lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy }); }, function () { clearTimeout(t); res(null); }, { enableHighAccuracy: true, timeout: 6500 });
+  });
+}
+function enviar() {
+  if (!$('aceptaDatos').checked) return error('Marca la autorización de datos personales.');
+  if (!$('aceptaContrato').checked) return error('Marca que aceptas el contrato.');
+  if (!firmado) return error('Firma con tu dedo en el recuadro.');
+  if (!otpEnviado) return error('Toca "Enviar código a mi correo".');
+  if (!/^\d{6}$/.test(v('otp'))) return error('Escribe el código de 6 dígitos que llegó a tu correo.');
+  carga(true, 'Verificando tu ubicación…');
+  ubicacion().then(function (geo) {
+    carga(true, 'Enviando tu registro… puede tardar un minuto');
+    var b = datos();
+    b.accion = 'registroTecnico'; b.otp = v('otp'); b.aceptaDatos = true; b.aceptaContrato = true; b.web = v('web');
+    b.foto = IMG.foto; b.cedulaFrente = IMG.cedulaFrente; b.cedulaReverso = IMG.cedulaReverso; b.rut = IMG.rut || ''; b.firma = firmaPng(); b.geo = geo; b.ua = navigator.userAgent;
+    return api(b);
+  }).then(function () { carga(false); try { localStorage.removeItem('mc_reg'); } catch (e) { } mostrar(7); })
+    .catch(function (e) { carga(false); error(e.message); });
+}
+
+$('sig').onclick = function () {
+  if (paso === 6) return enviar();
+  var e = validar(paso); if (e) return error(e);
+  guardarBorrador(); mostrar(paso + 1);
+};
+$('atras').onclick = function () { if (paso > 0) mostrar(paso - 1); };
+window.addEventListener('resize', function () { if (paso === 6) ajustarPad(); });
+Array.prototype.forEach.call(document.querySelectorAll('input.c,select.c'), function (i) { i.addEventListener('change', guardarBorrador); });
+
+cargarBorrador();
+marcar($('experiencia'), false, 'experiencia'); marcar($('equipo'), false, 'equipo');
+api({ accion: 'contratoTecnico' }).then(function (j) { chips($('zonas'), j.zonas, false, 'zona'); chips($('habilidades'), j.habilidades, true, 'habilidades'); })
+  .catch(function () { error('No hay conexión. Revisa tu internet y recarga la página.'); });
+mostrar(0);
+</script>
+</body>
+</html>
