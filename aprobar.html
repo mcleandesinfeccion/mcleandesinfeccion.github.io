@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#16285a">
+<title>Revisar técnico · M Clean</title>
+<link rel="icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#16285a;--yel:#f6d046;--blue:#2c66b8;--bg:#f3f5fa;--line:#e3e8f2;--txt:#1b2540;--mut:#6b7590;--ok:#1f9d63;--err:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,system-ui,sans-serif;background:var(--bg);color:var(--txt)}
+header{background:var(--navy);color:#fff;padding:14px 16px}
+.hrow{display:flex;align-items:center;gap:10px;max-width:760px;margin:0 auto}
+.hrow img{height:34px;background:#fff;border-radius:10px;padding:3px 6px}
+main{max-width:760px;margin:0 auto;padding:16px 16px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.top{display:flex;gap:16px;align-items:center}
+.top img{width:110px;height:110px;border-radius:50%;object-fit:cover;border:4px solid var(--yel);flex:none}
+.top h1{font-size:20px;color:var(--navy);line-height:1.2}
+.top p{font-size:13px;color:var(--mut)}
+.est{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:4px 12px;margin-top:6px}
+.Pendiente{background:#fff6d6;color:#9a7300}.Aprobado{background:#e2f6ec;color:var(--ok)}.Rechazado,.Suspendido{background:#fde8e6;color:var(--err)}
+h2{font-size:14px;color:var(--navy);margin-bottom:8px}
+.fila{display:flex;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px}
+.fila b{flex:0 0 150px;color:var(--mut);font-weight:500}
+.docs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.docs img{width:100%;border-radius:12px;border:1px solid var(--line)}
+.firma{max-width:260px;border:1px solid var(--line);border-radius:10px}
+.links a{display:inline-block;margin:4px 8px 4px 0;color:var(--blue);font-weight:600;font-size:13px}
+.acc{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{border:0;border-radius:14px;padding:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit}
+.b1{background:var(--ok);color:#fff}.b2{background:#fff;color:var(--err);border:1.5px solid #f3c2bd}.b3{background:var(--navy);color:#fff}.b4{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10px;font-family:inherit;font-size:14px;margin-top:8px;display:none}
+.msg{text-align:center;padding:30px;color:var(--mut)}
+.aviso{border-radius:12px;padding:10px 12px;font-size:13px;margin-top:10px}
+.aviso.ok{background:#e2f6ec;color:var(--ok)}.aviso.no{background:#fde8e6;color:var(--err)}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="hrow"><img src="logo-dark.webp" alt="M Clean"><b>Revisión de técnico aliado</b></div></header>
+<main id="app"><div class="msg">Cargando…</div></main>
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbwmj3prBAsOb77b5QTqPoY673GXdsZhBn0ef_ZaqDuX-9xzFoMCJFAs3Nq2tOeFoz2N/exec';
+var P = {}; location.hash.replace(/^#/, '').split('&').forEach(function (kv) { var a = kv.split('='); if (a[0]) P[a[0]] = decodeURIComponent(a[1] || ''); });
+function api(b) { b.id = P.id; b.t = P.t; return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw new Error(j.error || 'Error'); return j; }); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function fila(k, v) { return v ? '<div class="fila"><b>' + k + '</b><span>' + esc(v) + '</span></div>' : ''; }
+var T = null, aviso = '';
+function cargar() {
+  api({ accion: 'admTecnico' }).then(function (j) { T = j.tecnico; pintar(); }).catch(function (e) { document.getElementById('app').innerHTML = '<div class="msg">' + esc(e.message) + '</div>'; });
+}
+function pintar() {
+  var t = T, i = t.img || {};
+  var h = '<div class="card top">' + (i.foto ? '<img src="' + i.foto + '" alt="">' : '') + '<div><h1>' + esc(t.nombres + ' ' + t.apellidos) + '</h1><p>' + esc(t.tipoDoc + ' ' + t.doc) + ' · ' + esc(t.id) + '</p><p>Zona: <b>' + esc(t.zona) + '</b> · Reside en ' + esc(t.ciudad) + '</p><span class="est ' + esc(t.estado) + '">' + esc(t.estado) + '</span></div></div>';
+  h += '<div class="card"><h2>Decisión</h2>';
+  if (t.estado === 'Pendiente') h += '<div class="acc"><button class="btn b1" id="apr">✔ Aprobar</button><button class="btn b2" id="rec">✖ Rechazar</button></div><textarea id="motivo" placeholder="Motivo del rechazo (se le informa al técnico)"></textarea>';
+  else if (t.estado === 'Aprobado') h += '<p style="font-size:13px">Aprobado el ' + esc(t.fechaAprobacion) + ' · carnet vence el <b>' + esc(t.vence) + '</b> · código ' + esc(t.codigoCarnet) + '</p><div class="acc" style="margin-top:10px"><button class="btn b2" id="sus">Suspender</button><a class="btn b4" style="text-align:center;text-decoration:none" target="_blank" href="verificar.html?c=' + esc(t.codigoCarnet) + '">Ver verificación QR</a></div><textarea id="motivo" placeholder="Motivo de la suspensión"></textarea>';
+  else if (t.estado === 'Suspendido') h += '<p style="font-size:13px">' + esc(t.notas) + '</p><div class="acc" style="margin-top:10px"><button class="btn b3" id="rea">Reactivar</button></div>';
+  else h += '<p style="font-size:13px">' + esc(t.notas || 'Sin acciones disponibles.') + '</p>';
+  h += '<div class="sw" style="margin-top:14px"><span>Afiliación a seguridad social verificada<br><small style="color:#6b7590">Sin esto no puede aceptar servicios</small></span><button class="btn ' + (t.afiliacion === 'Sí' ? 'b1' : 'b4') + '" id="afi">' + (t.afiliacion === 'Sí' ? '✔ Verificada' : 'Marcar verificada') + '</button></div>';
+  if (aviso) h += '<div class="aviso ok">' + aviso + '</div>';
+  h += '</div>';
+  h += '<div class="card"><h2>Datos</h2>' + fila('Fecha de nacimiento', t.fechaNac) + fila('Celular', t.celular) + fila('Correo', t.correo) + fila('Dirección', t.direccion + ', ' + t.ciudad) + fila('Emergencia', t.emergNombre + ' · ' + t.emergTel) +
+    fila('Servicios', t.habilidades) + fila('Experiencia', t.experiencia) + fila('Equipo propio', t.equipo) + fila('Pago', t.banco + ' · ' + t.tipoCuenta + ' · ' + t.cuenta) + fila('RUT', t.rut === 'Pendiente' ? '⚠ Pendiente (' + (t.rutRecordatorios || 0) + ' recordatorios)' : 'Cargado') + fila('Registro', t.fechaRegistro) + '</div>';
+  h += '<div class="card"><h2>Documento de identidad</h2><div class="docs">' + (i.cedulaFrente ? '<img src="' + i.cedulaFrente + '">' : '') + (i.cedulaReverso ? '<img src="' + i.cedulaReverso + '">' : '') + '</div></div>';
+  h += '<div class="card"><h2>Firma electrónica</h2>' + (i.firma ? '<img class="firma" src="' + i.firma + '">' : '') + '<p style="font-size:12px;color:#6b7590;margin-top:8px">' + esc(t.evidencia) + '<br>Hash: ' + esc(t.hashContrato) + '</p>' +
+    '<div class="links">' + (t.contratoUrl ? '<a target="_blank" href="' + t.contratoUrl + '">📄 Contrato firmado (PDF)</a>' : '') + (t.rutUrl ? '<a target="_blank" href="' + t.rutUrl + '">📄 RUT</a>' : '') + (t.carpetaUrl ? '<a target="_blank" href="' + t.carpetaUrl + '">📁 Carpeta en Drive</a>' : '') + '</div></div>';
+  document.getElementById('app').innerHTML = h;
+  var q = function (id) { return document.getElementById(id); };
+  if (q('apr')) q('apr').onclick = function () { accion('aprobar', 'Aprobado. Le enviamos el carnet al técnico por correo.'); };
+  if (q('rec')) q('rec').onclick = function () { var m = q('motivo'); if (m.style.display !== 'block') { m.style.display = 'block'; this.textContent = 'Confirmar rechazo'; m.focus(); return; } accion('rechazar', 'Registro rechazado y técnico notificado.', m.value); };
+  if (q('sus')) q('sus').onclick = function () { var m = q('motivo'); if (m.style.display !== 'block') { m.style.display = 'block'; this.textContent = 'Confirmar suspensión'; m.focus(); return; } accion('suspender', 'Técnico suspendido.', m.value); };
+  if (q('rea')) q('rea').onclick = function () { accion('reactivar', 'Técnico reactivado.'); };
+  q('afi').onclick = function () { accion('afiliacion', 'Afiliación actualizada.'); };
+}
+function accion(dec, ok, motivo) {
+  Array.prototype.forEach.call(document.querySelectorAll('.btn'), function (b) { b.disabled = true; });
+  api({ accion: 'decidirTecnico', decision: dec, motivo: motivo || '' }).then(function () { aviso = ok; cargar(); })
+    .catch(function (e) { aviso = ''; alertar(e.message); });
+}
+function alertar(m) { var d = document.createElement('div'); d.className = 'aviso no'; d.textContent = m; document.getElementById('app').prepend(d); Array.prototype.forEach.call(document.querySelectorAll('.btn'), function (b) { b.disabled = false; }); }
+if (!P.id || !P.t) document.getElementById('app').innerHTML = '<div class="msg">Enlace incompleto.</div>'; else cargar();
+</script>
+</body>
+</html>
