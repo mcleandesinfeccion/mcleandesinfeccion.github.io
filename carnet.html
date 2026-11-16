@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#16285a">
+<title>Mi carnet · M Clean</title>
+<link rel="icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--navy:#16285a;--yel:#f6d046;--blue:#2c66b8;--bg:#f3f5fa;--line:#e3e8f2;--txt:#1b2540;--mut:#6b7590;--ok:#1f9d63;--err:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,system-ui,sans-serif;background:linear-gradient(170deg,#16285a 0,#2c66b8 340px,var(--bg) 340px);min-height:100vh;color:var(--txt)}
+main{max-width:420px;margin:0 auto;padding:18px 16px 50px}
+h1{color:#fff;font-size:18px;text-align:center;margin-bottom:12px}
+canvas#c{width:100%;border-radius:22px;box-shadow:0 18px 40px rgba(10,20,50,.35);display:block;background:#fff}
+.acc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.btn{border:0;border-radius:14px;padding:14px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;display:block}
+.b1{background:var(--yel);color:var(--navy)}.b2{background:var(--navy);color:#fff}.b3{background:#fff;color:var(--navy);border:1.5px solid var(--line)}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-top:16px}
+.card h2{font-size:15px;color:var(--navy);margin-bottom:6px}
+.card p{font-size:13px;color:var(--mut);margin-bottom:10px}
+.alerta{border-left:5px solid var(--err)}
+.ok{color:var(--ok)!important;font-weight:600}
+.msg{background:#fff;border-radius:18px;padding:30px;text-align:center;color:var(--mut)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Mi carnet de técnico aliado</h1>
+  <div id="app"><div class="msg">Cargando tu carnet…</div></div>
+  <div id="qr" style="display:none"></div>
+  <input type="file" id="rutFile" accept="image/*,application/pdf" style="display:none">
+</main>
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbwmj3prBAsOb77b5QTqPoY673GXdsZhBn0ef_ZaqDuX-9xzFoMCJFAs3Nq2tOeFoz2N/exec';
+var TOKEN = (location.hash.match(/t=([^&]+)/) || [])[1] || '';
+var C = null;
+function api(b) { b.t = TOKEN; return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }).then(function (j) { if (!j.ok) throw new Error(j.error || 'Error'); return j; }); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function img(src) { return new Promise(function (res) { if (!src) return res(null); var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { res(null); }; i.src = src; }); }
+function rr(x, a, b, w, h, r) { x.beginPath(); x.moveTo(a + r, b); x.arcTo(a + w, b, a + w, b + h, r); x.arcTo(a + w, b + h, a, b + h, r); x.arcTo(a, b + h, a, b, r); x.arcTo(a, b, a + w, b, r); x.closePath(); }
+function fechaBonita(s) { var m = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']; var p = String(s).split('-'); return p.length === 3 ? (+p[2]) + ' ' + m[+p[1] - 1] + ' ' + p[0] : s; }
+function lineas(x, txt, max) { var pal = txt.split(' '), out = [], l = ''; pal.forEach(function (w) { var t = l ? l + ' ' + w : w; if (x.measureText(t).width > max && l) { out.push(l); l = w; } else l = t; }); if (l) out.push(l); return out; }
+
+function dibujar(c) {
+  var W = 640, H = 1010, cv = document.getElementById('c'); cv.width = W; cv.height = H; var x = cv.getContext('2d');
+  document.getElementById('qr').innerHTML = '';
+  new QRCode(document.getElementById('qr'), { text: c.verificar, width: 360, height: 360, colorDark: '#16285a', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+  return Promise.all([img('logo-dark.webp'), img(c.foto), img(c.sello), document.fonts ? document.fonts.load('800 30px Poppins').then(function () { return document.fonts.load('500 20px Poppins'); }) : null]).then(function (r) {
+    var logo = r[0], foto = r[1], sello = r[2];
+    x.save(); rr(x, 0, 0, W, H, 36); x.clip();
+    x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+    var g = x.createLinearGradient(0, 0, W, 330); g.addColorStop(0, '#16285a'); g.addColorStop(1, '#2c66b8'); x.fillStyle = g; x.fillRect(0, 0, W, 330);
+    x.fillStyle = 'rgba(255,255,255,.07)'; [[560, 60, 120], [70, 280, 90], [600, 300, 50], [120, 40, 40]].forEach(function (b) { x.beginPath(); x.arc(b[0], b[1], b[2], 0, 7); x.fill(); });
+    x.fillStyle = '#f6d046'; x.beginPath(); x.moveTo(0, 318); x.lineTo(W, 290); x.lineTo(W, 302); x.lineTo(0, 330); x.fill();
+    x.fillStyle = '#fff'; rr(x, W / 2 - 120, 32, 240, 96, 22); x.fill();
+    if (logo) { var s = Math.min(210 / logo.width, 80 / logo.height); x.drawImage(logo, W / 2 - logo.width * s / 2, 80 - logo.height * s / 2, logo.width * s, logo.height * s); }
+    x.fillStyle = '#f6d046'; x.font = '800 20px Poppins'; x.textAlign = 'center'; x.fillText('T É C N I C O   A L I A D O', W / 2, 168);
+    var cx = W / 2, cy = 300, R = 118;
+    x.fillStyle = '#fff'; x.beginPath(); x.arc(cx, cy, R + 14, 0, 7); x.fill();
+    x.strokeStyle = '#f6d046'; x.lineWidth = 9; x.beginPath(); x.arc(cx, cy, R + 6, 0, 7); x.stroke();
+    if (foto) { x.save(); x.beginPath(); x.arc(cx, cy, R, 0, 7); x.clip(); var k = Math.max(2 * R / foto.width, 2 * R / foto.height); x.drawImage(foto, cx - foto.width * k / 2, cy - foto.height * k / 2, foto.width * k, foto.height * k); x.restore(); }
+    x.fillStyle = '#16285a'; x.font = '800 34px Poppins';
+    var ls = lineas(x, c.nombre.toUpperCase(), 560), y = 486; ls.slice(0, 2).forEach(function (l) { x.fillText(l, W / 2, y); y += 40; });
+    x.fillStyle = '#6b7590'; x.font = '500 20px Poppins'; x.fillText('Técnico aliado en limpieza y desinfección', W / 2, y + 4);
+    x.font = '700 19px Poppins'; var zt = 'Zona · ' + c.zona, zw = x.measureText(zt).width + 44; x.fillStyle = '#16285a'; rr(x, W / 2 - zw / 2, y + 22, zw, 44, 22); x.fill(); x.fillStyle = '#f6d046'; x.fillText(zt, W / 2, y + 51);
+    x.fillStyle = '#1b2540'; x.font = '500 18px Poppins'; x.fillText(c.doc + '   ·   Código ' + c.codigo, W / 2, y + 100);
+    var qy = 700, q = document.querySelector('#qr canvas');
+    x.fillStyle = '#f3f5fa'; rr(x, 40, qy - 10, 220, 220, 20); x.fill();
+    if (q) x.drawImage(q, 50, qy, 200, 200);
+    x.textAlign = 'left'; x.fillStyle = '#6b7590'; x.font = '600 15px Poppins'; x.fillText('VIGENTE HASTA', 290, qy + 18);
+    x.fillStyle = '#16285a'; x.font = '800 30px Poppins'; x.fillText(fechaBonita(c.vence), 290, qy + 56);
+    if (sello) { var sw = 300, sh = sello.height * sw / sello.width; x.drawImage(sello, 290, qy + 72, sw, sh); }
+    x.textAlign = 'center'; x.fillStyle = '#16285a'; x.fillRect(0, 940, W, 70);
+    x.fillStyle = '#fff'; x.font = '600 18px Poppins'; x.fillText('Escanea el QR para verificar · www.mclean.com.co', W / 2, 982);
+    if (!c.vigente) {
+      x.save(); x.translate(W / 2, 560); x.rotate(-0.42); x.fillStyle = 'rgba(192,57,43,.88)'; x.fillRect(-460, -46, 920, 92);
+      x.fillStyle = '#fff'; x.font = '800 46px Poppins'; x.fillText(c.estado === 'Suspendido' ? 'SUSPENDIDO' : c.estado === 'Aprobado' ? 'VENCIDO' : 'NO VIGENTE', 0, 16); x.restore();
+    }
+    x.restore();
+  });
+}
+
+function pintar() {
+  var c = C, h = '<canvas id="c"></canvas><div class="acc"><button class="btn b1" id="bajar">⬇ Descargar carnet</button><a class="btn b3" href="' + esc(c.verificar) + '" target="_blank">Ver verificación</a></div>';
+  if (c.estado === 'Suspendido') h += '<div class="card alerta"><h2>Tu acceso está suspendido</h2><p>' + esc(c.notas || 'Comunícate con M Clean.') + '</p></div>';
+  if (c.rutPendiente) h += '<div class="card' + (c.rutRecordatorios >= 2 ? ' alerta' : '') + '"><h2>📄 Falta tu RUT</h2><p>Súbelo en foto o PDF. ' + (c.rutRecordatorios ? 'Llevas ' + c.rutRecordatorios + ' de 3 recordatorios; al tercero sin RUT se suspende tu acceso.' : 'Te enviaremos recordatorios hasta recibirlo.') + '</p><button class="btn b2" id="subir" style="width:100%">Subir mi RUT</button><p id="rutMsg" style="margin:10px 0 0"></p></div>';
+  h += '<div class="card"><h2>¿Dudas?</h2><p>Escríbenos y te ayudamos.</p><a class="btn b3" href="https://wa.me/573226895212">WhatsApp M Clean</a></div>';
+  document.getElementById('app').innerHTML = h;
+  dibujar(c);
+  document.getElementById('bajar').onclick = function () {
+    var cv = document.getElementById('c'), a = document.createElement('a');
+    a.href = cv.toDataURL('image/png'); a.download = 'Carnet M Clean - ' + c.nombre + '.png'; document.body.appendChild(a); a.click(); a.remove();
+  };
+  var sb = document.getElementById('subir');
+  if (sb) sb.onclick = function () { document.getElementById('rutFile').click(); };
+}
+document.getElementById('rutFile').onchange = function () {
+  var f = this.files && this.files[0]; if (!f) return;
+  var msg = document.getElementById('rutMsg'); msg.className = ''; msg.textContent = 'Subiendo…';
+  leer(f).then(function (url) { return api({ accion: 'subirRut', rut: url }); })
+    .then(function () { msg.className = 'ok'; msg.textContent = '✅ RUT recibido. ¡Gracias!'; setTimeout(cargar, 1500); })
+    .catch(function (e) { msg.textContent = e.message; });
+};
+function leer(f) {
+  return new Promise(function (res, rej) {
+    if (/pdf/.test(f.type)) { if (f.size > 6e6) return rej(new Error('El PDF pesa más de 6 MB.')); var r = new FileReader(); r.onload = function () { res(r.result); }; r.readAsDataURL(f); return; }
+    var u = URL.createObjectURL(f), i = new Image(); i.onload = function () { var s = Math.min(1, 1600 / Math.max(i.width, i.height)), cv = document.createElement('canvas'); cv.width = i.width * s; cv.height = i.height * s; cv.getContext('2d').drawImage(i, 0, 0, cv.width, cv.height); res(cv.toDataURL('image/jpeg', 0.85)); }; i.onerror = function () { rej(new Error('No se pudo leer la imagen.')); }; i.src = u;
+  });
+}
+function cargar() {
+  api({ accion: 'miCarnet' }).then(function (j) { C = j.carnet; pintar(); })
+    .catch(function (e) { document.getElementById('app').innerHTML = '<div class="msg">' + esc(e.message) + '</div>'; });
+}
+if (!TOKEN) document.getElementById('app').innerHTML = '<div class="msg">Abre el enlace que te enviamos por correo.</div>'; else cargar();
+</script>
+</body>
+</html>
