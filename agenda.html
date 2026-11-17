@@ -95,6 +95,8 @@ main{max-width:1100px;margin:0 auto;padding:14px 14px 90px}
 .frm input,.frm select,.frm textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:11px 12px;font-size:14px;font-family:inherit;background:#fff;color:var(--txt)}
 .frm textarea{min-height:70px;resize:vertical}
 .frm .dos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.frm .falta{background:#fff6d6!important;border-color:#f6d046!important}
 .frm .sec{margin-top:16px;padding-top:12px;border-top:1px dashed var(--line);font-size:13px;font-weight:800;color:var(--navy)}
 .frm details{background:var(--bg);border-radius:14px;padding:10px 12px;margin-top:10px}
 .frm summary{font-weight:700;font-size:13px;color:var(--navy);cursor:pointer}
@@ -339,7 +341,9 @@ $('modal').addEventListener('click', e => { if (e.target.id==='modal') cerrar();
 $('prev').onclick = () => { S.ref = S.vista==='mes' ? new Date(S.ref.getFullYear(), S.ref.getMonth()-1, 1) : addD(S.ref,-7); cargar(); };
 $('next').onclick = () => { S.ref = S.vista==='mes' ? new Date(S.ref.getFullYear(), S.ref.getMonth()+1, 1) : addD(S.ref,7); cargar(); };
 $('hoyb').onclick = () => { S.ref = new Date(); cargar(); };
-$('recargar').onclick = () => { S.rango = null; cargar(); };
+$('recargar').onclick = async () => { const b = $('recargar'); if (b.disabled) return; b.disabled = true; b.style.animation = 'spin 1s linear infinite'; $('act').textContent = 'Actualizando desde Trello…';
+  try { await gapi({accion:'gerSincronizar'}); } catch (e) { toastG(e.message); }
+  b.disabled = false; b.style.animation = ''; S.rango = null; cargar(); };
 $('fTec').onchange = e => { S.tec = e.target.value; pintar(); };
 $('fEst').onchange = e => { S.est = e.target.value; pintar(); };
 
@@ -419,11 +423,37 @@ function comprimir(file){ return new Promise((res, rej) => { const url = URL.cre
   im.onload = () => { const k = Math.min(1, 1600 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width*k); c.height = Math.round(im.height*k);
     c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL('image/jpeg', 0.82)); };
   im.onerror = () => rej(new Error('No se pudo leer la imagen.')); im.src = url; }); }
-function leerIGS(t){ const g = re => { const m = t.match(re); return m ? m[1].trim() : ''; }, tit = s => s.toLowerCase().replace(/(^|\s)\S/g, m => m.toUpperCase());
-  const d = { expediente: g(/EXPEDIENTE\s*:?\s*(\d{5,})/i), afiliado: tit(g(/AFILIADO\s*:?\s*([^\n]+)/i)), celular: g(/CELULAR\s*:?\s*([\d\s]{7,})/i).replace(/\s/g,''),
-    campana: tit(g(/CUENTA\s*:?\s*([^\n]+)/i)), ciudad: tit(g(/CIUDAD\s*:\s*([^\n]*)/i)), direccion: tit(g(/DIRECCI[OÓ]N\s*:\s*([^\n]*)/i)), tipo: ((t.match(/SERVICIO\s+DE\s+[^\n]+/i)||[''])[0]).trim() };
+const nrm = s => String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+function leerChat(t, o){
+  t = String(t||'').replace(/^\s*\[[^\]\n]{6,30}\]\s*[^:\n]{1,40}:\s*/gm, '').replace(/^\s*\d{1,2}\/\d{1,2}\/\d{2,4},?\s+\d{1,2}:\d{2}[^-\n]{0,10}-\s*[^:\n]{1,40}:\s*/gm, '');
+  const g = re => { const m = t.match(re); return m ? m[1].trim() : ''; }, tit = s => s.toLowerCase().replace(/(^|\s)\S/g, m => m.toUpperCase()), T = nrm(t);
+  const d = { expediente: g(/EXPEDIENTE\s*:?\s*(\d{5,})/i), afiliado: tit(g(/(?:AFILIADO|NOMBRE|CLIENTE|USUARIO)\s*:\s*([^\n]+)/i) || g(/(?:me llamo|mi nombre es)\s+([A-Za-zÁÉÍÓÚÑáéíóúñ ]{3,40})/i)),
+    celular: (g(/(?:CELULAR|TEL[EÉ]FONO|CEL)\s*:?\s*([+\d\s-]{7,})/i) || ((t.match(/(?:\+?57[\s-]?)?3\d{2}[\s-]?\d{3}[\s-]?\d{4}/)||[''])[0])).replace(/\D/g,'').replace(/^57(?=3\d{9}$)/,''),
+    campana: tit(g(/CUENTA\s*:?\s*([^\n]+)/i).replace(/\*/g,'').trim()), ciudad: tit(g(/CIUDAD\s*:\s*([^\n]*)/i)), direccion: g(/DIRECCI[OÓ]N\s*:\s*([^\n]*)/i),
+    tipo: ((t.match(/SERVICIO\s+DE\s+[^\n]+/i)||[''])[0]).trim(), observaciones: g(/OBSERVACIONES?\s*:\s*([^\n]*)/i) };
+  if (/^(n\/?a|ninguna?|no)$/i.test(d.observaciones)) d.observaciones = '';
   if (d.tipo) d.tipo = d.tipo.charAt(0) + d.tipo.slice(1).toLowerCase();
-  const disp = t.match(/DISPONIBILIDAD\s*:?\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i); if (disp) d.fecha = disp[3]+'-'+disp[2].padStart(2,'0')+'-'+disp[1].padStart(2,'0');
+  const det = [g(/ELEMENTO[^:\n]*:\s*([^\n]*)/i), g(/MATERIAL[^:\n]*:\s*([^\n]*)/i), g(/MEDIDAS?\s*:\s*([^\n]*)/i)].filter(Boolean).map(tit).join(' · ');
+  if (det) d.detalle = det;
+  if (!d.direccion) { const m = t.match(/\b((?:calle|cl|cll|carrera|cra|kr|kra|avenida|av|diagonal|dg|transversal|tv|manzana|mz)\.?\s*\d[^\n,;]{2,60})/i); if (m) d.direccion = m[1].trim(); }
+  if (d.direccion) d.direccion = tit(d.direccion);
+  if (!d.ciudad && o) { const c = Object.keys(o.ciudades).sort((a,b)=>b.length-a.length).find(c => new RegExp('\\b'+nrm(c)+'\\b').test(T)); if (c) d.ciudad = c; }
+  if (!d.campana && o && o.empresas) { const e = o.empresas.slice().sort((a,b)=>b.length-a.length).find(e => e.length > 3 && T.indexOf(nrm(e)) >= 0); if (e) d.campana = e; }
+  if (!d.tipo) { const K = [[/colch/,'Lavado de colchón'],[/mueble|sofa|sala|silla|poltrona|comedor/,'Limpieza de muebles'],[/vidrio|ventana|ventanal/,'Limpieza de vidrios'],[/cocina|bano/,'Limpieza profunda de cocina y baño'],[/desinfec|fumig/,'Desinfección'],[/obra/,'Limpieza final de obra'],[/tapete|alfombra/,'Lavado de tapetes'],[/piso/,'Limpieza de pisos']];
+    const k = K.find(x => x[0].test(T)); if (k) d.tipo = k[1]; }
+  const iso = (a,m,dd) => a+'-'+String(m).padStart(2,'0')+'-'+String(dd).padStart(2,'0'), hoy = new Date();
+  const MES = {enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,setiembre:9,octubre:10,noviembre:11,diciembre:12};
+  let f = t.match(/DISPONIBILIDAD\s*:?\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i) || t.match(/\b(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?\b/);
+  if (f) { let a = f[3] ? +f[3] : hoy.getFullYear(); if (a < 100) a += 2000; d.fecha = iso(a, +f[2], +f[1]); }
+  else { const m = T.match(/(\d{1,2})\s+de\s+(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|setiembre|octubre|noviembre|diciembre)/);
+    if (m) { let a = hoy.getFullYear(); if (MES[m[2]] < hoy.getMonth()+1) a++; d.fecha = iso(a, MES[m[2]], +m[1]); }
+    else if (/pasado manana/.test(T)) d.fecha = ymd(addD(hoy,2)); else if (/\bmanana\b(?! en la| por la)/.test(T)) d.fecha = ymd(addD(hoy,1)); else if (/\bhoy\b/.test(T)) d.fecha = ymd(hoy);
+    else { const DS = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'], w = DS.findIndex(x => new RegExp('\\b'+x+'\\b').test(T)); if (w >= 0) { let k = (w - hoy.getDay() + 7) % 7 || 7; d.fecha = ymd(addD(hoy,k)); } } }
+  const h = T.match(/\b(\d{1,2})(?::(\d{2}))?\s*(a\.?\s*m\.?|p\.?\s*m\.?)/);
+  if (h) { let H = +h[1] % 12; if (/p/.test(h[3])) H += 12; d.hora = String(H).padStart(2,'0')+':'+(h[2]||'00'); }
+  else if (/en la tarde|por la tarde/.test(T)) d.hora = '14:00'; else if (/en la manana|por la manana/.test(T)) d.hora = '08:00';
+  const as = t.match(/asiste\s+([A-Za-zÁÉÍÓÚÑáéíóúñ]+(?:\s+[A-Za-zÁÉÍÓÚÑáéíóúñ]+){0,2})/i); if (as && !/^(el|la)\s+t[eé]cnic/i.test(as[1])) d.tecnico = tit(as[1]);
+  Object.keys(d).forEach(k => { if (!d[k]) delete d[k]; });
   return d; }
 async function nuevoServicio(){
   $('hoja').innerHTML = '<h2>Agendar servicio</h2><div class="sub">Se crea la tarjeta en Trello con la ficha completa</div><div class="cargando">Cargando opciones…</div>';
@@ -432,10 +462,11 @@ async function nuevoServicio(){
   const ciud = Object.keys(o.ciudades).map(c=>'<option value="'+esc(c)+'">').join('');
   const tecs = o.tecnicos.map(t=>'<option value="'+esc(t.nombre)+'">'+esc(t.nombre)+' · '+esc(t.zona)+'</option>').join('');
   $('hoja').innerHTML = '<h2>Agendar servicio</h2><div class="sub">Se crea la tarjeta en Trello con la ficha completa</div><form class="frm" id="fNuevo" autocomplete="off">'+
-   '<details open><summary>📋 Pegar mensaje de asignación (WhatsApp de IGS)</summary><textarea id="nMsg" placeholder="Pega aquí el mensaje con EXPEDIENTE, AFILIADO, CELULAR, CIUDAD, DIRECCIÓN…"></textarea><button type="button" class="chip" id="nLeer" style="margin-top:8px">Llenar campos con el mensaje</button></details>'+
+   '<details open><summary>📋 Pegar chat de WhatsApp (IGS o cliente)</summary><textarea id="nMsg" rows="5" placeholder="Pega aquí el mensaje o el chat completo: la app saca expediente, empresa, nombre, celular, ciudad, dirección, servicio, fecha y hora."></textarea><button type="button" class="chip" id="nLeer" style="margin-top:8px">✨ Llenar la ficha con el chat</button></details>'+
    '<label>📸 Captura de la asignación (evidencia)</label><input type="file" id="nEv" accept="image/*" multiple><div class="prev" id="nPrev"></div>'+
    '<div class="sec">Servicio</div>'+
-   '<div class="dos"><div><label>Expediente</label><input id="n_expediente" inputmode="numeric" placeholder="Vacío = particular"></div><div><label>Campaña (empresa IGS)</label><input id="n_campana" placeholder="Ej. Coomeva"></div></div>'+
+   '<div class="dos"><div><label>Expediente</label><input id="n_expediente" inputmode="numeric" placeholder="Vacío = particular"></div><div><label>Empresa / cuenta</label><select id="n_campanaSel"><option value="">— Elige —</option><optgroup label="Empresas IGS">'+(o.empresas||[]).map(e=>'<option>'+esc(e)+'</option>').join('')+'</optgroup><option value="__otra">Otra (escribir)</option><option>Particular M Clean</option><option>Cortesía M Clean</option></select><input id="n_campana" placeholder="Escribe la empresa" style="display:none;margin-top:6px"></div></div>'+
+   '<div class="okbox" id="nCort" style="display:none;font-size:13px">🎁 <b>Cortesía:</b> no se factura ni se reporta a IGS, pero el técnico sí cobra su tarifa normal.</div>'+
    '<label>Tipo de servicio</label><input id="n_tipo" list="lServ" required><datalist id="lServ">'+o.servicios.map(s=>'<option value="'+esc(s)+'">').join('')+'<option value="Limpieza de muebles"><option value="Lavado de colchón"><option value="Limpieza profunda de cocina y baño"><option value="Desinfección"><option value="Limpieza final de obra"></datalist>'+
    '<label>Detalle (elementos, medidas, material)</label><textarea id="n_detalle"></textarea>'+
    '<label class="chk"><input type="checkbox" id="n_vapor"> Requiere máquina a vapor</label>'+
@@ -454,12 +485,27 @@ async function nuevoServicio(){
    '<div class="acc"><button type="button" class="a4" onclick="cerrar()">Cancelar</button><button type="submit" class="a1" id="nOk">Agendar</button></div></form>';
   const EV = [];
   $('nEv').onchange = async e => { for (const f of e.target.files) { try { EV.push(await comprimir(f)); } catch (x) {} } $('nPrev').innerHTML = EV.map(u=>'<img src="'+u+'">').join(''); };
-  $('nLeer').onclick = () => { const d = leerIGS($('nMsg').value); let n = 0; Object.keys(d).forEach(k => { if (d[k] && $('n_'+k)) { $('n_'+k).value = d[k]; n++; } }); $('nErr').style.color = n ? '#1f9d63' : ''; $('nErr').textContent = n ? '✓ '+n+' campos llenados. Revisa fecha, hora y técnico.' : 'No encontré datos de IGS en el mensaje.'; };
+  const camp = v => { const sel = $('n_campanaSel'), ok = [...sel.options].find(x => nrm(x.value) === nrm(v));
+    if (!v) { sel.value = ''; $('n_campana').style.display = 'none'; } else if (ok) { sel.value = ok.value; $('n_campana').style.display = 'none'; } else { sel.value = '__otra'; $('n_campana').style.display = ''; $('n_campana').value = v; }
+    $('nCort').style.display = /cortes/i.test(sel.value) ? '' : 'none'; };
+  $('n_campanaSel').onchange = e => { $('n_campana').style.display = e.target.value === '__otra' ? '' : 'none'; if (e.target.value === '__otra') $('n_campana').focus(); $('nCort').style.display = /cortes/i.test(e.target.value) ? '' : 'none'; };
+  const IMP = {tipo:'Tipo de servicio', afiliado:'Usuario', celular:'Celular', ciudad:'Ciudad', direccion:'Dirección', fecha:'Fecha', hora:'Hora'};
+  $('nLeer').onclick = () => { const d = leerChat($('nMsg').value, o); let n = 0;
+    Object.keys(d).forEach(k => { if (k === 'campana') { camp(d[k]); n++; } else if ($('n_'+k)) { const el = $('n_'+k); if (el.tagName === 'SELECT' && ![...el.options].some(x => x.value === d[k])) return; el.value = d[k]; n++; } });
+    if (d.observaciones) $('n_observaciones').closest('details').open = true;
+    const faltan = Object.keys(IMP).filter(k => !$('n_'+k).value || (k === 'hora' && !d.hora));
+    document.querySelectorAll('#fNuevo .falta').forEach(x => x.classList.remove('falta')); faltan.forEach(k => $('n_'+k).classList.add('falta'));
+    if (!$('n_campanaSel').value) $('n_campanaSel').classList.add('falta');
+    $('n_fecha').dispatchEvent(new Event('change'));
+    $('nErr').style.color = n ? '#1f9d63' : ''; $('nErr').textContent = n ? '✓ '+n+' datos llenados.'+(faltan.length ? ' Completa lo resaltado en amarillo: '+faltan.map(k=>IMP[k]).join(', ')+'.' : ' Revisa y toca Agendar.') : 'No encontré datos en el chat. Llena la ficha a mano.'; };
+  document.getElementById('fNuevo').addEventListener('input', e => e.target.classList && e.target.classList.remove('falta'));
   $('n_fecha').onchange = e => { if (o.festivos.indexOf(e.target.value) >= 0) $('n_horario').value = 'Festivo'; };
   let forzar = false;
   $('fNuevo').onsubmit = async ev => { ev.preventDefault(); const b = $('nOk'); $('nErr').style.color=''; $('nErr').textContent='';
     const d = { accion:'gerCrear', mensaje: $('nMsg').value, evidencias: EV, vapor: $('n_vapor').checked, avisar: $('n_avisar').checked, forzar: forzar };
-    ['expediente','campana','tipo','detalle','afiliado','celular','ciudad','direccion','ubicacion','tablero','fecha','hora','horario','tecnico','valor','adicionales','observaciones'].forEach(k => d[k] = $('n_'+k).value);
+    ['expediente','tipo','detalle','afiliado','celular','ciudad','direccion','ubicacion','tablero','fecha','hora','horario','tecnico','valor','adicionales','observaciones'].forEach(k => d[k] = $('n_'+k).value);
+    d.campana = $('n_campanaSel').value === '__otra' ? $('n_campana').value.trim() : $('n_campanaSel').value;
+    if ($('n_campanaSel').value === '__otra' && !d.campana) { $('nErr').textContent = 'Escribe el nombre de la empresa.'; return; }
     if (!d.ciudad || !d.fecha || !d.tipo || !d.afiliado) { $('nErr').textContent = 'Completa tipo de servicio, usuario, ciudad y fecha.'; return; }
     b.disabled = true; b.textContent = 'Agendando…';
     try { const j = await gapi(d);
