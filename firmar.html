@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Firmar cuenta de cobro · M Clean</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#16285a;--yel:#f6d046;--line:#e3e8f2;--txt:#1b2540;--mut:#6b7590;--ok:#1f9d63;--err:#c0392b}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Poppins,system-ui,sans-serif;background:#f3f5fa;color:var(--txt);min-height:100vh}
+header{background:var(--navy);color:#fff;padding:14px 16px}
+.hrow{display:flex;align-items:center;gap:10px;max-width:560px;margin:0 auto}
+.hrow img{height:34px;background:#fff;border-radius:10px;padding:3px 6px}
+.hrow b{display:block;font-size:15px}.hrow small{font-size:11px;opacity:.75}
+main{max-width:560px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 2px 10px rgba(22,40,90,.06);margin-bottom:14px}
+h1{font-size:18px;color:var(--navy);margin-bottom:6px}
+.sub{font-size:13px;color:var(--mut)}
+.fila{display:flex;justify-content:space-between;gap:10px;font-size:13px;border-bottom:1px solid #eef1f6;padding:8px 0}
+.fila span small{color:var(--mut)}
+.tot{display:flex;justify-content:space-between;font-weight:700;font-size:15px;padding-top:10px;color:var(--navy)}
+canvas{width:100%;height:170px;border:2px dashed #cfd6e4;border-radius:14px;touch-action:none;background:#fff;display:block;margin-top:8px}
+.btn{width:100%;border:0;border-radius:14px;padding:14px;font:600 15px Poppins;cursor:pointer;margin-top:10px}
+.b1{background:var(--yel);color:var(--navy)}.b3{background:#eef1f6;color:var(--navy)}
+.acc{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+.ok{text-align:center;padding:30px 10px}.ok div{font-size:56px}
+.err{background:#fde8e6;color:var(--err);border-radius:14px;padding:14px;font-size:14px}
+.cargando{text-align:center;color:var(--mut);padding:40px 0}
+</style>
+</head>
+<body>
+<header><div class="hrow"><img src="logo-dark.webp" alt="M Clean"><div><b>M Clean Desinfección y Limpieza</b><small>Firma de cuenta de cobro</small></div></div></header>
+<main id="app"><div class="cargando">Cargando…</div></main>
+<script>
+var API = 'https://script.google.com/macros/s/AKfycbwmj3prBAsOb77b5QTqPoY673GXdsZhBn0ef_ZaqDuX-9xzFoMCJFAs3Nq2tOeFoz2N/exec';
+var H = {}; location.hash.slice(1).split('&').forEach(function (p) { var k = p.split('='); H[k[0]] = decodeURIComponent(k[1] || ''); });
+function $(i) { return document.getElementById(i); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function pesos(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
+function api(b) { b.t = H.t; return fetch(API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
+function error(t) { $('app').innerHTML = '<div class="err">' + esc(t) + '</div><p class="sub" style="margin-top:12px">¿Dudas? WhatsApp 322 689 5212</p>'; }
+if (!H.t || !H.c) error('Enlace incompleto. Abre el enlace que te enviamos por correo o WhatsApp.');
+else api({ accion: 'misPagos' }).then(function (j) {
+  if (!j.ok) return error(j.error);
+  var c = j.cuentas.filter(function (x) { return x.id === H.c; })[0];
+  if (!c) return error('No encontramos esta cuenta de cobro.');
+  if (c.estado !== 'Por firmar') { $('app').innerHTML = '<div class="card ok"><div>✅</div><h1>Esta cuenta ya está ' + (c.estado === 'Pagada' ? 'pagada' : 'firmada') + '</h1><p class="sub">' + esc(c.id) + ' · ' + pesos(c.total) + '</p></div>'; return; }
+  var emp = j.tipo === 'Empresa';
+  $('app').innerHTML = '<div class="card"><h1>Cuenta de cobro ' + esc(c.id) + '</h1><p class="sub">M Clean Desinfección y Limpieza S.A.S. ' + (emp ? 'les' : 'te') + ' debe por estos servicios:</p>' +
+    c.detalle.map(function (s) { return '<div class="fila"><span>' + esc(s.fecha) + ' · ' + esc(s.tipo) + '<br><small>' + esc(s.ciudad) + (s.exp ? ' · Exp. ' + esc(s.exp) : '') + '</small></span><b>' + pesos(s.valor) + '</b></div>'; }).join('') +
+    '<div class="tot"><span>Total</span><span>' + pesos(c.total) + '</span></div>' +
+    '<p class="sub" style="margin-top:10px">Pago a: ' + esc(j.banco.banco || '—') + ' ' + esc(j.banco.tipo || '') + ' ' + esc(j.banco.cuenta || '') + '.</p></div>' +
+    '<div class="card"><b style="font-size:14px">' + (emp ? 'Firma del representante legal' : 'Tu firma') + '</b><p class="sub">Firma con el dedo. ' + (emp ? 'Al firmar declaran que prestaron estos servicios de forma independiente, con su propio personal.' : 'Al firmar declaras que prestaste estos servicios de forma independiente.') + '</p>' +
+    '<canvas id="pad"></canvas><div class="acc"><button class="btn b3" id="borrar">Borrar</button><button class="btn b1" id="firmar">Firmar y enviar</button></div></div>';
+  var pad = $('pad'), r = pad.getBoundingClientRect(), k = window.devicePixelRatio || 1, ctx, dib = false, firmo = false;
+  pad.width = r.width * k; pad.height = r.height * k; ctx = pad.getContext('2d'); ctx.scale(k, k); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.strokeStyle = '#0D2C54';
+  var pos = function (e) { var b = pad.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; };
+  pad.addEventListener('pointerdown', function (e) { dib = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p[0], p[1]); });
+  pad.addEventListener('pointermove', function (e) { if (!dib) return; var p = pos(e); ctx.lineTo(p[0], p[1]); ctx.stroke(); firmo = true; });
+  pad.addEventListener('pointerup', function () { dib = false; });
+  $('borrar').onclick = function () { ctx.clearRect(0, 0, pad.width, pad.height); firmo = false; };
+  $('firmar').onclick = function () {
+    if (!firmo) { alert('Firma con el dedo en el recuadro.'); return; }
+    var c2 = document.createElement('canvas'); c2.width = pad.width; c2.height = pad.height; var x = c2.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c2.width, c2.height); x.drawImage(pad, 0, 0);
+    var b = $('firmar'); b.disabled = true; b.textContent = 'Enviando…';
+    api({ accion: 'firmarCuenta', cuenta: c.id, firma: c2.toDataURL('image/png') }).then(function (j) {
+      if (!j.ok) { b.disabled = false; b.textContent = 'Firmar y enviar'; alert(j.error); return; }
+      $('app').innerHTML = '<div class="card ok"><div>✅</div><h1>¡Cuenta firmada!</h1><p class="sub">Les enviamos copia en PDF al correo. Les avisaremos cuando hagamos el pago, con el soporte de la transferencia.</p></div>';
+    }).catch(function () { b.disabled = false; b.textContent = 'Firmar y enviar'; alert('No se pudo enviar. Revisa tu conexión e intenta de nuevo.'); });
+  };
+}).catch(function () { error('No pudimos cargar la cuenta. Revisa tu conexión e intenta de nuevo.'); });
+</script>
+</body>
+</html>

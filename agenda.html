@@ -156,6 +156,7 @@ main{max-width:1100px;margin:0 auto;padding:14px 14px 90px}
   <div class="hrow">
     <img src="logo-dark.webp" alt="M Clean">
     <div class="htit"><b>Gerencia M Clean</b><small id="act">Todos los tableros</small></div>
+    <button class="ibtn" id="tecBtn" title="Técnicos y empresas aliadas">👷</button>
     <button class="ibtn" id="pagBtn" title="Pagos técnicos">💵</button>
     <button class="ibtn" id="metBtn" title="Métricas">📊</button>
     <button class="ibtn" id="recargar" title="Actualizar">⟳</button>
@@ -576,7 +577,7 @@ async function metricas(){
       '<div class="sub" style="margin-top:12px;font-weight:700;color:var(--navy)">Servicios del mes</div>'+fila('Próximos',m.estados['1'])+fila('En proceso',m.estados['2'])+fila('Terminados',m.estados['3'])+fila('Pagados',m.estados['4'])+fila('Sin técnico',m.sinTecnico)+fila('Valor registrado','$'+Number(m.valor).toLocaleString('es-CO'))+
       '<div class="sub" style="margin-top:12px;font-weight:700;color:var(--navy)">Técnicos aliados (mes)</div>'+fila('Ofertas publicadas',m.aliados.ofertas)+fila('Aceptadas',m.aliados.tomadas)+fila('Llegadas registradas',m.aliados.conLlegada)+fila('Puntualidad',pct(m.aliados.puntuales,m.aliados.conLlegada))+
       '<div class="sub" style="margin-top:12px;font-weight:700;color:var(--navy)">Por ciudad</div>'+top(m.ciudades)+
-      '<div class="acc"><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>';
+      '<div class="acc"><button class="a3" style="grid-column:1/3" onclick="empresas()">🏢 Empresas aliadas</button><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>';
   } catch (e) { $('hoja').innerHTML = '<h2>📊 Métricas</h2><div class="okbox" style="background:#fdecea">'+esc(e.message)+'</div><div class="acc"><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>'; }
 }
 $('metBtn').onclick = metricas;
@@ -588,16 +589,16 @@ async function tecnicoForm(i){
   const zona = x.tablero, enZona = o.tecnicos.filter(t=>t.zona===zona), otros = o.tecnicos.filter(t=>t.zona!==zona);
   const opt = t => '<option value="'+esc(t.id)+'" data-e="'+(t.tipo==='Empresa'?1:'')+'">'+(t.tipo==='Empresa'?'🏢 ':'')+esc(t.nombre)+' · '+esc(t.zona)+'</option>';
   $('hoja').innerHTML = '<h2>👷 Técnico del servicio</h2><div class="sub">'+esc((x.exp?'Exp. '+x.exp+' · ':'')+(x.ciudad||x.tablero)+' · '+x.fecha+' '+hora12(x.hora))+'</div><form class="frm" id="fTec">'+
-    '<label>Técnico aliado (app)</label><select id="tId"><option value="">— Elige —</option>'+(enZona.length?'<optgroup label="Zona '+esc(zona)+'">'+enZona.map(opt).join('')+'</optgroup>':'')+(otros.length?'<optgroup label="Otras zonas">'+otros.map(opt).join('')+'</optgroup>':'')+'</select>'+
-    '<div id="tEmp" style="display:none"><label>Valor acordado con la empresa aliada (COP)</label><input id="tVal" inputmode="numeric" placeholder="Ej. 120000"><p style="font-size:12px;color:var(--mut);margin-top:4px">A las empresas aliadas solo se les <b>ofrece</b>: la empresa acepta y escribe el nombre y la cédula del técnico que asiste.</p></div>'+
-    '<div class="okbox" style="font-size:13px"><b>Ofrecer:</b> le llega la oferta solo a él y la acepta o rechaza en su app (recomendado para aliados independientes).<br><b>Asignar directo:</b> queda como técnico del servicio y se le avisa por correo.</div>'+
+    '<label>Técnico o empresa aliada</label><select id="tId"><option value="">— Elige —</option><option value="__emp">➕ Crear empresa aliada</option>'+(enZona.length?'<optgroup label="Zona '+esc(zona)+'">'+enZona.map(opt).join('')+'</optgroup>':'')+(otros.length?'<optgroup label="Otras zonas">'+otros.map(opt).join('')+'</optgroup>':'')+'</select>'+
+    '<div id="tEmp" style="display:none"><label>Valor acordado con la empresa (COP)</label><input id="tVal" inputmode="numeric" placeholder="Ej. 120000"><div class="dos"><div><label>Técnico que asiste</label><input id="tANom" placeholder="Nombre completo"></div><div><label>Cédula</label><input id="tADoc" inputmode="numeric"></div></div><p style="font-size:12px;color:var(--mut);margin-top:4px">La empresa no usa app: queda asignada de una vez y te doy el botón para enviarle el servicio por WhatsApp.</p></div>'+
+    '<div class="okbox" id="tAyuda" style="font-size:13px"><b>Ofrecer:</b> le llega la oferta solo a él y la acepta o rechaza en su app (recomendado para aliados independientes).<br><b>Asignar directo:</b> queda como técnico del servicio y se le avisa por correo.</div>'+
     '<label>…o técnico que aún no está registrado (escribe el nombre)</label><input id="tNom" placeholder="Ej. Betania Pacheco"><p style="font-size:12px;color:var(--mut);margin-top:4px">Queda asignado en Trello y marcado como “falta por registrar en la plataforma”. Usa “Asignar directo”.</p>'+
     '<p style="font-size:12px;margin-top:6px">¿Una empresa quiere ser aliada? <a href="https://wa.me/?text='+encodeURIComponent('Hola, regístrense como empresa aliada de M Clean aquí: https://mcleandesinfeccion.github.io/registro-empresa.html')+'" target="_blank" rel="noopener" style="color:#1f9d63;font-weight:700">Enviar enlace de registro de empresas</a></p>'+
     '<label class="chk"><input type="checkbox" id="tAv" checked> Preparar aviso de asignación (borrador a IGS + WhatsApp al usuario)</label>'+
     '<div class="err" id="tErr"></div><div class="acc"><button type="button" class="a3" id="tOf">📣 Ofrecer</button><button type="button" class="a1" id="tDi">✅ Asignar directo</button><button type="button" class="a4" style="grid-column:1/3" onclick="cerrar()">Cancelar</button></div></form>';
-  const fin = (j, txt) => { const a = j.aviso || {}; $('hoja').innerHTML = '<h2>✅ Listo</h2><div class="okbox">'+txt+(a.borrador?'<br>Borrador de confirmación a IGS listo en Gmail.':'')+'</div><div class="acc">'+(a.wa?'<a class="a2" href="'+esc(a.wa)+'" target="_blank" rel="noopener">Avisar al usuario</a>':'')+'<button class="a4" style="grid-column:1/3" onclick="cerrar();S.rango=null;cargar()">Listo</button></div>'; };
+  const fin = (j, txt) => { const a = j.aviso || {}; $('hoja').innerHTML = '<h2>✅ Listo</h2><div class="okbox">'+txt+(a.borrador?'<br>Borrador de confirmación a IGS listo en Gmail.':'')+'</div><div class="acc">'+(j.empresaWa?'<a class="a2" href="'+esc(j.empresaWa)+'" target="_blank" rel="noopener">📲 Avisar a la empresa</a>':'')+(a.wa?'<a class="a2" href="'+esc(a.wa)+'" target="_blank" rel="noopener">Avisar al usuario</a>':'')+'<button class="a4" style="grid-column:1/3" onclick="cerrar();S.rango=null;cargar()">Listo</button></div>'; };
   const esE = () => { const o = $('tId').selectedOptions[0]; return !!(o && o.dataset.e); };
-  $('tId').onchange = () => { const e = esE(); $('tEmp').style.display = e ? '' : 'none'; $('tDi').style.display = e ? 'none' : ''; };
+  $('tId').onchange = () => { if ($('tId').value === '__emp') { empresaForm(i); return; } const e = esE(); $('tEmp').style.display = e ? '' : 'none'; $('tOf').style.display = e ? 'none' : ''; $('tAyuda').style.display = e ? 'none' : ''; };
   $('tOf').onclick = async () => { const id = $('tId').value; if (!id) { $('tErr').textContent = 'Elige un técnico aliado para ofrecerle el servicio.'; return; }
     const val = Number(String($('tVal').value).replace(/\D/g,'')); if (esE() && !val) { $('tErr').textContent = 'Escribe el valor acordado con la empresa aliada.'; return; }
     const b = $('tOf'); b.disabled = true; b.textContent = 'Enviando…';
@@ -605,14 +606,62 @@ async function tecnicoForm(i){
     catch (e) { $('tErr').textContent = e.message; b.disabled = false; b.textContent = '📣 Ofrecer'; } };
   $('tDi').onclick = async () => { const id = $('tId').value, nom = $('tNom').value.trim(); if (!id && !nom) { $('tErr').textContent = 'Elige un aliado o escribe el nombre del técnico.'; return; }
     const b = $('tDi'); b.disabled = true; b.textContent = 'Asignando…';
-    try { const j = await gapi({accion:'gerAsignar', id:x.id, modo:'directo', tecnicoId:id, nombre: id ? $('tId').selectedOptions[0].textContent.split(' · ')[0] : nom, avisar:$('tAv').checked}); fin(j, 'Técnico asignado en la ficha de Trello.'); }
+    const E = esE(), val = Number(String($('tVal').value).replace(/\D/g,'')), aN = $('tANom').value.trim(), aD = $('tADoc').value.replace(/\D/g,'');
+    if (E && !val) { $('tErr').textContent = 'Escribe el valor acordado con la empresa.'; b.disabled = false; b.textContent = '✅ Asignar directo'; return; }
+    if (E && (aN.length < 5 || aD.length < 5)) { $('tErr').textContent = 'Escribe el nombre completo y la cédula del técnico que asiste.'; b.disabled = false; b.textContent = '✅ Asignar directo'; return; }
+    try { const j = await gapi({accion:'gerAsignar', id:x.id, modo:'directo', tecnicoId:id, nombre: id ? $('tId').selectedOptions[0].textContent.replace('🏢 ','').split(' · ')[0] : nom, avisar:$('tAv').checked, valor: E ? val : undefined, asisteNombre: E ? aN : undefined, asisteDoc: E ? aD : undefined}); fin(j, E ? 'Empresa asignada con el valor acordado. Envíale el servicio por WhatsApp.' : 'Técnico asignado en la ficha de Trello.'); }
     catch (e) { $('tErr').textContent = e.message; b.disabled = false; b.textContent = '✅ Asignar directo'; } };
+}
+const ZONAS_EMP = ['Apartadó','Barranquilla','Bucaramanga','Cartagena','Córdoba','Eje Cafetero','Otras ciudades','Quibdó','Santa Marta','Valle de Aburrá'];
+const leerArch = f => new Promise((res, rej) => { if (!f) return res(''); if (/^image\//.test(f.type)) return comprimir(f).then(res, rej); if (f.size > 8e6) return rej(new Error('Un archivo pesa más de 8 MB.')); const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+function empresaForm(i, e){
+  e = e || null; const ed = !!e, v = k => esc(e && e[k] || '');
+  $('hoja').innerHTML = '<h2>🏢 '+(ed?'Completar empresa aliada':'Nueva empresa aliada')+'</h2><div class="sub">'+(ed?esc(e.razon)+' · '+esc(e.id):'M Clean la registra y la opera; la empresa no usa app')+'</div><form class="frm" id="fEmp" autocomplete="off">'+
+    (ed?'':'<label>Razón social o nombre</label><input id="eRaz"><div class="dos"><div><label>NIT o documento</label><input id="eNit" inputmode="numeric"></div><div><label>Zona</label><select id="eZona">'+ZONAS_EMP.map(z=>'<option'+(VIS[i]&&VIS[i].tablero===z?' selected':'')+'>'+z+'</option>').join('')+'</select></div></div>')+
+    '<div class="dos"><div><label>Representante legal</label><input id="eRep" value="'+v('repLegal')+'"></div><div><label>Cédula representante</label><input id="eRepD" inputmode="numeric" value="'+v('repDoc')+'"></div></div>'+
+    '<div class="dos"><div><label>Celular / WhatsApp</label><input id="eCel" inputmode="tel" value="'+v('celular')+'"></div><div><label>Correo (opcional)</label><input id="eCor" type="email" value="'+v('correo')+'"></div></div>'+
+    '<div class="dos"><div><label>Ciudad</label><input id="eCiu" value="'+v('ciudad')+'"></div><div><label>Dirección</label><input id="eDir" value="'+v('direccion')+'"></div></div>'+
+    '<div class="dos"><div><label>Contacto operativo</label><input id="eCon" value="'+v('contacto')+'"></div><div><label>Tel. contacto</label><input id="eConT" inputmode="tel" value="'+v('contactoTel')+'"></div></div>'+
+    '<div class="dos"><div><label>¿Factura electrónica?</label><select id="eFac"><option value="No">No, cuenta de cobro</option><option value="Sí"'+(e&&e.factura==='Sí'?' selected':'')+'>Sí, factura</option></select></div><div><label>Pago</label><select id="eCic"><option value="Semanal">Semanal (viernes)</option><option value="Diario"'+(e&&e.ciclo==='Diario'?' selected':'')+'>El mismo día aprobado</option></select></div></div>'+
+    '<div class="dos"><div><label>Banco o billetera</label><input id="eBan" value="'+v('banco')+'" placeholder="Bancolombia, Nequi…"></div><div><label>Tipo de cuenta</label><select id="eTip"><option>Ahorros</option><option'+(e&&e.tipoCuenta==='Corriente'?' selected':'')+'>Corriente</option><option'+(e&&/llave|celular/i.test(e.tipoCuenta||'')?' selected':'')+'>Llave o celular</option></select></div></div>'+
+    '<label>Número de cuenta o llave'+(ed&&e.cuenta?' (actual '+esc(e.cuenta)+'; déjalo vacío para no cambiarlo)':'')+'</label><input id="eCta" inputmode="numeric">'+
+    '<div class="sub" style="margin-top:12px;font-weight:700;color:var(--navy)">Documentos (opcionales, puedes subirlos después)</div>'+
+    '<div class="dos"><div><label>RUT'+(ed&&e.docs.rut?' ✅':'')+'</label><input type="file" id="dRut" accept="image/*,application/pdf"></div><div><label>Cámara de Comercio'+(ed&&e.docs.camara?' ✅':'')+'</label><input type="file" id="dCam" accept="image/*,application/pdf"></div></div>'+
+    '<div class="dos"><div><label>Cédula frente'+(ed&&e.docs.cedula?' ✅':'')+'</label><input type="file" id="dCF" accept="image/*"></div><div><label>Cédula reverso</label><input type="file" id="dCR" accept="image/*"></div></div>'+
+    '<label>Acuerdo firmado'+(ed&&e.docs.acuerdo?' ✅':'')+' (si lo firmaron en papel)</label><input type="file" id="dAcu" accept="image/*,application/pdf">'+
+    (ed?'':'<p style="font-size:12px;margin-top:8px">¿Prefieres que la empresa llene todo? <a href="https://wa.me/?text='+encodeURIComponent('Hola, regístrense como empresa aliada de M Clean aquí: https://mcleandesinfeccion.github.io/registro-empresa.html')+'" target="_blank" rel="noopener" style="color:#1f9d63;font-weight:700">Enviarles el enlace de registro</a></p>')+
+    '<div class="err" id="eErr"></div><div class="acc"><button type="button" class="a4" id="eCan">Cancelar</button><button type="submit" class="a1" id="eOk">'+(ed?'Guardar':'Crear empresa')+'</button></div></form>';
+  $('modal').classList.add('on');
+  $('eCan').onclick = () => ed ? empresas() : (VIS[i] ? tecnicoForm(i) : cerrar());
+  $('fEmp').onsubmit = async ev => { ev.preventDefault(); const b = $('eOk'); b.disabled = true; b.textContent = 'Guardando…'; $('eErr').textContent = '';
+    try {
+      const docs = {}; for (const [k, id] of [['rut','dRut'],['camara','dCam'],['cedulaFrente','dCF'],['cedulaReverso','dCR'],['acuerdo','dAcu']]) { const f = $(id).files[0]; if (f) docs[k] = await leerArch(f); }
+      const datos = { repLegal:$('eRep').value, repDoc:$('eRepD').value, celular:$('eCel').value, correo:$('eCor').value, ciudad:$('eCiu').value, direccion:$('eDir').value, contacto:$('eCon').value, contactoTel:$('eConT').value, factura:$('eFac').value, cicloPago:$('eCic').value, banco:$('eBan').value, tipoCuenta:$('eTip').value };
+      if ($('eCta').value.trim()) datos.cuenta = $('eCta').value.trim(); else if (!ed) datos.cuenta = '';
+      if (ed) { await gapi(Object.assign({accion:'gerEmpresaEditar', id:e.id, datos}, docs)); toastG('Empresa actualizada'); empresas(); return; }
+      const j = await gapi(Object.assign({accion:'gerEmpresaCrear', razon:$('eRaz').value, nit:$('eNit').value, zona:$('eZona').value}, datos, docs));
+      OPC = null; toastG('Empresa creada: '+j.id);
+      if (VIS[i]) { await tecnicoForm(i); const s = $('tId'); if (s) { s.value = j.id; s.onchange(); } } else empresas();
+    } catch (x) { $('eErr').textContent = x.message; b.disabled = false; b.textContent = ed ? 'Guardar' : 'Crear empresa'; }
+  };
+}
+async function empresas(){
+  $('hoja').innerHTML = '<h2>🏢 Empresas aliadas</h2><div class="cargando">Cargando…</div>'; $('modal').classList.add('on');
+  let L; try { L = (await gapi({accion:'gerEmpresas'})).empresas; } catch (e) { $('hoja').innerHTML = '<h2>🏢 Empresas aliadas</h2><div class="okbox" style="background:#fdecea">'+esc(e.message)+'</div><div class="acc"><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>'; return; }
+  window._EMP = L; const pct = (x,y) => y ? Math.round(100*x/y)+'%' : '—', lk = (u,t) => u ? '<a href="'+esc(u)+'" target="_blank" rel="noopener" style="color:var(--blue)">'+t+'</a>' : '<span style="color:#c0392b">'+t+' ✗</span>';
+  $('hoja').innerHTML = '<h2>🏢 Empresas aliadas</h2><div class="sub">'+L.length+' empresa(s)</div>'+
+    (L.length ? L.map((e,k)=>'<div class="okbox" style="background:#fff;border:1px solid var(--line);margin-top:10px"><b>'+esc(e.razon)+'</b> · '+esc(e.id)+' <span style="font-size:12px;color:'+(e.estado==='Aprobado'?'#1f9d63':'#e2a400')+'">'+esc(e.estado)+'</span><br><span style="font-size:12px;color:var(--mut)">NIT '+esc(e.nit)+' · '+esc(e.zona)+' · '+(e.factura==='Sí'?'Factura':'Cuenta de cobro')+' · pago '+(e.ciclo==='Diario'?'diario':'semanal')+'</span>'+
+      '<div style="font-size:13px;margin-top:6px">Servicios: <b>'+e.servicios+'</b> ('+e.mes+' este mes) · Terminados: <b>'+e.terminados+'</b> · Puntualidad: <b>'+pct(e.puntuales,e.conLlegada)+'</b><br>Garantías: <b>'+e.garantia+'</b> · Rechazados: <b>'+e.rechazados+'</b> · Por pagar: <b>'+pesosG(e.porPagar)+'</b> · Pagado: <b>'+pesosG(e.pagado)+'</b></div>'+
+      '<div style="font-size:12px;margin-top:6px">'+lk(e.docs.rut,'RUT')+' · '+lk(e.docs.camara,'Cámara')+' · '+lk(e.docs.cedula,'Cédula')+' · '+lk(e.docs.acuerdo,'Acuerdo')+(e.carpeta?' · <a href="'+esc(e.carpeta)+'" target="_blank" rel="noopener" style="color:var(--blue)">Carpeta</a>':'')+(e.banco?'':' · <span style="color:#c0392b">Sin datos de pago</span>')+'</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">'+(e.aprobar?'<a class="chip" href="'+esc(e.aprobar)+'" target="_blank" rel="noopener">Revisar y aprobar</a>':'')+'<button class="chip" onclick="empresaForm(-1, _EMP['+k+'])">Completar datos / documentos</button>'+(e.contactoTel||e.celular?'<a class="chip" href="https://wa.me/57'+esc(String(e.contactoTel||e.celular).replace(/\D/g,'').slice(-10))+'" target="_blank" rel="noopener">WhatsApp</a>':'')+'</div></div>').join('') : '<div class="vacio">Aún no hay empresas aliadas</div>')+
+    '<div class="acc"><button class="a3" onclick="empresaForm(-1)">➕ Crear empresa aliada</button><button class="a4" onclick="cerrar()">Cerrar</button></div>';
 }
 function evidencias(i){
   const x = VIS[i]; if (!x) return;
   $('hoja').innerHTML = '<h2>📷 Evidencias y cierre</h2><div class="sub">'+esc((x.exp?'Exp. '+x.exp+' · ':'')+(x.cliente||'')+' · '+(x.ciudad||x.tablero))+'</div><form class="frm" id="fEv">'+
     '<label>Fotos de ANTES</label><input type="file" id="evA" accept="image/*" multiple><div class="prev" id="pvA"></div>'+
     '<label>Fotos de DESPUÉS (incluye el acta en papel si la hay)</label><input type="file" id="evD" accept="image/*" multiple><div class="prev" id="pvD"></div>'+
+    '<div class="dos"><div><label>Hora de llegada</label><input type="time" id="evL"></div><div><label>Hora de salida</label><input type="time" id="evS"></div></div><p style="font-size:12px;color:var(--mut);margin-top:4px">Opcional: si el técnico no la registró en la app (por ejemplo, empresas aliadas). Sirve para medir la puntualidad.</p>'+
     '<label>Resultado</label><select id="evR"><option value="terminado">✅ Terminado</option><option value="abierto">🟡 Expediente abierto (requiere nueva visita)</option><option value="fallido">🔴 Fallido</option></select>'+
     '<label>Observaciones</label><textarea id="evN" placeholder="Ej. Se limpió sofá de 3 puestos, quedó mancha antigua en el brazo derecho"></textarea>'+
     '<div class="okbox" style="font-size:13px">Se suben las fotos a Trello, se genera un informe en PDF con el membrete de M Clean (sin firma del usuario), se marca la lista de verificación y la tarjeta pasa al estado elegido. Si es de IGS, el borrador del reporte se prepara en Gmail.</div>'+
@@ -623,7 +672,7 @@ function evidencias(i){
   $('fEv').onsubmit = async ev => { ev.preventDefault(); const r = $('evR').value;
     if (r === 'terminado' && !D.length) { $('evE').textContent = 'Sube al menos una foto de después.'; return; }
     const b = $('evOk'); b.disabled = true; b.textContent = 'Subiendo '+(A.length+D.length)+' foto(s)…';
-    try { const j = await gapi({accion:'gerEvidencias', id:x.id, antes:A, despues:D, resultado:r, nota:$('evN').value});
+    try { const j = await gapi({accion:'gerEvidencias', id:x.id, antes:A, despues:D, resultado:r, nota:$('evN').value, llegada:$('evL').value, salida:$('evS').value});
       $('hoja').innerHTML = '<h2>✅ Servicio cerrado</h2><div class="okbox">Se adjuntaron '+(j.adjuntos||0)+' archivo(s) a la tarjeta'+(j.lista?' y quedó en “'+esc(j.lista)+'”':'')+'.</div><div class="acc">'+(x.url?'<a class="a1" href="'+esc(x.url)+'" target="_blank" rel="noopener">Abrir en Trello</a>':'')+'<button class="a4" style="grid-column:1/3" onclick="cerrar();S.rango=null;cargar()">Listo</button></div>';
     } catch (e) { $('evE').textContent = e.message; b.disabled = false; b.textContent = 'Guardar y cerrar'; } };
 }
@@ -659,7 +708,7 @@ async function pagos(){
       '<div class="acc"><button class="a3" id="pgGen" style="grid-column:1/3">🧾 Generar ya las cuentas de cobro (corte '+esc(p.corte)+')</button></div>' : '<div class="vacio">Sin saldo aprobado</div>')+
     '<div class="sub" style="font-weight:700;color:var(--navy);margin-top:14px">3. Cuentas de cobro</div>'+
     (p.cuentas.length ? p.cuentas.map(c=>'<div class="fila" style="align-items:center"><span style="flex:1"><b>'+esc(c.tecnico)+'</b><br><span style="color:var(--mut)">'+esc(c.id)+' · '+c.servicios+' serv. · '+esc(c.desde)+' a '+esc(c.hasta)+'</span></span><span style="text-align:right"><b>'+pesosG(c.total)+'</b><br><span style="font-size:12px;color:'+(c.estado==='Firmada'?'#1f9d63':c.estado==='Pagada'?'var(--mut)':'#e2a400')+'">'+esc(c.estado)+'</span>'+
-      (c.pdf?'<br><a href="'+esc(c.pdf)+'" target="_blank" rel="noopener" style="font-size:12px;color:var(--blue)">Ver PDF</a>':'')+(c.soporte?'<br><a href="'+esc(c.soporte)+'" target="_blank" rel="noopener" style="font-size:12px;color:var(--blue)">Ver soporte de pago</a>':'')+(c.estado==='Firmada'?'<br><button class="chip" style="margin-top:4px" onclick="cuentaPagada(\''+c.id+'\')">Marcar pagada</button>':'')+'</span></div>').join('') : '<div class="vacio">Aún no hay cuentas de cobro</div>')+
+      (c.pdf?'<br><a href="'+esc(c.pdf)+'" target="_blank" rel="noopener" style="font-size:12px;color:var(--blue)">Ver PDF</a>':'')+(c.soporte?'<br><a href="'+esc(c.soporte)+'" target="_blank" rel="noopener" style="font-size:12px;color:var(--blue)">Ver soporte de pago</a>':'')+(c.estado==='Firmada'?'<br><button class="chip" style="margin-top:4px" onclick="cuentaPagada(\''+c.id+'\')">Marcar pagada</button>':'')+((c.estado==='Por firmar'||c.estado==='Por facturar')?'<br><button class="chip" style="margin-top:4px" onclick="cuentaLink(\''+c.id+'\')">📲 '+(c.estado==='Por facturar'?'Pedir factura':'Enviar link de firma')+'</button><br>'+(c.estado==='Por facturar'?'<button class="chip" style="margin-top:4px" onclick="cuentaFactura(\''+c.id+'\')">Subir factura</button><br>':'')+'<button class="chip" style="margin-top:4px" onclick="cuentaSinFirma(\''+c.id+'\')">Pasar sin firma</button>':'')+'</span></div>').join('') : '<div class="vacio">Aún no hay cuentas de cobro</div>')+
     '<div class="err" id="pgErr" style="color:#c0392b;font-size:13px;margin-top:8px"></div><div class="acc"><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>';
   const sel = () => [...document.querySelectorAll('.pgSel:checked')].map(i=>i.value);
   if ($('pgTodos')) $('pgTodos').onchange = e => document.querySelectorAll('.pgSel').forEach(i=>i.checked=e.target.checked);
@@ -680,8 +729,50 @@ function cuentaPagada(id){
     const r = new FileReader(); r.onload = () => enviar(r.result); r.readAsDataURL(a); };
   if (confirm('Sube el soporte de la transferencia (foto o PDF). ¿Elegir archivo ahora? (Cancelar = marcar sin soporte)')) f.click(); else enviar('');
 }
+async function cuentaLink(id){ const w = window.open('', '_blank'); try { const j = await gapi({accion:'gerCuentaLink', id}); if (j.wa && w) w.location.href = j.wa; else { if (w) w.close(); try { await navigator.clipboard.writeText(j.link); toastG('Sin WhatsApp registrado: enlace copiado'); } catch (e) { prompt('Copia el enlace:', j.link); } } } catch (e) { if (w) w.close(); $('pgErr').textContent = e.message; } }
+function cuentaFactura(id){ const f = document.createElement('input'); f.type = 'file'; f.accept = 'application/pdf,image/*';
+  f.onchange = async () => { try { const a = await leerArch(f.files[0]); if (!a) return; await gapi({accion:'gerFacturaSubir', id, archivo:a}); toastG('Factura cargada'); pagos(); } catch (e) { $('pgErr').textContent = e.message; } }; f.click(); }
+function cuentaSinFirma(id){
+  if (!confirm('Pasar la cuenta sin firma: sube 1 a 4 pantallazos del chat donde la empresa acepta los servicios y valores. ¿Elegir pantallazos?')) return;
+  const f = document.createElement('input'); f.type = 'file'; f.accept = 'image/*'; f.multiple = true;
+  f.onchange = async () => { try { const caps = []; for (const a of [...f.files].slice(0, 4)) caps.push(await comprimir(a)); if (!caps.length) return; const nota = prompt('Nota (opcional), ej. "Aceptó por WhatsApp el 17-nov":') || '';
+    toastG('Generando la cuenta…'); await gapi({accion:'gerCuentaSinFirma', id, capturas:caps, nota}); toastG('Cuenta registrada sin firma, con soporte'); pagos(); } catch (e) { $('pgErr').textContent = e.message; } };
+  f.click(); }
+async function tecnicos(filtro){
+  filtro = filtro || 'Todos';
+  $('hoja').innerHTML = '<h2>👷 Técnicos y empresas aliadas</h2><div class="cargando">Cargando…</div>'; $('modal').classList.add('on');
+  let r; try { r = await gapi({accion:'gerTecnicos'}); } catch (e) { $('hoja').innerHTML = '<h2>👷 Técnicos y empresas aliadas</h2><div class="okbox" style="background:#fdecea">'+esc(e.message)+'</div><div class="acc"><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>'; return; }
+  window._TEC = r.lista; const col = { Aprobado:'#1f9d63', Pendiente:'#e2a400', Suspendido:'#c0392b' };
+  const L = r.lista.filter(t => filtro === 'Todos' || t.tipo === filtro).sort((a,b) => a.zona.localeCompare(b.zona) || a.nombre.localeCompare(b.nombre));
+  const tab = n => '<button class="chip'+(filtro===n?' on':'')+'" style="'+(filtro===n?'background:var(--navy);color:#fff':'')+'" onclick="tecnicos(\''+n+'\')">'+n+'</button>';
+  $('hoja').innerHTML = '<h2>👷 Técnicos y empresas aliadas</h2><div class="sub">'+r.lista.filter(t=>t.tipo==='Técnico').length+' técnico(s) · '+r.lista.filter(t=>t.tipo==='Empresa').length+' empresa(s)</div>'+
+    '<div style="display:flex;gap:8px;margin:8px 0">'+tab('Todos')+tab('Técnico')+tab('Empresa')+'</div>'+
+    L.map(t => { const k = r.lista.indexOf(t); return '<div class="okbox" style="background:#fff;border:1px solid var(--line);margin-top:8px"><b>'+(t.tipo==='Empresa'?'🏢 ':'👷 ')+esc(t.nombre)+'</b> <span style="font-size:12px;color:var(--mut)">'+esc(t.id)+'</span> <span style="font-size:12px;font-weight:700;color:'+(col[t.estado]||'var(--mut)')+'">'+esc(t.estado)+'</span>'+
+      '<br><span style="font-size:12px;color:var(--mut)">'+esc(t.zona)+' · '+esc(t.celular||'')+(t.vence?' · vigente hasta '+esc(t.vence):'')+' · '+t.servicios+' servicio(s), '+t.terminados+' terminado(s)'+(t.mensajes?' · '+t.mensajes+' mensaje(s)'+(t.sinLeer?' ('+t.sinLeer+' sin leer)':''):'')+'</span>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="chip solo-admin" onclick="mensajeA('+k+')">💬 Mensaje</button><a class="chip solo-admin" href="'+esc(t.ficha)+'" target="_blank" rel="noopener">Ver ficha</a>'+
+      (t.tipo==='Empresa'?'<button class="chip solo-admin" onclick="empresaDe(\''+esc(t.id)+'\')">Completar datos</button>':'')+
+      (t.estado==='Suspendido'?'<button class="chip solo-admin" onclick="tecEstado('+k+',\'Aprobado\')">Reactivar</button>':(t.estado==='Aprobado'?'<button class="chip solo-admin" onclick="tecEstado('+k+',\'Suspendido\')">Suspender</button>':''))+
+      '<button class="chip solo-admin" style="color:#c0392b" onclick="tecEstado('+k+',\'Retirado\')">Retirar</button></div></div>'; }).join('')+
+    (r.sinRegistro.length ? '<div class="sub" style="margin-top:16px;font-weight:700;color:var(--navy)">Nombres escritos en Trello sin perfil en la plataforma</div><div style="font-size:12px;color:var(--mut)">Tienen servicios próximos o en proceso. Si ya no trabajan con M Clean, reasigna esos servicios desde la agenda.</div>'+
+      r.sinRegistro.map(x => '<div class="okbox" style="background:#fff6e0;margin-top:8px"><b>'+esc(x.nombre)+'</b> · '+x.servicios.length+' servicio(s)<br><span style="font-size:12px">'+x.servicios.map(v => (v.url?'<a href="'+esc(v.url)+'" target="_blank" rel="noopener" style="color:var(--blue)">':'')+esc(v.fecha+' · '+v.ciudad+(v.exp?' · Exp. '+v.exp:''))+(v.url?'</a>':'')).join('<br>')+'</span></div>').join('') : '')+
+    '<div class="acc"><button class="a3 solo-admin" onclick="empresaForm(-1)">➕ Crear empresa aliada</button><button class="a4" onclick="cerrar()">Cerrar</button></div>';
+}
+async function empresaDe(id){ try { const L = (await gapi({accion:'gerEmpresas'})).empresas, e = L.find(x => x.id === id); if (e) empresaForm(-1, e); } catch (x) { toastG(x.message); } }
+function mensajeA(k){ const t = _TEC[k]; if (!t) return;
+  $('hoja').innerHTML = '<h2>💬 Mensaje a '+esc(t.nombre)+'</h2><div class="sub">'+(t.tipo==='Empresa'?'La empresa no usa app: le llega por correo y te abro WhatsApp con el texto.':'Le aparece en su app y le llega por correo. También puedes enviarlo por WhatsApp.')+'</div><form class="frm" id="fMs"><textarea id="msT" style="min-height:120px" placeholder="Escribe el mensaje…"></textarea><div class="err" id="msE"></div><div class="acc"><button type="button" class="a4" onclick="tecnicos()">Volver</button><button type="submit" class="a1" id="msOk">Enviar</button></div></form>';
+  $('fMs').onsubmit = async ev => { ev.preventDefault(); const b = $('msOk'); b.disabled = true; b.textContent = 'Enviando…';
+    try { const j = await gapi({accion:'gerMensaje', id:t.id, texto:$('msT').value});
+      $('hoja').innerHTML = '<h2>✅ Mensaje enviado</h2><div class="okbox">'+(t.tipo==='Empresa'?'':'Quedó en su app. ')+(j.correo?'Se envió por correo.':'No tiene correo registrado.')+'</div><div class="acc">'+(j.wa?'<a class="a2" href="'+esc(j.wa)+'" target="_blank" rel="noopener">📲 Enviar también por WhatsApp</a>':'')+'<button class="a4" onclick="tecnicos()">Volver</button></div>';
+    } catch (e) { $('msE').textContent = e.message; b.disabled = false; b.textContent = 'Enviar'; } };
+}
+async function tecEstado(k, est){ const t = _TEC[k]; if (!t) return;
+  const txt = { Retirado:'¿Retirar a '+t.nombre+' de la plataforma? Ya no aparecerá en las listas ni recibirá servicios. Su historial y pagos se conservan.', Suspendido:'¿Suspender a '+t.nombre+'? No recibirá servicios hasta que lo reactives.', Aprobado:'¿Reactivar a '+t.nombre+'?' }[est];
+  if (!confirm(txt)) return; const motivo = est === 'Aprobado' ? '' : (prompt('Motivo (opcional):') || '');
+  try { const j = await gapi({accion:'gerTecnicoEstado', id:t.id, estado:est, motivo}); OPC = null;
+    toastG(t.nombre+': '+est.toLowerCase()); if (j.pendientes && j.pendientes.length) alert('Ojo: tiene '+j.pendientes.length+' servicio(s) asignado(s) por reasignar:\n'+j.pendientes.join('\n')); tecnicos(); } catch (e) { toastG(e.message); } }
 function toastG(t){ const d = document.createElement('div'); d.textContent = t; d.style.cssText = 'position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#0D2C54;color:#fff;padding:12px 18px;border-radius:14px;z-index:99;font-size:14px'; document.body.appendChild(d); setTimeout(()=>d.remove(), 3500); }
 $('pagBtn').onclick = pagos;
+$('tecBtn').onclick = () => tecnicos();
 if (location.hash === '#pagos') setTimeout(() => { if (S.clave && S.u && !S.u.lector) pagos(); }, 1500);
 
 async function guardarTrk(i){ const x = VIS[i]; if (!x) return; const url = ($('trkUrl').value||'').trim();
