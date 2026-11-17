@@ -589,7 +589,7 @@ async function tecnicoForm(i){
   const zona = x.tablero, enZona = o.tecnicos.filter(t=>t.zona===zona), otros = o.tecnicos.filter(t=>t.zona!==zona);
   const opt = t => '<option value="'+esc(t.id)+'" data-e="'+(t.tipo==='Empresa'?1:'')+'">'+(t.tipo==='Empresa'?'🏢 ':'')+esc(t.nombre)+' · '+esc(t.zona)+'</option>';
   $('hoja').innerHTML = '<h2>👷 Técnico del servicio</h2><div class="sub">'+esc((x.exp?'Exp. '+x.exp+' · ':'')+(x.ciudad||x.tablero)+' · '+x.fecha+' '+hora12(x.hora))+'</div><form class="frm" id="fTec">'+
-    '<label>Técnico o empresa aliada</label><select id="tId"><option value="">— Elige —</option><option value="__emp">➕ Crear empresa aliada</option>'+(enZona.length?'<optgroup label="Zona '+esc(zona)+'">'+enZona.map(opt).join('')+'</optgroup>':'')+(otros.length?'<optgroup label="Otras zonas">'+otros.map(opt).join('')+'</optgroup>':'')+'</select>'+
+    '<label>Técnico o empresa aliada</label><select id="tId"><option value="">— Elige —</option><option value="__emp">➕ Crear empresa aliada</option><option value="__tec">➕ Registrar técnico nuevo</option>'+(enZona.length?'<optgroup label="Zona '+esc(zona)+'">'+enZona.map(opt).join('')+'</optgroup>':'')+(otros.length?'<optgroup label="Otras zonas">'+otros.map(opt).join('')+'</optgroup>':'')+'</select>'+
     '<div id="tEmp" style="display:none"><label>Valor acordado con la empresa (COP)</label><input id="tVal" inputmode="numeric" placeholder="Ej. 120000"><div class="dos"><div><label>Técnico que asiste</label><input id="tANom" placeholder="Nombre completo"></div><div><label>Cédula</label><input id="tADoc" inputmode="numeric"></div></div><p style="font-size:12px;color:var(--mut);margin-top:4px">La empresa no usa app: queda asignada de una vez y te doy el botón para enviarle el servicio por WhatsApp.</p></div>'+
     '<div class="okbox" id="tAyuda" style="font-size:13px"><b>Ofrecer:</b> le llega la oferta solo a él y la acepta o rechaza en su app (recomendado para aliados independientes).<br><b>Asignar directo:</b> queda como técnico del servicio y se le avisa por correo.</div>'+
     '<label>…o técnico que aún no está registrado (escribe el nombre)</label><input id="tNom" placeholder="Ej. Betania Pacheco"><p style="font-size:12px;color:var(--mut);margin-top:4px">Queda asignado en Trello y marcado como “falta por registrar en la plataforma”. Usa “Asignar directo”.</p>'+
@@ -598,7 +598,7 @@ async function tecnicoForm(i){
     '<div class="err" id="tErr"></div><div class="acc"><button type="button" class="a3" id="tOf">📣 Ofrecer</button><button type="button" class="a1" id="tDi">✅ Asignar directo</button><button type="button" class="a4" style="grid-column:1/3" onclick="cerrar()">Cancelar</button></div></form>';
   const fin = (j, txt) => { const a = j.aviso || {}; $('hoja').innerHTML = '<h2>✅ Listo</h2><div class="okbox">'+txt+(a.borrador?'<br>Borrador de confirmación a IGS listo en Gmail.':'')+'</div><div class="acc">'+(j.empresaWa?'<a class="a2" href="'+esc(j.empresaWa)+'" target="_blank" rel="noopener">📲 Avisar a la empresa</a>':'')+(a.wa?'<a class="a2" href="'+esc(a.wa)+'" target="_blank" rel="noopener">Avisar al usuario</a>':'')+'<button class="a4" style="grid-column:1/3" onclick="cerrar();S.rango=null;cargar()">Listo</button></div>'; };
   const esE = () => { const o = $('tId').selectedOptions[0]; return !!(o && o.dataset.e); };
-  $('tId').onchange = () => { if ($('tId').value === '__emp') { empresaForm(i); return; } const e = esE(); $('tEmp').style.display = e ? '' : 'none'; $('tOf').style.display = e ? 'none' : ''; $('tAyuda').style.display = e ? 'none' : ''; };
+  $('tId').onchange = () => { if ($('tId').value === '__emp') { empresaForm(i); return; } if ($('tId').value === '__tec') { tecnicoNuevo(i); return; } const e = esE(); $('tEmp').style.display = e ? '' : 'none'; $('tOf').style.display = e ? 'none' : ''; $('tAyuda').style.display = e ? 'none' : ''; };
   $('tOf').onclick = async () => { const id = $('tId').value; if (!id) { $('tErr').textContent = 'Elige un técnico aliado para ofrecerle el servicio.'; return; }
     const val = Number(String($('tVal').value).replace(/\D/g,'')); if (esE() && !val) { $('tErr').textContent = 'Escribe el valor acordado con la empresa aliada.'; return; }
     const b = $('tOf'); b.disabled = true; b.textContent = 'Enviando…';
@@ -755,7 +755,16 @@ async function tecnicos(filtro){
       '<button class="chip solo-admin" style="color:#c0392b" onclick="tecEstado('+k+',\'Retirado\')">Retirar</button></div></div>'; }).join('')+
     (r.sinRegistro.length ? '<div class="sub" style="margin-top:16px;font-weight:700;color:var(--navy)">Nombres escritos en Trello sin perfil en la plataforma</div><div style="font-size:12px;color:var(--mut)">Tienen servicios próximos o en proceso. Si ya no trabajan con M Clean, reasigna esos servicios desde la agenda.</div>'+
       r.sinRegistro.map(x => '<div class="okbox" style="background:#fff6e0;margin-top:8px"><b>'+esc(x.nombre)+'</b> · '+x.servicios.length+' servicio(s)<br><span style="font-size:12px">'+x.servicios.map(v => (v.url?'<a href="'+esc(v.url)+'" target="_blank" rel="noopener" style="color:var(--blue)">':'')+esc(v.fecha+' · '+v.ciudad+(v.exp?' · Exp. '+v.exp:''))+(v.url?'</a>':'')).join('<br>')+'</span></div>').join('') : '')+
-    '<div class="acc"><button class="a3 solo-admin" onclick="empresaForm(-1)">➕ Crear empresa aliada</button><button class="a4" onclick="cerrar()">Cerrar</button></div>';
+    '<div class="acc"><button class="a3 solo-admin" onclick="empresaForm(-1)">➕ Empresa aliada</button><button class="a3 solo-admin" onclick="tecnicoNuevo(-1)">➕ Técnico</button><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>';
+}
+function tecnicoNuevo(i){
+  $('hoja').innerHTML = '<h2>👷 Registrar técnico nuevo</h2><div class="sub">El técnico llena sus datos, toma su foto para el carnet y firma su contrato desde el celular (eso debe hacerlo él). Tú solo le envías el enlace y luego lo apruebas.</div><form class="frm" id="fTN"><label>Nombre</label><input id="tnNom" placeholder="Ej. Carlos Pérez"><label>Celular / WhatsApp</label><input id="tnCel" inputmode="tel" placeholder="3001234567"><div class="err" id="tnE"></div><div class="acc"><button type="button" class="a4" id="tnCan">Volver</button><button type="submit" class="a2">📲 Enviar enlace por WhatsApp</button></div></form>'+
+    '<p style="font-size:12px;margin-top:10px;color:var(--mut)">Enlace: https://mcleandesinfeccion.github.io/registro.html · Cuando termine te llega el correo para aprobarlo y queda en 👷 Técnicos.</p>';
+  $('modal').classList.add('on');
+  $('tnCan').onclick = () => VIS[i] ? tecnicoForm(i) : tecnicos();
+  $('fTN').onsubmit = ev => { ev.preventDefault(); const n = $('tnNom').value.trim(), c = $('tnCel').value.replace(/\D/g,'').replace(/^57(?=3\d{9}$)/,'');
+    if (!/^3\d{9}$/.test(c)) { $('tnE').textContent = 'Escribe un celular de 10 dígitos.'; return; }
+    window.open('https://wa.me/57'+c+'?text='+encodeURIComponent('Hola'+(n?' '+n:'')+', te saludamos de M Clean Desinfección y Limpieza. Para trabajar con nosotros como técnico aliado regístrate aquí (toma unos 10 minutos: datos, foto para tu carnet, cédula y firma del contrato): https://mcleandesinfeccion.github.io/registro.html'), '_blank'); };
 }
 async function empresaDe(id){ try { const L = (await gapi({accion:'gerEmpresas'})).empresas, e = L.find(x => x.id === id); if (e) empresaForm(-1, e); } catch (x) { toastG(x.message); } }
 function mensajeA(k){ const t = _TEC[k]; if (!t) return;
@@ -773,6 +782,9 @@ async function tecEstado(k, est){ const t = _TEC[k]; if (!t) return;
 function toastG(t){ const d = document.createElement('div'); d.textContent = t; d.style.cssText = 'position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#0D2C54;color:#fff;padding:12px 18px;border-radius:14px;z-index:99;font-size:14px'; document.body.appendChild(d); setTimeout(()=>d.remove(), 3500); }
 $('pagBtn').onclick = pagos;
 $('tecBtn').onclick = () => tecnicos();
+const APP_VER = 'g26';
+function revisarVersion(){ fetch('version-gerencia.txt?'+Date.now(), {cache:'no-store'}).then(r => r.ok ? r.text() : '').then(v => { v = v.trim(); if (v && v !== APP_VER && !$('nuevaVer')) { const d = document.createElement('div'); d.id = 'nuevaVer'; d.innerHTML = '🔄 Hay una versión nueva de Gerencia. <b>Toca aquí para actualizar</b>'; d.style.cssText = 'position:fixed;left:12px;right:12px;bottom:20px;background:#f6d046;color:#0D2C54;padding:14px 16px;border-radius:14px;z-index:999;font-size:14px;box-shadow:0 4px 18px rgba(0,0,0,.25);cursor:pointer'; d.onclick = () => location.replace(location.pathname+'?v='+v); document.body.appendChild(d); } }).catch(()=>{}); }
+document.addEventListener('visibilitychange', () => { if (!document.hidden) revisarVersion(); }); setInterval(revisarVersion, 5*60e3); setTimeout(revisarVersion, 3000);
 if (location.hash === '#pagos') setTimeout(() => { if (S.clave && S.u && !S.u.lector) pagos(); }, 1500);
 
 async function guardarTrk(i){ const x = VIS[i]; if (!x) return; const url = ($('trkUrl').value||'').trim();
