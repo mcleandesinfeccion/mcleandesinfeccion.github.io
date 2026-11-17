@@ -162,8 +162,9 @@ function pintar() {
     });
   } else {
     h += '<div class="card" id="misPagos"><h3>💵 Mis pagos</h3><p style="font-size:13px;color:#6b7590;margin-top:6px">Cargando…</p></div>';
-    h += '<div class="card" style="text-align:center"><h3>Mi carnet</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 14px">Tu carnet con foto, QR y sello de M Clean.</p><a class="btn b1" href="carnet.html#t=' + TOKEN + '">Abrir mi carnet</a></div>' +
-      '<div class="card" style="text-align:center"><h3>Mi contrato</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 14px">Tu contrato de prestación de servicios firmado, en PDF con el membrete de M Clean.</p><button class="btn b3" onclick="verContrato(this)">Descargar mi contrato</button></div>' +
+    var EMP = p.tipo === 'Empresa';
+    h += (EMP ? '' : '<div class="card" style="text-align:center"><h3>Mi carnet</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 14px">Tu carnet con foto, QR y sello de M Clean.</p><a class="btn b1" href="carnet.html#t=' + TOKEN + '">Abrir mi carnet</a></div>') +
+      '<div class="card" style="text-align:center"><h3>' + (EMP ? 'Acuerdo de la empresa' : 'Mi contrato') + '</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 14px">' + (EMP ? 'El acuerdo de prestación de servicios firmado' : 'Tu contrato de prestación de servicios firmado') + ', en PDF con el membrete de M Clean.</p><button class="btn b3" onclick="verContrato(this)">Descargar ' + (EMP ? 'el acuerdo' : 'mi contrato') + '</button></div>' +
       (p.manual ? '<div class="card"><h3>📘 Capacitación</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 12px">' + (p.manual.confirmado ? 'Confirmada el ' + esc(p.manual.confirmado) + ' ✔' : 'Pendiente de confirmar.') + '</p><div class="acc"><a class="btn b3" target="_blank" rel="noopener" href="' + p.manual.pdf + '">📄 Manual</a><a class="btn b3" target="_blank" rel="noopener" href="' + p.manual.video + '">🎬 Video</a></div>' + (p.manual.confirmado ? '' : '<button class="btn b1" style="margin-top:10px" onclick="abrirManual()">Leí y entendí</button>') + '</div>' : '') +
       '<div class="card"><h3>¿Cómo funciona?</h3><p style="font-size:13px;color:#6b7590;margin-top:6px;line-height:1.6">1. Te llegan ofertas de tu zona; aceptas solo las que quieras.<br>2. El día del servicio toca <b>Salgo</b> (desde 1 hora antes), activa el seguimiento si lo trae, toca <b>Llegué</b> y completa el acta.<br>3. Toma las fotos desde la app: llevan marca de agua automática.<br>4. Si te atiende un menor o un adulto mayor con discapacidad, no ingreses: toca <b>No puedo ingresar</b>.<br>5. Tu ubicación solo se registra durante el servicio aceptado.<br>6. Se te paga por cada servicio aprobado.</p></div>';
   }
@@ -190,13 +191,16 @@ function cerrar() { $('modal').classList.remove('on'); }
 function abrirAceptar(id) {
   var o = D.ofertas.filter(function (x) { return x.id === id; })[0]; if (!o) return;
   $('hoja').innerHTML = '<h2>Aceptar servicio</h2><p style="font-size:14px"><b>' + esc(o.tipo) + '</b><br>📍 ' + esc(o.ciudad) + ' · 📅 ' + esc(fechaTxt(o.fecha)) + (o.hora ? ' · 🕐 ' + hora12(o.hora) : '') + '<br>💵 <b style="color:#1f9d63">' + pesos(o.pago) + '</b></p>' +
-    '<div class="decl">' + esc(D.declaracion) + '</div><label class="chk"><input type="checkbox" id="dChk"><span>Acepto esta declaración y el servicio en la fecha y hora indicadas.</span></label>' +
+    (D.perfil.tipo === 'Empresa' ? '<div class="decl" style="background:#fff6e0">Ante el cliente el servicio se presta <b>a nombre de M Clean</b>. Escriban el técnico que asistirá:</div><input id="aNom" placeholder="Nombre completo del técnico" autocomplete="off" style="width:100%;padding:12px;border:1.5px solid #e3e8f2;border-radius:12px;font:500 15px Poppins;margin-bottom:8px"><input id="aDoc" inputmode="numeric" placeholder="Cédula del técnico" style="width:100%;padding:12px;border:1.5px solid #e3e8f2;border-radius:12px;font:500 15px Poppins;margin-bottom:10px">' : '<div class="decl">' + esc(D.declaracion) + '</div>') +
+    '<label class="chk"><input type="checkbox" id="dChk"><span>' + (D.perfil.tipo === 'Empresa' ? 'Aceptamos el servicio por el valor indicado, en la fecha y hora indicadas.' : 'Acepto esta declaración y el servicio en la fecha y hora indicadas.') + '</span></label>' +
     '<div class="acc"><button class="btn b3" onclick="cerrar()">Cancelar</button><button class="btn b1" id="confirmar">Aceptar servicio</button></div>';
   $('modal').classList.add('on');
   $('confirmar').onclick = function () {
-    if (!$('dChk').checked) { toast('Marca la declaración para continuar.'); return; }
+    if (!$('dChk').checked) { toast('Marca la casilla para continuar.'); return; }
+    var emp = D.perfil.tipo === 'Empresa', nom = emp ? $('aNom').value.trim() : '', doc = emp ? $('aDoc').value.replace(/\D/g, '') : '';
+    if (emp && (nom.length < 5 || doc.length < 5)) { toast('Escriban el nombre completo y la cédula del técnico.'); return; }
     carga(true, 'Confirmando…');
-    geo().then(function (g) { return api({ accion: 'aceptarOferta', oferta: id, declaracion: true, geo: g }); })
+    geo().then(function (g) { return api({ accion: 'aceptarOferta', oferta: id, declaracion: true, geo: g, asisteNombre: nom, asisteDoc: doc }); })
       .then(function (j) { carga(false); cerrar(); if (!j.ok) { toast(j.error); cargar(); return; } toast('¡Servicio aceptado! Lo verás en Mi agenda.'); TAB = 'agenda'; Array.prototype.forEach.call(document.querySelectorAll('.tabs button'), function (b) { b.classList.toggle('on', b.getAttribute('data-t') === 'agenda'); }); cargar(); });
   };
 }
@@ -360,11 +364,12 @@ function cargarPagos() {
     if (!j.ok) { $('misPagos').innerHTML = '<h3>💵 Mis pagos</h3><p style="font-size:13px;color:#6b7590">' + esc(j.error || 'No disponible') + '</p>'; return; }
     PAGOS = j;
     var caja = function (v, t, c) { return '<div style="flex:1;background:' + c + ';border-radius:14px;padding:10px;text-align:center"><b style="font-size:16px;display:block">' + pesos(v) + '</b><span style="font-size:11px">' + t + '</span></div>'; };
-    var por = j.cuentas.filter(function (c) { return c.estado === 'Por firmar'; });
-    var h = '<h3>💵 Mis pagos</h3><p style="font-size:12px;color:#6b7590;margin:4px 0 10px">Tarifa por servicio: ' + pesos(j.tarifa) + '</p>' +
-      (j.garantia ? '<p style="font-size:12px;color:#e2a400;margin:0 0 8px">🛡 ' + pesos(j.garantia) + ' en garantía (se liberan cuando M Clean confirme el servicio).</p>' : '') + '<p style="font-size:12px;color:#6b7590;margin:0 0 8px">Se paga cada viernes lo aprobado de lunes a jueves. El jueves te llega la cuenta de cobro para firmar.</p>' +
+    var por = j.cuentas.filter(function (c) { return c.estado === 'Por firmar' || c.estado === 'Por facturar'; }), EMP = j.tipo === 'Empresa';
+    var h = '<h3>💵 Mis pagos</h3><p style="font-size:12px;color:#6b7590;margin:4px 0 10px">' + (EMP ? 'Valor acordado en cada servicio · pago ' + (j.ciclo === 'Diario' ? 'el mismo día de la aprobación' : 'semanal (viernes)') : 'Tarifa por servicio: ' + pesos(j.tarifa)) + '</p>' +
+      (j.garantia ? '<p style="font-size:12px;color:#e2a400;margin:0 0 8px">🛡 ' + pesos(j.garantia) + ' en garantía (se liberan cuando M Clean confirme el servicio).</p>' : '') + (EMP ? '' : '<p style="font-size:12px;color:#6b7590;margin:0 0 8px">Se paga cada viernes lo aprobado de lunes a jueves. El jueves te llega la cuenta de cobro para firmar.</p>') +
       '<div style="display:flex;gap:8px">' + caja(j.porAprobar, 'En revisión', '#fff6e0') + caja(j.saldo, 'Aprobado por cobrar', '#eaf8f0') + caja(j.enCuenta, 'En cuenta de cobro', '#eef3fb') + '</div>';
-    por.forEach(function (c) { h += '<div style="margin-top:12px;border:2px solid #f6d046;border-radius:14px;padding:12px"><b>🧾 Cuenta de cobro ' + esc(c.id) + '</b><br><span style="font-size:13px">' + c.servicios + ' servicio(s) · ' + esc(c.desde) + ' a ' + esc(c.hasta) + ' · <b>' + pesos(c.total) + '</b></span><button class="btn b1" style="margin-top:10px" onclick="verCuenta(\'' + c.id + '\')">Revisar y firmar</button></div>'; });
+    por.forEach(function (c) { var fac = c.estado === 'Por facturar'; h += '<div style="margin-top:12px;border:2px solid #f6d046;border-radius:14px;padding:12px"><b>🧾 ' + (fac ? 'Liquidación para facturar ' : 'Cuenta de cobro ') + esc(c.id) + '</b><br><span style="font-size:13px">' + c.servicios + ' servicio(s) · ' + esc(c.desde) + ' a ' + esc(c.hasta) + ' · <b>' + pesos(c.total) + '</b></span>' +
+      (fac ? '<p style="font-size:12px;color:#6b7590;margin:8px 0 0">Expidan la factura electrónica a nombre de M Clean Desinfección y Limpieza S.A.S., NIT 901.380.963-5, por ese valor.</p><button class="btn b1" style="margin-top:10px" onclick="subirFactura(\'' + c.id + '\')">Subir factura (PDF o foto)</button>' : '<button class="btn b1" style="margin-top:10px" onclick="verCuenta(\'' + c.id + '\')">Revisar y firmar</button>') + '</div>'; });
     if (j.servicios.length) h += '<p style="font-size:13px;font-weight:700;margin:12px 0 4px">Servicios</p>' + j.servicios.map(function (s) { return '<div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid #eef1f6;padding:6px 0"><span>' + esc(s.fecha) + ' · ' + esc(s.ciudad) + (s.exp ? ' · Exp. ' + esc(s.exp) : '') + '<br><span style="color:#6b7590">' + esc(s.estado) + '</span></span><b>' + pesos(s.valor) + '</b></div>'; }).join('');
     var hist = j.cuentas.filter(function (c) { return c.estado !== 'Por firmar'; });
     if (hist.length) h += '<p style="font-size:13px;font-weight:700;margin:12px 0 4px">Cuentas de cobro</p>' + hist.map(function (c) { return '<div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid #eef1f6;padding:6px 0"><span>' + esc(c.id) + '<br><span style="color:#6b7590">' + esc(c.estado) + '</span></span><b>' + pesos(c.total) + '</b></div>'; }).join('');
@@ -444,6 +449,16 @@ function abrirManual() {
       .catch(function () { carga(false); toast('Sin conexión. Inténtalo de nuevo.'); }); };
 }
 if (/manual=1/.test(location.hash)) { var _iv = setInterval(function () { if (D) { clearInterval(_iv); if (D.perfil.manual && !D.perfil.manual.confirmado) abrirManual(); } }, 300); setTimeout(function () { clearInterval(_iv); }, 15000); }
+
+function subirFactura(id) {
+  var inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/pdf,image/*';
+  inp.onchange = function () { var f = inp.files[0]; if (!f) return; if (f.size > 8e6) { toast('El archivo pesa más de 8 MB.'); return; }
+    var r = new FileReader(); r.onload = function () { carga(true, 'Subiendo la factura…');
+      api({ accion: 'subirFactura', cuenta: id, archivo: r.result }).then(function (j) { carga(false); if (!j.ok) { toast(j.error); return; } toast('✓ Factura recibida. Les avisaremos cuando hagamos el pago.'); cargarPagos(); })
+        .catch(function () { carga(false); toast('No se pudo subir. Intenta de nuevo.'); }); };
+    r.readAsDataURL(f); };
+  inp.click();
+}
 </script>
 </body>
 </html>
