@@ -231,7 +231,7 @@ function cargarTextos() {
   if (textosDe === clave) return;
   $('txtContrato').textContent = 'Cargando contrato…';
   var b = d; b.accion = 'contratoTecnico';
-  api(b).then(function (j) { $('txtDatos').innerHTML = j.autorizacion; $('txtContrato').innerHTML = j.contrato; textosDe = clave; })
+  api(b).then(function (j) { $('txtDatos').innerHTML = j.autorizacion; $('txtContrato').innerHTML = '<div style="display:flex;gap:12px;align-items:center;border-bottom:4px solid #FFD100;padding-bottom:10px;margin-bottom:12px"><img src="icon-192.png" alt="M Clean" style="width:56px;height:56px;border-radius:12px"><div style="font-size:11px;line-height:1.45;color:#334"><b style="font-size:13px;color:#0D2C54">M CLEAN DESINFECCIÓN Y LIMPIEZA S.A.S.</b><br>NIT 901.380.963-5 · Calle 19 No. 8-34, piso 14, of. 1410, Pereira<br>322 689 5212 · mcleandesinfeccion@gmail.com · www.mclean.com.co</div></div>' + j.contrato; textosDe = clave; })
     .catch(function (e) { $('txtContrato').textContent = 'No se pudo cargar el contrato: ' + e.message; });
 }
 

@@ -72,6 +72,14 @@ textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:10
 .fotob{display:flex;align-items:center;gap:12px;background:#fff;border:2px dashed #c8d2e6;border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer}
 .fotob .n{margin-left:auto;background:var(--navy);color:#fff;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700}
 .fotob.ok{border-style:solid;border-color:var(--ok)}
+.b5{background:#fde8e6;color:var(--err);border:1.5px solid #f3b8b0}
+.chk{display:flex;gap:10px;align-items:flex-start;background:#f3f6fb;border-radius:12px;padding:12px;margin-bottom:8px;font-size:14px;cursor:pointer}
+.chk input{width:22px;height:22px;flex:none;margin-top:1px;accent-color:#16285a}
+.man{background:linear-gradient(135deg,#16285a,#2c66b8);color:#fff;border-radius:18px;padding:16px;margin-bottom:14px}
+.man h3{color:#fff;font-size:16px}.man p{font-size:13px;opacity:.9;margin:6px 0 12px}
+.man .acc a{background:rgba(255,255,255,.14);color:#fff;border:0}
+.mot{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px;font:600 14px Poppins;color:var(--navy);cursor:pointer}
+.mot.on{border-color:var(--err);background:#fde8e6}
 .ev{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
 .ev .o{display:flex;gap:6px}.ev .o button{width:36px;height:36px;border-radius:50%;border:1.5px solid #e07a2e;background:#fff;color:#e07a2e;font:800 13px Poppins;cursor:pointer}
 .ev .o button.on{background:#e07a2e;color:#fff}
@@ -123,6 +131,7 @@ function pintar() {
   var p = D.perfil, h = '';
   if (p.motivo) h += '<div class="aviso' + (p.estado === 'Suspendido' ? ' r' : '') + '">' + esc(p.motivo) + '</div>';
   if (p.rutPendiente) h += '<div class="aviso">📄 Falta tu RUT. Súbelo desde la pestaña <b>Carnet</b>.</div>';
+  if (p.manual && !p.manual.confirmado && TAB !== 'carnet') h += '<div class="man"><h3>📘 Tu capacitación</h3><p>Lee el manual del técnico y mira el video de 90 segundos. Luego confirma con “Leí y entendí”' + (p.manual.enviado ? '. <b>Hasta confirmar no recibes servicios.</b>' : '.') + '</p><div class="acc" style="margin-bottom:10px"><a class="btn" target="_blank" rel="noopener" href="' + p.manual.pdf + '">📄 Manual</a><a class="btn" target="_blank" rel="noopener" href="' + p.manual.video + '">🎬 Video</a></div><button class="btn b1" onclick="abrirManual()">Leí y entendí</button></div>';
   if (TAB === 'ofertas') {
     if (!D.ofertas.length) h += '<div class="vacio"><div class="ic">📭</div>No hay ofertas en tu zona en este momento.<br>Te avisaremos por correo cuando llegue una.</div>';
     D.ofertas.forEach(function (o) {
@@ -144,22 +153,37 @@ function pintar() {
         '<div class="fila"><b>Pago</b><span style="color:#1f9d63;font-weight:700">' + pesos(s.pago) + '</span></div>' +
         '<div class="pasos"><span class="' + (s.salida ? 'ok' : '') + '">🚗 Salida' + (s.salida ? ' ' + s.salida.slice(11, 16) : '') + '</span><span class="' + (s.llegada ? 'ok' : '') + '">📍 Llegada' + (s.llegada ? ' ' + s.llegada.slice(11, 16) : '') + '</span><span class="' + (s.terminado ? 'ok' : '') + '">✅ Fin' + (s.terminado ? ' ' + s.terminado.slice(11, 16) : '') + '</span></div>' +
         '<div class="acc" style="margin-bottom:10px"><a class="btn b3" target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=' + dest + '&travelmode=driving">🗺️ Google Maps</a><a class="btn b3" target="_blank" href="https://waze.com/ul?' + (s.lat ? 'll=' + s.lat + ',' + s.lng : 'q=' + encodeURIComponent(s.direccion + ', ' + s.ciudad)) + '&navigate=yes">🚙 Waze</a></div>' +
-        (!s.salida ? '<button class="btn b2" data-ev="salida" data-id="' + s.id + '"' + (s.puedeSalir ? '' : ' disabled') + '>🚗 Salgo hacia el servicio</button>' + (s.puedeSalir ? '' : '<p style="font-size:12px;color:#6b7590;text-align:center;margin-top:6px">Disponible desde una hora antes del servicio</p>') :
+        (s.seguimiento && s.salida && !s.llegada ? '<a class="btn b3" style="margin-bottom:10px" target="_blank" rel="noopener" href="' + esc(s.seguimiento) + '">📡 Abrir seguimiento del cliente</a>' : '') +
+        (s.noIngreso ? '<div class="aviso r">🚫 Reportaste que no pudiste ingresar (' + esc(s.noIngreso.slice(11, 16)) + '). Espera instrucciones de M Clean.</div>' :
+        !s.salida ? '<button class="btn b2" data-salir="' + s.id + '"' + (s.puedeSalir ? '' : ' disabled') + '>🚗 Salgo hacia el servicio</button>' + (s.puedeSalir ? '' : '<p style="font-size:12px;color:#6b7590;text-align:center;margin-top:6px">Disponible desde una hora antes del servicio</p>') :
           !s.llegada ? '<button class="btn b1" data-ev="llegada" data-id="' + s.id + '">📍 Llegué al sitio</button>' :
-            !s.terminado ? '<button class="btn b4" data-acta="' + s.id + '">📝 Completar acta y terminar</button>' : '<p style="text-align:center;color:#1f9d63;font-weight:700">Servicio terminado ✔</p>') + '</div>';
+            !s.terminado ? '<button class="btn b4" data-acta="' + s.id + '">📝 Completar acta y terminar</button>' : '<p style="text-align:center;color:#1f9d63;font-weight:700">Servicio terminado ✔</p>') +
+        (s.salida && !s.terminado && !s.noIngreso ? '<button class="btn b5" style="margin-top:10px" data-noing="' + s.id + '">🚫 No puedo ingresar</button>' : '') + '</div>';
     });
   } else {
+    h += '<div class="card" id="misPagos"><h3>💵 Mis pagos</h3><p style="font-size:13px;color:#6b7590;margin-top:6px">Cargando…</p></div>';
     h += '<div class="card" style="text-align:center"><h3>Mi carnet</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 14px">Tu carnet con foto, QR y sello de M Clean.</p><a class="btn b1" href="carnet.html#t=' + TOKEN + '">Abrir mi carnet</a></div>' +
-      '<div class="card"><h3>¿Cómo funciona?</h3><p style="font-size:13px;color:#6b7590;margin-top:6px;line-height:1.6">1. Te llegan ofertas de tu zona; aceptas solo las que quieras.<br>2. El día del servicio toca <b>Salgo</b> (desde 1 hora antes), <b>Llegué</b> y <b>Terminé</b>.<br>3. Tu ubicación solo se registra durante el servicio aceptado.<br>4. Se te paga por cada servicio realizado.</p></div>';
+      '<div class="card" style="text-align:center"><h3>Mi contrato</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 14px">Tu contrato de prestación de servicios firmado, en PDF con el membrete de M Clean.</p><button class="btn b3" onclick="verContrato(this)">Descargar mi contrato</button></div>' +
+      (p.manual ? '<div class="card"><h3>📘 Capacitación</h3><p style="font-size:13px;color:#6b7590;margin:6px 0 12px">' + (p.manual.confirmado ? 'Confirmada el ' + esc(p.manual.confirmado) + ' ✔' : 'Pendiente de confirmar.') + '</p><div class="acc"><a class="btn b3" target="_blank" rel="noopener" href="' + p.manual.pdf + '">📄 Manual</a><a class="btn b3" target="_blank" rel="noopener" href="' + p.manual.video + '">🎬 Video</a></div>' + (p.manual.confirmado ? '' : '<button class="btn b1" style="margin-top:10px" onclick="abrirManual()">Leí y entendí</button>') + '</div>' : '') +
+      '<div class="card"><h3>¿Cómo funciona?</h3><p style="font-size:13px;color:#6b7590;margin-top:6px;line-height:1.6">1. Te llegan ofertas de tu zona; aceptas solo las que quieras.<br>2. El día del servicio toca <b>Salgo</b> (desde 1 hora antes), activa el seguimiento si lo trae, toca <b>Llegué</b> y completa el acta.<br>3. Toma las fotos desde la app: llevan marca de agua automática.<br>4. Si te atiende un menor o un adulto mayor con discapacidad, no ingreses: toca <b>No puedo ingresar</b>.<br>5. Tu ubicación solo se registra durante el servicio aceptado.<br>6. Se te paga por cada servicio aprobado.</p></div>';
   }
   $('app').innerHTML = h;
+  if ($('misPagos')) cargarPagos();
 }
+function verContrato(b) { b.disabled = true; b.textContent = 'Preparando…';
+  api({ accion: 'miContrato' }).then(function (j) { b.disabled = false; b.textContent = 'Descargar mi contrato';
+    if (!j.ok || !j.pdf) { toast(j.error || 'No disponible'); return; }
+    var bin = atob(j.pdf.split(',')[1]), u = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    var url = URL.createObjectURL(new Blob([u], { type: 'application/pdf' })), a = document.createElement('a'); a.href = url; a.download = j.nombre || 'Contrato.pdf'; document.body.appendChild(a); a.click(); a.remove();
+  }).catch(function (e) { b.disabled = false; b.textContent = 'Descargar mi contrato'; toast(e.message); }); }
 document.addEventListener('click', function (e) {
   var t = e.target.closest('.tabs button'); if (t) { TAB = t.getAttribute('data-t'); Array.prototype.forEach.call(document.querySelectorAll('.tabs button'), function (b) { b.classList.toggle('on', b === t); }); pintar(); window.scrollTo(0, 0); return; }
   var a = e.target.closest('[data-acep]'); if (a) return abrirAceptar(a.getAttribute('data-acep'));
   var r = e.target.closest('[data-rech]'); if (r) { var id = r.getAttribute('data-rech'); carga(true, 'Un momento…'); api({ accion: 'rechazarOferta', oferta: id }).then(function () { carga(false); toast('Listo, no te mostraremos esta oferta.'); cargar(); }); return; }
   var ac = e.target.closest('[data-acta]'); if (ac) return abrirActa(ac.getAttribute('data-acta'));
   var v = e.target.closest('[data-ev]'); if (v) return evento(v.getAttribute('data-ev'), v.getAttribute('data-id'));
+  var sl = e.target.closest('[data-salir]'); if (sl) return checklistSalida(sl.getAttribute('data-salir'));
+  var ni = e.target.closest('[data-noing]'); if (ni) return noIngreso(ni.getAttribute('data-noing'));
   if (e.target.id === 'modal') cerrar();
 });
 function cerrar() { $('modal').classList.remove('on'); }
@@ -176,18 +200,21 @@ function abrirAceptar(id) {
       .then(function (j) { carga(false); cerrar(); if (!j.ok) { toast(j.error); cargar(); return; } toast('¡Servicio aceptado! Lo verás en Mi agenda.'); TAB = 'agenda'; Array.prototype.forEach.call(document.querySelectorAll('.tabs button'), function (b) { b.classList.toggle('on', b.getAttribute('data-t') === 'agenda'); }); cargar(); });
   };
 }
-function evento(ev, id, forzar, nota) {
+function evento(ev, id, forzar, nota, extra) {
   carga(true, 'Obteniendo tu ubicación…');
   geo().then(function (g) {
     if (!g) { carga(false); toast('Activa la ubicación (GPS) de tu celular y vuelve a intentarlo.'); return; }
     carga(true, 'Registrando…');
-    return api({ accion: 'eventoServicio', oferta: id, evento: ev, geo: g, forzar: !!forzar, nota: nota || '' }).then(function (j) {
+    var b = { accion: 'eventoServicio', oferta: id, evento: ev, geo: g, forzar: !!forzar, nota: nota || '' }; if (extra) Object.keys(extra).forEach(function (k) { b[k] = extra[k]; });
+    return api(b).then(function (j) {
       carga(false);
       if (j.lejos) return lejos(id, j.distancia);
       if (!j.ok) { toast(j.error); return; }
       toast(ev === 'salida' ? '¡Buen viaje! Registramos tu salida.' : ev === 'llegada' ? 'Llegada registrada.' : '¡Servicio terminado! Gracias.');
       cargar();
-      if (j.wa) { $('hoja').innerHTML = '<h2>' + (ev === 'salida' ? 'Avisa al cliente que vas en camino' : 'Avisa al cliente que llegaste') + '</h2><p style="font-size:14px;color:#6b7590">Toca el botón y envía el mensaje que ya está escrito por WhatsApp.</p><div class="acc"><button class="btn b3" onclick="cerrar()">Ahora no</button><a class="btn b1" style="background:#25d366;color:#fff;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="' + j.wa + '" onclick="setTimeout(cerrar,500)">Avisar por WhatsApp</a></div>'; $('modal').classList.add('on'); }
+      var sv = D && D.servicios.filter(function (x) { return x.id === id; })[0], trk = ev === 'salida' && sv && sv.seguimiento;
+      if (j.wa || trk) { $('hoja').innerHTML = (trk ? '<h2>📡 Activa el seguimiento</h2><p style="font-size:14px;color:#6b7590">Toca el botón: se abre la página de ubicación del cliente. <b>Déjala abierta todo el camino</b> y ciérrala solo al llegar. Al llegar, toma una captura de pantalla para subirla en el acta.</p><a class="btn b2" style="margin-bottom:14px" target="_blank" rel="noopener" href="' + esc(trk) + '">Activar seguimiento</a>' : '') +
+        (j.wa ? '<h2>' + (ev === 'salida' ? 'Avisa al cliente que vas en camino' : 'Avisa al cliente que llegaste') + '</h2><p style="font-size:14px;color:#6b7590">Toca el botón y envía el mensaje que ya está escrito por WhatsApp.</p><div class="acc"><button class="btn b3" onclick="cerrar()">Ahora no</button><a class="btn b1" style="background:#25d366;color:#fff;text-align:center;text-decoration:none" target="_blank" rel="noopener" href="' + j.wa + '" onclick="setTimeout(cerrar,500)">Avisar por WhatsApp</a></div>' : '<button class="btn b3" onclick="cerrar()">Listo</button>'); $('modal').classList.add('on'); }
     });
   });
 }
@@ -214,7 +241,7 @@ function abrirActa(id) {
   carga(true, 'Preparando el acta…');
   api({ accion: 'actaInfo', oferta: id }).then(function (j) {
     carga(false); if (!j.ok) { toast(j.error); return; }
-    A = { id: id, info: j, paso: 0, sel: { diagnostico: [], causa: [], trabajo: [], acabados: [], precauciones: [] }, ev: {}, negativa: null, nAntes: j.fotosAntes, nDesp: j.fotosDespues, nEvid: j.evidencia ? 1 : 0, pads: {} };
+    A = { id: id, info: j, paso: 0, sel: { diagnostico: [], causa: [], trabajo: [], acabados: [], precauciones: [] }, ev: {}, negativa: null, nAntes: j.fotosAntes, nDesp: j.fotosDespues, nEvid: j.evidencia ? 1 : 0, pads: {} }; A.trk = ((D.servicios.filter(function (x) { return x.id === id; })[0]) || {}).seguimiento || ''; A.nSeg = 0;
     $('acta').classList.add('on'); pasoActa();
   });
 }
@@ -229,7 +256,9 @@ function pasoActa() {
   if (A.paso === 0) {
     h = '<p style="font-size:13px;color:#6b7590;margin-bottom:12px">Toma fotos claras del antes y del después. Se guardan al instante.</p>' +
       '<div class="fotob' + (A.nAntes ? ' ok' : '') + '" data-foto="antes"><span style="font-size:28px">📸</span><div><b>Fotos de ANTES</b><br><small>Mínimo 1 · máximo 6</small></div><span class="n">' + A.nAntes + '</span></div>' +
-      '<div class="fotob' + (A.nDesp ? ' ok' : '') + '" data-foto="despues"><span style="font-size:28px">✨</span><div><b>Fotos de DESPUÉS</b><br><small>Mínimo 1 · máximo 6</small></div><span class="n">' + A.nDesp + '</span></div>';
+      '<div class="fotob' + (A.nDesp ? ' ok' : '') + '" data-foto="despues"><span style="font-size:28px">✨</span><div><b>Fotos de DESPUÉS</b><br><small>Mínimo 1 · máximo 6</small></div><span class="n">' + A.nDesp + '</span></div>' +
+      (A.trk ? '<div class="fotob' + (A.nSeg ? ' ok' : '') + '" data-foto="seguimiento" data-galeria="1"><span style="font-size:28px">📡</span><div><b>Captura del seguimiento</b><br><small>La captura de pantalla que tomaste al llegar</small></div><span class="n">' + (A.nSeg || 0) + '</span></div>' : '') +
+      '<p style="font-size:12px;color:#6b7590;margin-top:4px">📷 Las fotos llevan marca de agua automática con fecha, hora, ubicación y expediente.</p>';
   } else if (A.paso === 1) {
     var tits = { diagnostico: 'Diagnóstico inicial', causa: 'Causa', trabajo: 'Trabajo realizado', acabados: 'Diagnóstico de acabados', precauciones: 'Precauciones para el usuario' };
     Object.keys(tits).forEach(function (k) { h += '<div class="grupo"><h4>' + tits[k] + '</h4>' + chipsHtml(k, j.opciones[k]) + '</div>'; });
@@ -277,17 +306,18 @@ $('aBody').addEventListener('click', function (e) {
   var c = e.target.closest('.chip[data-k]'); if (c) { var k = c.getAttribute('data-k'), v = c.getAttribute('data-v'), i = A.sel[k].indexOf(v); if (i >= 0) A.sel[k].splice(i, 1); else A.sel[k].push(v); c.classList.toggle('on'); return; }
   var ev = e.target.closest('[data-e]'); if (ev) { A.ev[ev.getAttribute('data-e')] = ev.getAttribute('data-v'); Array.prototype.forEach.call(ev.parentNode.children, function (b) { b.classList.toggle('on', b === ev); }); return; }
   var ng = e.target.closest('[data-neg]'); if (ng) { A.negativa.motivo = ng.getAttribute('data-neg'); Array.prototype.forEach.call(ng.parentNode.children, function (b) { b.classList.toggle('on', b === ng); }); return; }
-  var f = e.target.closest('[data-foto]'); if (f) { A.tipoFoto = f.getAttribute('data-foto'); guardarU(); $('aFile').value = ''; $('aFile').click(); }
+  var f = e.target.closest('[data-foto]'); if (f) { A.tipoFoto = f.getAttribute('data-foto'); guardarU(); var inp = $('aFile'); if (f.getAttribute('data-galeria')) inp.removeAttribute('capture'); else inp.setAttribute('capture', 'environment'); inp.value = ''; inp.click(); }
 });
 $('aFile').onchange = function () {
   var file = this.files && this.files[0]; if (!file || !A) return;
   carga(true, 'Subiendo foto…');
-  var u = URL.createObjectURL(file), im = new Image();
-  im.onload = function () {
+  var u = URL.createObjectURL(file), im = new Image(), gps = geo();
+  im.onload = function () { gps.then(function (g) {
     var s = Math.min(1, 1280 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = im.width * s; c.height = im.height * s; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
-    api({ accion: 'fotoServicio', oferta: A.id, tipo: A.tipoFoto, foto: c.toDataURL('image/jpeg', 0.8) }).then(function (j) {
+    if (A.tipoFoto !== 'seguimiento') marcaAgua(c, g);
+    return api({ accion: 'fotoServicio', oferta: A.id, tipo: A.tipoFoto, foto: c.toDataURL('image/jpeg', 0.8) }); }).then(function (j) {
       carga(false); if (!j.ok) { toast(j.error); return; }
-      if (A.tipoFoto === 'antes') A.nAntes = j.total; else if (A.tipoFoto === 'despues') A.nDesp = j.total; else A.nEvid = j.total;
+      if (A.tipoFoto === 'antes') A.nAntes = j.total; else if (A.tipoFoto === 'despues') A.nDesp = j.total; else if (A.tipoFoto === 'seguimiento') A.nSeg = j.total; else A.nEvid = j.total;
       toast('Foto guardada ✔'); pasoActa();
     }).catch(function () { carga(false); toast('No se pudo subir. Revisa tu señal e inténtalo de nuevo.'); });
   };
@@ -322,6 +352,98 @@ $('aSig').onclick = function () {
 $('rec').onclick = function () { cargar(); };
 document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && TOKEN) cargar(); });
 if (!TOKEN) $('app').innerHTML = '<div class="vacio"><div class="ic">🔑</div>Abre el enlace personal que te enviamos por correo al aprobar tu registro.</div>'; else cargar();
+
+var PAGOS = null;
+function pesos(n) { return '$' + Number(n || 0).toLocaleString('es-CO'); }
+function cargarPagos() {
+  api({ accion: 'misPagos' }).then(function (j) {
+    if (!j.ok) { $('misPagos').innerHTML = '<h3>💵 Mis pagos</h3><p style="font-size:13px;color:#6b7590">' + esc(j.error || 'No disponible') + '</p>'; return; }
+    PAGOS = j;
+    var caja = function (v, t, c) { return '<div style="flex:1;background:' + c + ';border-radius:14px;padding:10px;text-align:center"><b style="font-size:16px;display:block">' + pesos(v) + '</b><span style="font-size:11px">' + t + '</span></div>'; };
+    var por = j.cuentas.filter(function (c) { return c.estado === 'Por firmar'; });
+    var h = '<h3>💵 Mis pagos</h3><p style="font-size:12px;color:#6b7590;margin:4px 0 10px">Tarifa por servicio: ' + pesos(j.tarifa) + '</p>' +
+      (j.garantia ? '<p style="font-size:12px;color:#e2a400;margin:0 0 8px">🛡 ' + pesos(j.garantia) + ' en garantía (se liberan cuando M Clean confirme el servicio).</p>' : '') + '<p style="font-size:12px;color:#6b7590;margin:0 0 8px">Se paga cada viernes lo aprobado de lunes a jueves. El jueves te llega la cuenta de cobro para firmar.</p>' +
+      '<div style="display:flex;gap:8px">' + caja(j.porAprobar, 'En revisión', '#fff6e0') + caja(j.saldo, 'Aprobado por cobrar', '#eaf8f0') + caja(j.enCuenta, 'En cuenta de cobro', '#eef3fb') + '</div>';
+    por.forEach(function (c) { h += '<div style="margin-top:12px;border:2px solid #f6d046;border-radius:14px;padding:12px"><b>🧾 Cuenta de cobro ' + esc(c.id) + '</b><br><span style="font-size:13px">' + c.servicios + ' servicio(s) · ' + esc(c.desde) + ' a ' + esc(c.hasta) + ' · <b>' + pesos(c.total) + '</b></span><button class="btn b1" style="margin-top:10px" onclick="verCuenta(\'' + c.id + '\')">Revisar y firmar</button></div>'; });
+    if (j.servicios.length) h += '<p style="font-size:13px;font-weight:700;margin:12px 0 4px">Servicios</p>' + j.servicios.map(function (s) { return '<div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid #eef1f6;padding:6px 0"><span>' + esc(s.fecha) + ' · ' + esc(s.ciudad) + (s.exp ? ' · Exp. ' + esc(s.exp) : '') + '<br><span style="color:#6b7590">' + esc(s.estado) + '</span></span><b>' + pesos(s.valor) + '</b></div>'; }).join('');
+    var hist = j.cuentas.filter(function (c) { return c.estado !== 'Por firmar'; });
+    if (hist.length) h += '<p style="font-size:13px;font-weight:700;margin:12px 0 4px">Cuentas de cobro</p>' + hist.map(function (c) { return '<div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid #eef1f6;padding:6px 0"><span>' + esc(c.id) + '<br><span style="color:#6b7590">' + esc(c.estado) + '</span></span><b>' + pesos(c.total) + '</b></div>'; }).join('');
+    $('misPagos').innerHTML = h;
+  });
+}
+function verCuenta(id) {
+  var c = PAGOS.cuentas.filter(function (x) { return x.id === id; })[0]; if (!c) return;
+  $('hoja').innerHTML = '<h2>Cuenta de cobro ' + esc(c.id) + '</h2><p style="font-size:13px;color:#6b7590">M Clean Desinfección y Limpieza S.A.S. te debe <b>' + pesos(c.total) + '</b> por estos servicios:</p>' +
+    c.detalle.map(function (s) { return '<div style="display:flex;justify-content:space-between;font-size:12px;border-bottom:1px solid #eef1f6;padding:6px 0"><span>' + esc(s.fecha) + ' · ' + esc(s.tipo) + '<br><span style="color:#6b7590">' + esc(s.ciudad) + (s.exp ? ' · Exp. ' + esc(s.exp) : '') + '</span></span><b>' + pesos(s.valor) + '</b></div>'; }).join('') +
+    '<p style="font-size:12px;color:#6b7590;margin-top:8px">Pago a: ' + esc(PAGOS.banco.banco || '—') + ' ' + esc(PAGOS.banco.tipo || '') + ' ' + esc(PAGOS.banco.cuenta || '') + '. Al firmar declaras que prestaste estos servicios de forma independiente.</p>' +
+    '<p style="font-size:13px;font-weight:700;margin-top:10px">Firma con tu dedo</p><canvas id="ccPad" style="width:100%;height:150px;border:2px dashed #cfd6e4;border-radius:14px;touch-action:none;background:#fff"></canvas>' +
+    '<div class="acc"><button class="btn b3" id="ccBorrar">Borrar</button><button class="btn b1" id="ccFirmar">Firmar y enviar</button></div><button class="btn b3" style="margin-top:8px" onclick="cerrar()">Cerrar</button>';
+  $('modal').classList.add('on');
+  var pad = $('ccPad'), ctx, dib = false, firmo = false;
+  setTimeout(function () { var r = pad.getBoundingClientRect(), k = window.devicePixelRatio || 1; pad.width = r.width * k; pad.height = r.height * k; ctx = pad.getContext('2d'); ctx.scale(k, k); ctx.lineWidth = 2.4; ctx.lineCap = 'round'; ctx.strokeStyle = '#0D2C54'; }, 60);
+  var pos = function (e) { var r = pad.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  pad.addEventListener('pointerdown', function (e) { dib = true; var p = pos(e); ctx.beginPath(); ctx.moveTo(p[0], p[1]); });
+  pad.addEventListener('pointermove', function (e) { if (!dib) return; var p = pos(e); ctx.lineTo(p[0], p[1]); ctx.stroke(); firmo = true; });
+  pad.addEventListener('pointerup', function () { dib = false; });
+  $('ccBorrar').onclick = function () { ctx.clearRect(0, 0, pad.width, pad.height); firmo = false; };
+  $('ccFirmar').onclick = function () {
+    if (!firmo) { toast('Firma con tu dedo en el recuadro.'); return; }
+    var c2 = document.createElement('canvas'); c2.width = pad.width; c2.height = pad.height; var x = c2.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c2.width, c2.height); x.drawImage(pad, 0, 0);
+    carga(true, 'Generando tu cuenta de cobro…');
+    api({ accion: 'firmarCuenta', cuenta: c.id, firma: c2.toDataURL('image/png') }).then(function (j) { carga(false); if (!j.ok) { toast(j.error); return; } cerrar(); toast('✓ Cuenta de cobro firmada y enviada a M Clean'); cargarPagos(); })
+      .catch(function (e) { carga(false); toast(e.message); });
+  };
+}
+
+/* ======== Protocolo: marca de agua, salida, no ingreso, capacitación ======== */
+var LOGO = new Image(); LOGO.src = 'logo-dark.webp';
+function marcaAgua(c, g) {
+  var x = c.getContext('2d'), w = c.width, h = c.height, f = Math.max(14, Math.round(w / 42)), pad = Math.round(f * 0.7), bh = f * 3.4;
+  var sv = D && A ? D.servicios.filter(function (s) { return s.id === A.id; })[0] : null, ahora = new Date();
+  var etq = { antes: 'ANTES', despues: 'DESPUÉS', evidencia: 'EVIDENCIA' }[A.tipoFoto] || '';
+  var l1 = 'M Clean · ' + etq + (sv && sv.exp ? ' · Exp. ' + sv.exp : '') + (sv ? ' · ' + sv.ciudad : '');
+  var l2 = ahora.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' + ahora.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }) + (g ? ' · ' + g.lat.toFixed(5) + ', ' + g.lng.toFixed(5) + ' (±' + Math.round(g.acc || 0) + ' m)' : ' · sin GPS');
+  x.fillStyle = 'rgba(22,40,90,.72)'; x.fillRect(0, h - bh, w, bh);
+  x.fillStyle = '#f6d046'; x.fillRect(0, h - bh, w, Math.max(2, f / 6));
+  var lx = pad; try { if (LOGO.complete && LOGO.naturalWidth) { var lh = bh - pad * 1.4, lw = lh * LOGO.naturalWidth / LOGO.naturalHeight; x.fillStyle = '#fff'; x.fillRect(pad * .6, h - bh + pad * .7, lw + pad * .8, lh); x.drawImage(LOGO, pad, h - bh + pad * .7, lw, lh); lx = pad * 2 + lw; } } catch (e) { }
+  x.fillStyle = '#fff'; x.font = '700 ' + f + 'px Poppins, sans-serif'; x.textBaseline = 'top'; x.fillText(l1, lx, h - bh + pad * .8);
+  x.font = '500 ' + Math.round(f * .85) + 'px Poppins, sans-serif'; x.fillStyle = '#dbe3f3'; x.fillText(l2, lx, h - bh + pad * .8 + f * 1.35);
+}
+function checklistSalida(id) {
+  $('hoja').innerHTML = '<h2>Antes de salir</h2><p style="font-size:14px;color:#6b7590;margin-bottom:12px">Confirma que vas completo al servicio:</p>' +
+    '<label class="chk"><input type="checkbox" class="ck"> Llevo las herramientas e implementos del servicio</label>' +
+    '<label class="chk"><input type="checkbox" class="ck"> Llevo los elementos de limpieza básicos</label>' +
+    '<label class="chk"><input type="checkbox" class="ck"> Tengo la ubicación del celular activada y batería suficiente</label>' +
+    '<div class="acc"><button class="btn b3" onclick="cerrar()">Volver</button><button class="btn b2" id="ckOk">Salgo ahora</button></div>';
+  $('modal').classList.add('on');
+  $('ckOk').onclick = function () { var ok = Array.prototype.every.call(document.querySelectorAll('.ck'), function (c) { return c.checked; });
+    if (!ok) { toast('Marca las tres casillas para continuar.'); return; } cerrar(); evento('salida', id, false, '', { checklist: true }); };
+}
+function noIngreso(id) {
+  var MOT = ['Me atiende un menor de edad', 'Me atiende un adulto mayor con discapacidad', 'No hay un adulto responsable', 'Otro motivo'], sel = '';
+  $('hoja').innerHTML = '<h2>🚫 No puedo ingresar</h2><p style="font-size:14px;color:#6b7590;margin-bottom:12px">Por ningún motivo ingreses si te atiende un menor de edad o un adulto mayor con discapacidad sin un adulto responsable. Elige el motivo: M Clean reprograma la visita.</p>' +
+    MOT.map(function (m) { return '<button class="mot" data-m="' + esc(m) + '">' + esc(m) + '</button>'; }).join('') +
+    '<textarea id="niNota" rows="2" placeholder="Detalle (opcional)"></textarea><div class="acc"><button class="btn b3" onclick="cerrar()">Volver</button><button class="btn b5" id="niOk">Reportar</button></div>';
+  $('modal').classList.add('on');
+  Array.prototype.forEach.call(document.querySelectorAll('.mot'), function (b) { b.onclick = function () { sel = b.getAttribute('data-m'); Array.prototype.forEach.call(document.querySelectorAll('.mot'), function (y) { y.classList.toggle('on', y === b); }); }; });
+  $('niOk').onclick = function () { if (!sel) { toast('Elige el motivo.'); return; } carga(true, 'Reportando…');
+    geo().then(function (g) { return api({ accion: 'eventoServicio', oferta: id, evento: 'noIngreso', motivo: sel, nota: $('niNota').value.trim(), geo: g || {} }); })
+      .then(function (j) { carga(false); if (!j.ok) { toast(j.error); return; } cerrar(); toast('Reportado. M Clean te dará instrucciones.'); cargar(); })
+      .catch(function () { carga(false); toast('No se pudo reportar. Revisa tu señal.'); }); };
+}
+function abrirManual() {
+  var m = D && D.perfil.manual; if (!m) return;
+  api({ accion: 'manualVisto' });
+  $('hoja').innerHTML = '<h2>📘 Capacitación del técnico</h2><p style="font-size:14px;color:#6b7590;margin-bottom:12px">Lee el manual completo y mira el video con el proceso del servicio en la app.</p>' +
+    '<div class="acc" style="margin-bottom:12px"><a class="btn b3" target="_blank" rel="noopener" href="' + m.pdf + '">📄 Manual (PDF)</a><a class="btn b3" target="_blank" rel="noopener" href="' + m.video + '">🎬 Video</a></div>' +
+    '<label class="chk"><input type="checkbox" id="manOk"> Leí el manual del técnico, vi el video de capacitación y me comprometo a seguir el protocolo de servicio de M Clean.</label>' +
+    '<div class="acc"><button class="btn b3" onclick="cerrar()">Después</button><button class="btn b1" id="manBtn">Leí y entendí</button></div>';
+  $('modal').classList.add('on');
+  $('manBtn').onclick = function () { if (!$('manOk').checked) { toast('Marca la casilla para confirmar.'); return; } carga(true, 'Registrando…');
+    api({ accion: 'manualConfirmar', acepto: true, ua: navigator.userAgent }).then(function (j) { carga(false); if (!j.ok) { toast(j.error); return; } cerrar(); toast('✓ Capacitación confirmada. ¡Bienvenido!'); cargar(); })
+      .catch(function () { carga(false); toast('Sin conexión. Inténtalo de nuevo.'); }); };
+}
+if (/manual=1/.test(location.hash)) { var _iv = setInterval(function () { if (D) { clearInterval(_iv); if (D.perfil.manual && !D.perfil.manual.confirmado) abrirManual(); } }, 300); setTimeout(function () { clearInterval(_iv); }, 15000); }
 </script>
 </body>
 </html>

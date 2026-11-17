@@ -6,6 +6,15 @@
 <meta name="theme-color" content="#16285a">
 <meta name="description" content="M Clean Desinfección y Limpieza: agenda en 60 segundos tu limpieza profunda a vapor. 28 ciudades de Colombia y Panamá.">
 <title>M Clean – Agenda tu servicio</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="M Clean Desinfección y Limpieza">
+<meta property="og:title" content="M Clean · Agenda tu limpieza en 60 segundos">
+<meta property="og:description" content="Limpieza profunda a vapor, muebles, colchones, vidrios y desinfección. Precios claros, pagas al terminar. 28 ciudades de Colombia.">
+<meta property="og:image" content="https://mcleandesinfeccion.github.io/og-mclean.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://mcleandesinfeccion.github.io/">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="M Clean">
 <link rel="manifest" href="manifest.json">
@@ -264,13 +273,14 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
     <div class="cta">
       <a class="btn y" href="#reservar">Agendar en 60 segundos</a>
       <a class="btn o" href="https://wa.me/573226895212?text=Hola%20M%20Clean%2C%20quiero%20una%20cotizaci%C3%B3n" target="_blank" rel="noopener">Cotizar por WhatsApp</a>
+      <a href="#mireserva" style="color:#fff;font-weight:700;font-size:14px;text-align:center;text-decoration:underline">¿Ya reservaste? Consulta, cambia o cancela tu reserva</a>
     </div>
     <div class="reel"><span class="tag">● Así trabajamos</span>
       <video src="reel-hero.mp4" poster="reel-hero.jpg" autoplay muted loop playsinline preload="metadata"></video></div>
     <div class="stats">
       <div class="stat"><b>28</b><small>ciudades en Colombia</small></div>
       <div class="stat"><b style="font-size:19px;line-height:26px">Panamá</b><small>sede en Ciudad de Panamá</small></div>
-      <div class="stat"><b>100%</b><small>evaluación SG-SST · ARL SURA</small></div>
+      <div class="stat"><b>24 h</b><small>para cambiar o cancelar sin costo</small></div>
     </div>
   </div></div>
 
@@ -314,7 +324,7 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
       <a class="btn y" href="#servicios">Ver servicios empresariales</a>
     </div>
   </div>
-  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a> · <a href="#mireserva">Mi reserva</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
 </section>
 
 <!-- =================== SERVICIOS =================== -->
@@ -324,7 +334,7 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
     <div class="sec" style="padding-top:10px"><span class="kicker">Empresas</span><h2>Empresas, obras y desinfección</h2><p class="lead">Cotización con visita técnica, sin compromiso.</p></div>
     <div id="empresas"></div>
   </div>
-  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a> · <a href="#mireserva">Mi reserva</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
 </section>
 
 <!-- =================== RESERVAR =================== -->
@@ -371,7 +381,7 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
         <h3>Tus datos</h3><p class="ayuda">Para confirmarte y que el técnico te contacte.</p>
         <input id="nombre" placeholder="Nombre completo" autocomplete="name" maxlength="80">
         <input id="celular" placeholder="Celular (10 dígitos)" inputmode="numeric" autocomplete="tel" maxlength="13" style="margin-top:8px">
-        <input id="correo" type="email" placeholder="Correo (opcional)" autocomplete="email" maxlength="80" style="margin-top:8px">
+        <input id="correo" type="email" placeholder="Correo: te enviamos la confirmación" autocomplete="email" maxlength="80" style="margin-top:8px">
         <textarea id="detalle" rows="3" maxlength="300" placeholder="Detalles (opcional): tamaño de colchones, sofá en tela, mascotas…" style="margin-top:8px"></textarea>
         <input id="web" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         <label class="l">Resumen</label><div class="resumen" id="resumen"></div>
@@ -392,12 +402,29 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
       <p style="color:var(--gr);margin:0">Tu número de servicio es</p>
       <div class="exp" id="okExp"></div>
       <div class="resumen" id="okRes" style="text-align:left"></div>
-      <p class="nota">Te escribiremos por WhatsApp con el nombre del técnico asignado. Guarda tu número de servicio.</p>
+      <p class="nota">Te escribiremos por WhatsApp con el nombre del técnico asignado. Guarda tu número de servicio: con él puedes consultar, cambiar o cancelar en <a href="#mireserva">Mi reserva</a>.</p>
       <a class="btn wa" id="okWa" target="_blank" rel="noopener" style="margin-top:14px">Escribir a M Clean por WhatsApp</a>
       <a class="btn n" href="#pagos" style="margin-top:10px">Ver medios de pago</a>
       <button class="btn w" type="button" id="bNueva" style="margin-top:10px">Hacer otra reserva</button>
     </div>
   </div>
+</section>
+
+<!-- =================== MI RESERVA =================== -->
+<section id="v-mireserva" class="vista">
+  <div class="cab"><div class="wrap"><span class="tag">Mi reserva</span><h2>Consulta o cambia <span>tu servicio</span></h2><p>Cambios y cancelaciones sin costo hasta 24 horas antes.</p></div></div>
+  <div class="wrap sube">
+    <div class="card" id="mrBuscar">
+      <h3 style="margin-top:0">Busca tu reserva</h3>
+      <p class="nota" style="margin:0 0 12px">Escribe el número de servicio que te dimos (ej. MDYL012) y el celular con el que reservaste.</p>
+      <input id="mrExp" placeholder="Número de servicio" autocomplete="off" maxlength="12" style="text-transform:uppercase">
+      <input id="mrCel" placeholder="Celular (10 dígitos)" inputmode="numeric" maxlength="13" style="margin-top:8px">
+      <p class="err" id="mrErr"></p>
+      <button class="btn y" type="button" id="mrVer">Consultar</button>
+    </div>
+    <div class="card" id="mrRes" hidden></div>
+  </div>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
 </section>
 
 <!-- =================== PAGOS =================== -->
@@ -420,7 +447,7 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
       <div class="alerta"><span>⚠</span><span>Solo recibimos pagos en estos medios oficiales. M Clean nunca te pedirá pagar a otra cuenta ni adelantar dinero por llamada o mensaje.</span></div>
     </div>
   </div>
-  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a> · <a href="#mireserva">Mi reserva</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
 </section>
 
 <!-- =================== NOSOTROS =================== -->
@@ -436,7 +463,7 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
       <div class="datos" style="margin-top:12px">
         <div class="dato"><span class="ic"><svg class="i"><use href="#i-phone"/></svg></span><span><b>322 689 5212</b><br><small style="color:var(--gr)">Llamadas y WhatsApp</small></span></div>
         <div class="dato"><span class="ic"><svg class="i"><use href="#i-mail"/></svg></span><span><b>mcleandesinfeccion@gmail.com</b></span></div>
-        <div class="dato"><span class="ic"><svg class="i"><use href="#i-pin"/></svg></span><span><b>Sede principal</b><br><small style="color:var(--gr)">Calle 7 Sur # 42-145, of. 13-135 (WeWork), El Poblado, Medellín</small></span></div>
+        <div class="dato"><span class="ic"><svg class="i"><use href="#i-pin"/></svg></span><span><b>Sede principal · Pereira</b><br><small style="color:var(--gr)">Calle 19 No. 8-34, piso 14, of. 1410</small><br><b>Medellín</b><br><small style="color:var(--gr)">Calle 7 Sur # 42-145, of. 13-135 (WeWork), El Poblado</small></span></div>
         <div class="dato"><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><span><b>Lunes a sábado</b><br><small style="color:var(--gr)">8:00 a. m. – 6:00 p. m.</small></span></div>
       </div>
       <a class="btn wa" href="https://wa.me/573226895212" target="_blank" rel="noopener" style="margin-top:16px">WhatsApp 322 689 5212</a>
@@ -445,7 +472,7 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
       <a class="btn w" href="#pqrs" style="margin-top:12px">PQRS y garantía</a>
     </div>
   </div>
-  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
+  <footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a> · <a href="#mireserva">Mi reserva</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer>
 </section>
 
 <section id="v-terminos" class="vista"><div class="cab"><div class="wrap"><span class="tag">Legal</span><h2>Términos y <span>condiciones</span></h2></div></div>
@@ -470,7 +497,7 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
 </ul>
 <h3>5. Cancelaciones, cambios y derecho de retracto</h3>
 <ul>
-<li>Puedes cancelar o cambiar tu reserva sin costo avisando por WhatsApp con al menos 24 horas de anticipación.</li>
+<li>Puedes cancelar o cambiar tu reserva sin costo con al menos 24 horas de anticipación, desde la opción <a href="#mireserva">Mi reserva</a> de esta aplicación o por WhatsApp.</li>
 <li>Por tratarse de una venta a distancia, tienes <b>derecho de retracto</b> dentro de los cinco (5) días hábiles siguientes a la reserva (art. 47 Ley 1480 de 2011). Este derecho no aplica una vez el servicio ha comenzado a prestarse con tu acuerdo. Si ya pagaste, te devolvemos el dinero dentro de los 30 días calendario siguientes.</li>
 <li>Si el técnico llega y no puede prestar el servicio por causas atribuibles al cliente (nadie atiende, no se permite el ingreso), M Clean podrá cobrar el desplazamiento, lo cual se te informará previamente.</li>
 <li>Si M Clean debe cancelar o reprogramar, te avisaremos lo antes posible y podrás elegir una nueva fecha o la devolución de lo pagado.</li>
@@ -484,12 +511,12 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
 <h3>9. PQRS</h3>
 <p>Puedes presentar peticiones, quejas, reclamos o sugerencias por WhatsApp 322 689 5212 o al correo mcleandesinfeccion@gmail.com. Responderemos dentro de los quince (15) días hábiles siguientes. También puedes acudir a la Superintendencia de Industria y Comercio (www.sic.gov.co).</p>
 <h3>10. Cambios y ley aplicable</h3>
-<p>M Clean puede actualizar estos términos; la versión vigente es la publicada en la aplicación. Se rigen por las leyes de la República de Colombia.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
+<p>M Clean puede actualizar estos términos; la versión vigente es la publicada en la aplicación. Se rigen por las leyes de la República de Colombia.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a> · <a href="#mireserva">Mi reserva</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
 <section id="v-privacidad" class="vista"><div class="cab"><div class="wrap"><span class="tag">Ley 1581 de 2012</span><h2>Tratamiento de <span>datos</span></h2></div></div>
   <div class="wrap sube"><div class="card legal">
 <p><i>Ley 1581 de 2012 y Decreto 1377 de 2013 (compilado en el Decreto 1074 de 2015). Última actualización: 16/11/2026</i></p>
 <h3>1. Responsable</h3>
-<p><b>M Clean Desinfección y Limpieza S.A.S.</b>, NIT 901.380.963-5, sede principal Calle 7 Sur # 42-145, oficina 13-135 (WeWork), El Poblado, Medellín, Antioquia, correo mcleandesinfeccion@gmail.com, teléfono 322 689 5212.</p>
+<p><b>M Clean Desinfección y Limpieza S.A.S.</b>, NIT 901.380.963-5, sede principal Calle 19 No. 8-34, piso 14, oficina 1410, Pereira, Risaralda, correo mcleandesinfeccion@gmail.com, teléfono 322 689 5212.</p>
 <h3>2. Datos que recogemos</h3>
 <p>Nombre, celular, correo (opcional), dirección y ubicación en el mapa del lugar del servicio, servicio solicitado, fecha y hora, y los detalles que escribas. No pedimos datos sensibles ni datos de menores de edad. Si escribes información de otra persona, declaras tener su autorización.</p>
 <h3>3. Para qué los usamos (finalidades)</h3>
@@ -509,13 +536,15 @@ nav.menu .centro span svg{width:26px;height:26px;stroke-width:2.4;color:var(--na
 <p>Conservamos los datos mientras dure la relación comercial y por el tiempo que exijan las normas contables y tributarias; luego se eliminan.</p>
 <h3>8. Autorización</h3>
 <p>Al marcar la casilla de autorización en el formulario de reserva otorgas tu consentimiento previo, expreso e informado para el tratamiento descrito. M Clean conserva registro de la fecha y hora de esa autorización.</p>
-<h3>9. Vigencia</h3>
-<p>Esta política rige desde su publicación. Cualquier cambio importante se informará en esta aplicación.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
+<h3>9. Estadísticas de uso</h3>
+<p>Contamos de forma anónima cuántas personas visitan la aplicación y cuántas completan una reserva. No usamos cookies de seguimiento ni guardamos datos que te identifiquen para esto.</p>
+<h3>10. Vigencia</h3>
+<p>Esta política rige desde su publicación. Cualquier cambio importante se informará en esta aplicación.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a> · <a href="#mireserva">Mi reserva</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
 <section id="v-pqrs" class="vista"><div class="cab"><div class="wrap"><span class="tag">Atención al cliente</span><h2>PQRS y <span>garantía</span></h2></div></div>
   <div class="wrap sube"><div class="card legal">
 <p>¿Tienes una petición, queja, reclamo, sugerencia o quieres hacer válida la garantía? Escríbenos con tu número de servicio (MDYL…).</p>
 <a class="btn wa" rel="noopener" href="https://wa.me/573226895212?text=Hola%20M%20Clean%2C%20quiero%20radicar%20una%20PQRS.%20Mi%20n%C3%BAmero%20de%20servicio%20es%3A%20" target="_blank">Radicar PQRS por WhatsApp</a>
-<p style="margin-top:12px">También al correo <b>mcleandesinfeccion@gmail.com</b>. Respondemos en máximo 15 días hábiles. Si no quedas conforme, puedes acudir a la Superintendencia de Industria y Comercio: www.sic.gov.co.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
+<p style="margin-top:12px">También al correo <b>mcleandesinfeccion@gmail.com</b>. Respondemos en máximo 15 días hábiles. Si no quedas conforme, puedes acudir a la Superintendencia de Industria y Comercio: www.sic.gov.co.</p><a class="btn w" href="javascript:history.back()">Volver</a></div></div><footer class="pie"><img src="logo-dark.webp" alt="M Clean"><br>M Clean Desinfección y Limpieza S.A.S. · NIT 901.380.963-5<br><a href="#terminos">Términos</a> · <a href="#privacidad">Privacidad</a> · <a href="#pqrs">PQRS</a> · <a href="#mireserva">Mi reserva</a><br>Superintendencia de Industria y Comercio: www.sic.gov.co</footer></section>
 
 <a class="fwa" href="https://wa.me/573226895212?text=Hola%20M%20Clean" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 32 32"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.7a10.7 10.7 0 0 1-5.5-1.5l-.4-.2-3.9 1 1-3.8-.2-.4A10.7 10.7 0 1 1 16 26.7zm5.9-8c-.3-.2-1.9-.9-2.2-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7 0a8.8 8.8 0 0 1-2.6-1.6 9.7 9.7 0 0 1-1.8-2.2c-.2-.3 0-.5.1-.7l.5-.6.3-.5a.6.6 0 0 0 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.9.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c2.7 1.1 2.7.7 3.2.7a2.7 2.7 0 0 0 1.8-1.3 2.2 2.2 0 0 0 .2-1.3c-.1-.1-.3-.2-.6-.3z"/></svg></a>
 
@@ -589,7 +618,7 @@ const LOGO = '<span class="lg"><img src="logo-dark.webp" alt=""></span>';
 function bg(url, alt){ return `background-image:url('${url}')${alt ? `,url('${alt}')` : ''}`; }
 
 /* ---- navegación ---- */
-const VISTAS = ['inicio','servicios','reservar','ok','pagos','nosotros','terminos','privacidad','pqrs'];
+const VISTAS = ['inicio','servicios','reservar','ok','pagos','nosotros','terminos','privacidad','pqrs','mireserva'];
 function mostrar(){
   const v = (location.hash || '#inicio').slice(1), vista = VISTAS.includes(v) ? v : 'inicio';
   document.querySelectorAll('.vista').forEach(s => s.classList.toggle('on', s.id === 'v-' + vista));
@@ -598,6 +627,7 @@ function mostrar(){
   window.scrollTo(0, 0);
   if (vista === 'reservar' && S.paso === 3) setTimeout(iniciarMapa, 80);
   if (vista === 'pagos') pintarQR();
+  if (vista === 'reservar' && typeof met === 'function' && !vistos.r) { vistos.r = 1; met('abre_reserva'); }
 }
 window.addEventListener('hashchange', mostrar);
 document.querySelectorAll('nav.menu button').forEach(b => b.addEventListener('click', () => { location.hash = b.dataset.v; }));
@@ -693,6 +723,7 @@ function irPaso(p, irA){
   if (p === 2 && S.fecha) cargarHoras();
   if (p === 3) setTimeout(iniciarMapa, 80);
   if (p === 4) resumen();
+  if (pasoMet[p] && !vistos[p]) { vistos[p] = 1; met(pasoMet[p]); }
   if (irA === false) return;
   if (location.hash !== '#reservar') location.hash = 'reservar'; else window.scrollTo({top:0, behavior:'smooth'});
 }
@@ -731,6 +762,7 @@ $('bSig').addEventListener('click', async () => {
     if (!r.ok) { error(r.error || 'No pudimos registrar la reserva.'); if (r.ocupado) { S.hora = null; irPaso(2); } return; }
     $('okExp').textContent = r.expediente; $('okRes').innerHTML = $('resumen').innerHTML; $('pagoExp').value = r.expediente; enlaceComp();
     $('okWa').href = WA + encodeURIComponent('Hola M Clean, hice la reserva ' + r.expediente + ' (' + r.servicio + ', ' + r.fecha + ' ' + r.hora + ', ' + r.ciudad + ').');
+    met('reserva');
     location.hash = 'ok';
   } catch (e) { b.disabled = false; b.textContent = 'Confirmar reserva'; error('No pudimos enviar la reserva. Revisa tu conexión o escríbenos por WhatsApp.'); }
 });
@@ -752,6 +784,58 @@ function copiar(){ const ok = () => toast('✓ Llave copiada: 3226895212');
 $('bCopiar').addEventListener('click', copiar); $('bCopiar2').addEventListener('click', copiar);
 function enlaceComp(){ const e = $('pagoExp').value.trim().toUpperCase(); $('bComp').href = WA + encodeURIComponent('Hola M Clean, adjunto el comprobante de pago' + (e ? ' del servicio ' + e : '') + '.'); }
 $('pagoExp').addEventListener('input', enlaceComp); enlaceComp();
+
+
+/* ---- métricas anónimas ---- */
+function met(e){ if (DEMO) return; try { navigator.sendBeacon(API, JSON.stringify({accion:'metrica', e:e})); } catch (x) {} }
+try { if (!sessionStorage.getItem('mc_v')) { sessionStorage.setItem('mc_v','1'); met('visita'); } } catch (x) { met('visita'); }
+const pasoMet = {2:'paso_fecha', 3:'paso_direccion', 4:'paso_datos'}, vistos = {};
+document.addEventListener('click', e => { const a = e.target.closest('a[href*="wa.me"]'); if (a) met('whatsapp'); }, true);
+
+/* ---- mi reserva ---- */
+let MR = null;
+async function mrApi(b){ const r = await fetch(API, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({accion:'miReserva', exp:$('mrExp').value, celular:$('mrCel').value}, b))}); return r.json(); }
+function mrPintar(){
+  const x = MR, d = new Date(x.fecha + 'T12:00:00').toLocaleDateString('es-CO', {weekday:'long', day:'numeric', month:'long'});
+  $('mrRes').hidden = false;
+  $('mrRes').innerHTML = `<h3 style="margin-top:0">${x.exp}</h3><div class="resumen"><b>${x.servicio}</b><br>${d} · ${x.hora}<br>${x.direccion ? x.direccion + ' · ' : ''}${x.ciudad}<br>Estado: <b>${x.estado}</b>${x.tecnico ? '<br>Técnico: <b>' + x.tecnico + '</b>' : ''}</div>` +
+    (x.puedeCambiar ? `<div class="fila"><button class="btn n" type="button" id="mrRep">Cambiar fecha</button><button class="btn w" type="button" id="mrCan">Cancelar</button></div><div id="mrZona"></div>` :
+      `<p class="nota">${x.estado === 'Programado' ? 'Faltan menos de 24 horas para tu servicio: para cambios escríbenos por WhatsApp.' : 'Este servicio ya no admite cambios desde la app.'}</p><a class="btn wa" target="_blank" rel="noopener" style="margin-top:10px" href="${WA + encodeURIComponent('Hola M Clean, necesito ayuda con mi reserva ' + x.exp)}">Escribir por WhatsApp</a>`);
+  if (!x.puedeCambiar) return;
+  $('mrRep').onclick = () => {
+    let html = '', n = 0; const base = new Date(Date.now() + 864e5);
+    for (let i = 0; n < 14 && i < 24; i++) { const dd = new Date(base); dd.setDate(base.getDate() + i); const f = dd.getFullYear() + '-' + String(dd.getMonth()+1).padStart(2,'0') + '-' + String(dd.getDate()).padStart(2,'0');
+      if (dd.getDay() === 0 || festivosCO(dd.getFullYear()).indexOf(f) >= 0) continue; n++;
+      html += `<button type="button" class="dia" data-f="${f}"><small>${DS[dd.getDay()]}</small><b>${dd.getDate()}</b><i>${MS[dd.getMonth()]}</i></button>`; }
+    $('mrZona').innerHTML = `<p class="nota" style="margin-top:14px">Elige el nuevo día y la hora de llegada:</p><div class="dias" id="mrDias">${html}</div><div class="horas" id="mrHoras" style="margin-top:10px"></div><p class="err" id="mrErr2"></p><button class="btn y" type="button" id="mrOk" disabled>Confirmar cambio</button>`;
+    let F = '', Hh = null;
+    $('mrDias').onclick = async e => { const b = e.target.closest('.dia'); if (!b) return; F = b.dataset.f; Hh = null; $('mrOk').disabled = true;
+      document.querySelectorAll('#mrDias .dia').forEach(z => z.classList.toggle('sel', z === b)); $('mrHoras').innerHTML = '<p class="nota">Consultando horarios…</p>';
+      try { const r = await (await fetch(API + '?accion=disponibilidad&ciudad=' + encodeURIComponent(x.ciudad) + '&fecha=' + F + '&servicio=' + x.servicioKey)).json();
+        const L = r.libres || []; $('mrHoras').innerHTML = [8,11,14].map(h => `<button type="button" class="hora" data-h="${h}" ${L.includes(h)?'':'disabled'}>${h>12?h-12:h}:00<small>${h>=12?'p. m.':'a. m.'}</small></button>`).join('') + (L.length ? '' : `<p class="nota" style="grid-column:1/4">${r.motivo || 'Sin horarios libres ese día.'}</p>`);
+      } catch (z) { $('mrHoras').innerHTML = '<p class="nota">No pudimos consultar. Revisa tu conexión.</p>'; } };
+    $('mrHoras').onclick = e => { const b = e.target.closest('.hora'); if (!b || b.disabled) return; Hh = +b.dataset.h; document.querySelectorAll('#mrHoras .hora').forEach(z => z.classList.toggle('sel', z === b)); $('mrOk').disabled = false; };
+    $('mrOk').onclick = async () => { const b = $('mrOk'); b.disabled = true; b.textContent = 'Cambiando…';
+      try { const r = await mrApi({op:'reprogramar', fecha:F, hora:Hh}); if (!r.ok) { $('mrErr2').textContent = r.error; b.disabled = false; b.textContent = 'Confirmar cambio'; return; }
+        toast('✓ Reserva cambiada'); MR.fecha = r.fecha; MR.hora = r.hora; mrPintar(); } catch (z) { $('mrErr2').textContent = 'No pudimos hacer el cambio. Intenta de nuevo.'; b.disabled = false; b.textContent = 'Confirmar cambio'; } };
+  };
+  $('mrCan').onclick = () => {
+    $('mrZona').innerHTML = `<p class="nota" style="margin-top:14px">¿Seguro que quieres cancelar? Cuéntanos el motivo (opcional):</p><textarea id="mrMot" rows="2" maxlength="200"></textarea><p class="err" id="mrErr3"></p><div class="fila"><button class="btn w" type="button" id="mrNo">Volver</button><button class="btn n" type="button" id="mrSi" style="background:#d23a52">Sí, cancelar</button></div>`;
+    $('mrNo').onclick = () => { $('mrZona').innerHTML = ''; };
+    $('mrSi').onclick = async () => { const b = $('mrSi'); b.disabled = true; b.textContent = 'Cancelando…';
+      try { const r = await mrApi({op:'cancelar', motivo:$('mrMot').value}); if (!r.ok) { $('mrErr3').textContent = r.error; b.disabled = false; b.textContent = 'Sí, cancelar'; return; }
+        $('mrRes').innerHTML = '<h3 style="margin-top:0">Reserva cancelada</h3><p class="nota">Cancelamos tu servicio ' + MR.exp + '. Cuando quieras, agenda de nuevo.</p><a class="btn y" href="#reservar" style="margin-top:12px">Hacer una nueva reserva</a>'; } catch (z) { $('mrErr3').textContent = 'No pudimos cancelar. Intenta de nuevo.'; b.disabled = false; b.textContent = 'Sí, cancelar'; } };
+  };
+}
+$('mrVer').addEventListener('click', async () => {
+  const b = $('mrVer'); $('mrErr').textContent = ''; $('mrRes').hidden = true;
+  if (!$('mrExp').value.trim() || $('mrCel').value.replace(/\D/g,'').length < 10) { $('mrErr').textContent = 'Escribe tu número de servicio y tu celular.'; return; }
+  b.disabled = true; b.innerHTML = '<span class="spin"></span> Buscando…'; met('mi_reserva');
+  try { const r = DEMO ? {ok:true, reserva:{exp:'MDYL007', servicio:'Cocina + un baño a vapor', ciudad:'Pereira', direccion:'Calle 1 # 2 - 3', fecha:'2026-12-01', hora:'8:00 a. m.', estado:'Programado', tecnico:'', puedeCambiar:true, servicioKey:'cocina-bano'}} : await mrApi({op:'ver'});
+    b.disabled = false; b.textContent = 'Consultar';
+    if (!r.ok) { $('mrErr').textContent = r.error; return; } MR = r.reserva; mrPintar();
+  } catch (z) { b.disabled = false; b.textContent = 'Consultar'; $('mrErr').textContent = 'No pudimos consultar. Revisa tu conexión.'; }
+});
 
 irPaso(1, false); if (!location.hash) history.replaceState(null, '', '#inicio'); mostrar();
 if ('serviceWorker' in navigator && !DEMO) navigator.serviceWorker.register('sw.js').catch(() => {});
