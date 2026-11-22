@@ -220,12 +220,14 @@ async function cargar(){
   const hoy = new Date(); hoy.setHours(0,0,0,0);
   const desde = ymd(a < hoy ? a : hoy), hasta = ymd(b > addD(hoy,1) ? b : addD(hoy,1));
   if (S.rango && S.rango[0] <= desde && S.rango[1] >= hasta) { pintar(); return; }
-  $('vista').innerHTML = '<div class="cargando">Cargando agenda…</div>';
+  const ck = 'mc_ag_' + desde + '_' + hasta; let pre = null; try { pre = JSON.parse(localStorage.getItem(ck) || 'null'); } catch (e) { }
+    if (pre && pre.d) { S.datos = pre.d; llenarFiltros(); pintar(); alertas(); $('act').textContent = 'Actualizando…'; } else $('vista').innerHTML = '<div class="cargando">Cargando agenda…</div>';
   try {
     const r = await fetch(API, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify({ accion:'agenda', clave:S.clave, desde:desde, hasta:hasta }) });
     const j = await r.json();
     if (!j.ok) { if (/sesi[oó]n vencida/i.test(j.error||'')) { salir(); $('perr').textContent = j.error; return; } throw new Error(j.error||'Error'); }
     S.datos = j.servicios || []; S.rango = [desde, hasta];
+      try { Object.keys(localStorage).filter(k => k.indexOf('mc_ag_') === 0 && k !== ck).forEach(k => localStorage.removeItem(k)); localStorage.setItem(ck, JSON.stringify({ d: S.datos })); } catch (e) { }
     $('act').textContent = 'Actualizado ' + (j.actualizado || 'ahora');
     llenarFiltros(); pintar(); alertas();
     if (!OPC) opciones().then(() => pintar()).catch(() => {});
@@ -316,7 +318,7 @@ function detalle(x){
     (mapa?'<a class="a3" href="'+mapa+'" target="_blank" rel="noopener">Ver dirección</a>':'')+
     '<button class="a4" onclick="cerrar()">Cerrar</button></div>'+
     (nr ? '<div class="okbox" style="background:#fff6e0;margin-top:12px">⚠ <b>'+esc(t)+'</b> falta por registrarse en la plataforma: no recibe ofertas ni registra su llegada. <a href="https://wa.me/?text='+encodeURIComponent('Hola '+t+', regístrate como técnico aliado de M Clean para recibir tus servicios y tu carnet digital: https://mcleandesinfeccion.github.io/registro.html')+'" target="_blank" rel="noopener" style="color:#1f9d63;font-weight:700">Enviarle el enlace de registro</a></div>' : '')+
-    '<div class="nov" style="margin-top:14px"><button onclick="tecnicoForm('+i+')" style="background:var(--yel);border-color:var(--yel)">👷 Asignar u ofrecer técnico</button><button onclick="evidencias('+i+')" style="background:var(--navy);color:#fff;border-color:var(--navy)">📷 Cargar evidencias y cerrar</button></div>'+
+    '<div class="nov" style="margin-top:14px"><button onclick="editarServicio('+i+')">✏️ Editar servicio</button><button onclick="tecnicoForm('+i+')" style="background:var(--yel);border-color:var(--yel)">👷 Asignar u ofrecer técnico</button><button onclick="evidencias('+i+')" style="background:var(--navy);color:#fff;border-color:var(--navy)">📷 Cargar evidencias y cerrar</button></div>'+
     '<div class="sub" style="margin-top:14px;font-weight:700;color:var(--navy)">Estado en Trello</div><div class="nov est">'+est+'</div>'+
     '<div class="sub" style="margin-top:14px;font-weight:700;color:var(--navy)">Novedades</div><div class="nov">'+
     '<button onclick="novedad('+i+',\'retraso\')">⏱ Retraso</button><button onclick="novedad('+i+',\'reprogramar\')">📅 Reprogramar</button>'+
@@ -536,6 +538,59 @@ function novedad(i, tipo){
 }
 $('nuevoBtn').onclick = nuevoServicio;
 
+/* ---------- Editar servicio (gerencia) ---------- */
+function a24h(s){ const p = String(s||'').match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i); if (!p) return ''; let H = +p[1]; if (p[3]) { const pm = p[3].toUpperCase()==='PM'; if (pm && H<12) H+=12; if (!pm && H===12) H=0; } return ('0'+H).slice(-2)+':'+p[2]; }
+function campoForm(k, l, val, tipo, ops){
+  const lab = '<label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-top:10px">'+l+'</label>';
+  const st = 'width:100%;box-sizing:border-box';
+  if (tipo==='area') return lab+'<textarea id="ed_'+k+'" rows="2" style="'+st+'">'+esc(val||'')+'</textarea>';
+  if (tipo==='sel') return lab+'<select id="ed_'+k+'" style="'+st+'">'+ops.map(o=>'<option'+(String(o)===String(val||'')?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';
+  return lab+'<input id="ed_'+k+'" type="'+tipo+'" value="'+esc(val||'')+'" style="'+st+'">';
+}
+function editarServicio(i){
+  const x = VIS[i]; if (!x) return;
+  const C = [['afiliado','Usuario',x.cliente,'text'],['celular','Celular',x.cel,'tel'],['ciudad','Ciudad',x.ciudad,'text'],['direccion','Dirección',x.dir,'text'],['tipo','Tipo de servicio',x.tipo,'text'],['detalle','Detalle (elementos, medidas, material)',x.detalle,'area'],['fecha','Fecha del servicio',x.fecha,'date'],['hora','Hora',a24h(x.hora),'time'],['horario','Horario',x.horario,'sel',['','Diurno','Nocturno','Festivo']],['valor','Valor total (COP)',x.valor,'number'],['observaciones','Observaciones',x.obs,'area']];
+  $('hoja').innerHTML = '<h2>✏️ Editar servicio</h2><div class="sub">Exp. '+esc(x.exp||'')+' · '+esc(x.cliente||'')+'</div>' + C.map(c=>campoForm(c[0],c[1],c[2],c[3],c[4])).join('') + '<p style="font-size:12px;color:var(--mut);margin-top:8px">Cada cambio queda registrado en Trello con el valor anterior.</p><div class="err" id="edErr" style="color:#c0392b;font-size:13px"></div><div class="acc"><button class="a4" id="edNo">Cancelar</button><button class="a1" id="edOk">Guardar cambios</button></div>';
+  $('modal').classList.add('on');
+  $('edNo').onclick = () => detalle(x);
+  $('edOk').onclick = async () => {
+    const b = $('edOk'); const campos = {};
+    C.forEach(c => { const nv = $('ed_'+c[0]).value.trim(); const ov = String(c[3]==='time' ? a24h(c[2]) : (c[2]==null ? '' : c[2])).trim(); if (nv !== ov) campos[c[0]] = nv; });
+    if (!Object.keys(campos).length) { $('edErr').textContent = 'No hiciste ningún cambio.'; return; }
+    b.disabled = true; b.textContent = 'Guardando…';
+    try {
+      const j = await gapi({accion:'gerEditar', id:x.id, campos});
+      try { await gapi({accion:'gerSincronizar'}); } catch (e) { }
+      $('hoja').innerHTML = '<h2>✅ Listo</h2><div class="okbox">Se guardaron '+j.cambios+' cambio(s) en Trello y en la agenda.</div><div class="acc"><button class="a4" style="grid-column:1/-1" onclick="cerrar();S.rango=null;cargar()">Listo</button></div>';
+    } catch (e) { $('edErr').textContent = e.message; b.disabled = false; b.textContent = 'Guardar cambios'; }
+  };
+}
+/* ---------- Crear / editar técnico con todos sus datos (gerencia) ---------- */
+const HABS_TEC = ['Limpieza a vapor','Muebles y tapicería','Colchones','Vidrios','Cocina y baño','Desinfección','Pisos','Hidrolavado','Final de obra','Jardinería'];
+async function tecnicoEditar(id){
+  $('hoja').innerHTML = '<h2>👷 '+(id?'Editar técnico':'Crear técnico')+'</h2><div class="cargando">Cargando…</div>'; $('modal').classList.add('on');
+  let t = {}, zonas = [], habs = HABS_TEC;
+  try {
+    if (id) { const r = await gapi({accion:'gerTecnicoDatos', id}); t = r.tecnico || {}; zonas = r.zonas || []; habs = r.habilidades || HABS_TEC; }
+    else { const o = await opciones(); zonas = (o.tableros || Object.keys(COLORES)).slice(); }
+  } catch (e) { $('hoja').innerHTML = '<h2>👷 Técnico</h2><div class="okbox" style="background:#fdecea">'+esc(e.message)+'</div><div class="acc"><button class="a4" style="grid-column:1/-1" onclick="tecnicos()">Volver</button></div>'; return; }
+  const sel = String(t.habilidades||'').split(',').map(s=>s.trim());
+  const C = [['nombres','Nombres *',t.nombres,'text'],['apellidos','Apellidos',t.apellidos,'text'],['tipoDoc','Tipo de documento',t.tipoDoc||'CC','sel',['CC','CE','PPT','NIT']],['doc','Número de documento *',t.doc,'text'],['fechaNac','Fecha de nacimiento',t.fechaNac,'date'],['celular','Celular / WhatsApp *',t.celular,'tel'],['correo','Correo',t.correo,'email'],['direccion','Dirección',t.direccion,'text'],['ciudad','Ciudad',t.ciudad,'text'],['zona','Zona de servicios *',t.zona,'sel',[''].concat(zonas)],['experiencia','Experiencia',t.experiencia,'text'],['banco','Banco / billetera',t.banco,'text'],['tipoCuenta','Tipo de cuenta',t.tipoCuenta,'sel',['','Ahorros','Corriente','Nequi','Daviplata','Llave']],['cuenta','Número de cuenta o llave',t.cuenta,'text'],['emergNombre','Contacto de emergencia',t.emergNombre,'text'],['emergTel','Teléfono de emergencia',t.emergTel,'tel']];
+  const chk = '<label style="display:block;font-size:12px;font-weight:700;color:var(--navy);margin-top:10px">Servicios que sabe hacer</label><div style="display:flex;flex-wrap:wrap;gap:6px 14px">'+habs.map(h=>'<label style="font-size:13px"><input type="checkbox" class="edHab" value="'+esc(h)+'"'+(sel.indexOf(h)>=0?' checked':'')+'> '+esc(h)+'</label>').join('')+'</div>';
+  $('hoja').innerHTML = '<h2>👷 '+(id?'Editar técnico':'Crear técnico')+'</h2><div class="sub">'+(id?esc(t.id)+' · '+esc(t.estado||''):'Queda aprobado y disponible de una vez para asignarle servicios en su zona.')+'</div>' + C.map(c=>campoForm(c[0],c[1],c[2],c[3],c[4])).join('') + chk + (id?'':'<p style="font-size:12px;color:var(--mut);margin-top:8px">Si tiene correo, le llega su enlace personal de la app. Luego puede completar foto, cédula y contrato desde el registro. ¿Prefieres que se registre solo? <a href="#" id="edLink">Enviarle el enlace de registro</a></p>') + '<div class="err" id="edErr" style="color:#c0392b;font-size:13px;margin-top:6px"></div><div class="acc"><button class="a4" onclick="tecnicos()">Volver</button><button class="a1" id="edOk">'+(id?'Guardar cambios':'Crear técnico')+'</button></div>';
+  if (!id) $('edLink').onclick = ev => { ev.preventDefault(); tecnicoNuevo(-1); };
+  $('edOk').onclick = async () => {
+    const b = $('edOk'); const v = { id: id || '' };
+    C.forEach(c => v[c[0]] = $('ed_'+c[0]).value.trim());
+    v.habilidades = [...document.querySelectorAll('.edHab')].filter(x=>x.checked).map(x=>x.value).join(', ');
+    if (!v.nombres || !v.doc || !v.celular || !v.zona) { $('edErr').textContent = 'Faltan datos obligatorios: nombres, documento, celular y zona.'; return; }
+    b.disabled = true; b.textContent = 'Guardando…';
+    try {
+      const j = await gapi({accion:'gerTecnicoGuardar', tecnico: v}); OPC = null;
+      $('hoja').innerHTML = '<h2>✅ Listo</h2><div class="okbox">'+(j.nuevo ? 'Técnico creado: <b>'+esc(j.id)+'</b>. Ya aparece para asignarle servicios.' : 'Se guardaron '+j.cambios+' cambio(s) del técnico '+esc(j.id)+'.')+'</div><div class="acc"><button class="a4" style="grid-column:1/-1" onclick="tecnicos()">Ver técnicos</button></div>';
+    } catch (e) { $('edErr').textContent = e.message; b.disabled = false; b.textContent = id ? 'Guardar cambios' : 'Crear técnico'; }
+  };
+}
 function accionGer(i, tipo, n){
   const x = VIS[i]; if (!x) return;
   const NOM = {'1':'Próximo servicio','2':'En proceso','3':'Terminado','4':'Pagado al técnico'};
@@ -749,13 +804,13 @@ async function tecnicos(filtro){
     '<div style="display:flex;gap:8px;margin:8px 0">'+tab('Todos')+tab('Técnico')+tab('Empresa')+'</div>'+
     L.map(t => { const k = r.lista.indexOf(t); return '<div class="okbox" style="background:#fff;border:1px solid var(--line);margin-top:8px"><b>'+(t.tipo==='Empresa'?'🏢 ':'👷 ')+esc(t.nombre)+'</b> <span style="font-size:12px;color:var(--mut)">'+esc(t.id)+'</span> <span style="font-size:12px;font-weight:700;color:'+(col[t.estado]||'var(--mut)')+'">'+esc(t.estado)+'</span>'+
       '<br><span style="font-size:12px;color:var(--mut)">'+esc(t.zona)+' · '+esc(t.celular||'')+(t.vence?' · vigente hasta '+esc(t.vence):'')+' · '+t.servicios+' servicio(s), '+t.terminados+' terminado(s)'+(t.mensajes?' · '+t.mensajes+' mensaje(s)'+(t.sinLeer?' ('+t.sinLeer+' sin leer)':''):'')+'</span>'+
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="chip solo-admin" onclick="mensajeA('+k+')">💬 Mensaje</button><a class="chip solo-admin" href="'+esc(t.ficha)+'" target="_blank" rel="noopener">Ver ficha</a>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="chip solo-admin" onclick="mensajeA('+k+')">💬 Mensaje</button>'+(t.tipo==='Empresa'?'':'<button class="chip solo-admin" onclick="tecnicoEditar(\''+esc(t.id)+'\')">✏️ Editar</button>')+'<a class="chip solo-admin" href="'+esc(t.ficha)+'" target="_blank" rel="noopener">Ver ficha</a>'+
       (t.tipo==='Empresa'?'<button class="chip solo-admin" onclick="empresaDe(\''+esc(t.id)+'\')">Completar datos</button>':'')+
       (t.estado==='Suspendido'?'<button class="chip solo-admin" onclick="tecEstado('+k+',\'Aprobado\')">Reactivar</button>':(t.estado==='Aprobado'?'<button class="chip solo-admin" onclick="tecEstado('+k+',\'Suspendido\')">Suspender</button>':''))+
       '<button class="chip solo-admin" style="color:#c0392b" onclick="tecEstado('+k+',\'Retirado\')">Retirar</button></div></div>'; }).join('')+
     (r.sinRegistro.length ? '<div class="sub" style="margin-top:16px;font-weight:700;color:var(--navy)">Nombres escritos en Trello sin perfil en la plataforma</div><div style="font-size:12px;color:var(--mut)">Tienen servicios próximos o en proceso. Si ya no trabajan con M Clean, reasigna esos servicios desde la agenda.</div>'+
       r.sinRegistro.map(x => '<div class="okbox" style="background:#fff6e0;margin-top:8px"><b>'+esc(x.nombre)+'</b> · '+x.servicios.length+' servicio(s)<br><span style="font-size:12px">'+x.servicios.map(v => (v.url?'<a href="'+esc(v.url)+'" target="_blank" rel="noopener" style="color:var(--blue)">':'')+esc(v.fecha+' · '+v.ciudad+(v.exp?' · Exp. '+v.exp:''))+(v.url?'</a>':'')).join('<br>')+'</span></div>').join('') : '')+
-    '<div class="acc"><button class="a3 solo-admin" onclick="empresaForm(-1)">➕ Empresa aliada</button><button class="a3 solo-admin" onclick="tecnicoNuevo(-1)">➕ Técnico</button><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>';
+    '<div class="acc"><button class="a3 solo-admin" onclick="empresaForm(-1)">➕ Empresa aliada</button><button class="a3 solo-admin" onclick="tecnicoEditar(\'\')">➕ Técnico</button><button class="a4" style="grid-column:1/3" onclick="cerrar()">Cerrar</button></div>';
 }
 function tecnicoNuevo(i){
   $('hoja').innerHTML = '<h2>👷 Registrar técnico nuevo</h2><div class="sub">El técnico llena sus datos, toma su foto para el carnet y firma su contrato desde el celular (eso debe hacerlo él). Tú solo le envías el enlace y luego lo apruebas.</div><form class="frm" id="fTN"><label>Nombre</label><input id="tnNom" placeholder="Ej. Carlos Pérez"><label>Celular / WhatsApp</label><input id="tnCel" inputmode="tel" placeholder="3001234567"><div class="err" id="tnE"></div><div class="acc"><button type="button" class="a4" id="tnCan">Volver</button><button type="submit" class="a2">📲 Enviar enlace por WhatsApp</button></div></form>'+
