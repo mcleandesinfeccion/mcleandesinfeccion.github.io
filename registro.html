@@ -74,21 +74,22 @@ input.c:focus,select.c:focus{border-color:var(--blue)}
 </head>
 <body>
 <header>
-  <div class="hrow"><img src="logo-dark.webp" alt="M Clean"><div><b>Registro de técnicos aliados</b><small id="pasoTxt">Bienvenido(a)</small></div></div>
+  <div class="hrow"><img src="logo-dark.webp" alt="M Clean"><div><b id="tituloApp">Registro de técnicos aliados</b><small id="pasoTxt">Bienvenido(a)</small></div></div>
   <div class="prog"><i id="barra"></i></div>
 </header>
 <main>
   <section class="paso on" data-p="0">
-    <h1>Únete como técnico aliado de M Clean</h1>
-    <p class="sub">Toma unos 5 minutos. Ten a la mano:</p>
+    <h1 id="h0">Únete como técnico aliado de M Clean</h1>
+    <p class="sub" id="sub0">Toma unos 5 minutos. Ten a la mano:</p>
+    <div id="nomBox" style="display:none"><div class="tip" id="nomTxt"></div><label class="l">Tu número de cédula</label><input class="c" id="nomDoc" inputmode="numeric" placeholder="Sin puntos"></div>
     <ul class="lista">
       <li>📱 Tu celular con cámara</li>
       <li>🪪 Tu cédula física</li>
       <li>🏦 Tu número de cuenta o Nequi / DaviPlata</li>
       <li>📧 Tu correo electrónico (te enviaremos un código)</li>
-      <li>📄 Tu RUT (si no lo tienes, lo subes después)</li>
+      <li id="liRut">📄 Tu RUT (si no lo tienes, lo subes después)</li>
     </ul>
-    <div class="tip">Como técnico aliado eres <b>independiente</b>: tú decides qué servicios aceptas y se te paga por cada servicio realizado.</div>
+    <div class="tip" id="tipAliado">Como técnico aliado eres <b>independiente</b>: tú decides qué servicios aceptas y se te paga por cada servicio realizado.</div>
   </section>
 
   <section class="paso" data-p="1">
@@ -106,7 +107,7 @@ input.c:focus,select.c:focus{border-color:var(--blue)}
   </section>
 
   <section class="paso" data-p="2">
-    <h1>Tu foto para el carnet</h1><p class="sub">Será la foto de tu carnet de técnico aliado.</p>
+    <h1>Tu foto para el carnet</h1><p class="sub">Será la foto de tu carnet de técnico.</p>
     <div class="tip">☀️ Busca buena luz · 🙂 Rostro de frente, sin gafas ni gorra · 🧱 Fondo claro</div>
     <div class="foto selfie" data-k="foto" data-cap="user"><img alt=""><div class="ic">🤳</div><b>Tomar selfie</b><span>Toca aquí para abrir la cámara</span></div>
   </section>
@@ -127,14 +128,14 @@ input.c:focus,select.c:focus{border-color:var(--blue)}
   </section>
 
   <section class="paso" data-p="5">
-    <h1>¿Dónde te pagamos?</h1><p class="sub">Te pagamos por cada servicio realizado.</p>
+    <h1>¿Dónde te pagamos?</h1><p class="sub" id="sub5">Te pagamos por cada servicio realizado.</p>
     <label class="l">Banco o billetera</label>
     <select class="c" id="banco"><option value="">Selecciona…</option><option>Bancolombia</option><option>Nequi</option><option>DaviPlata</option><option>Davivienda</option><option>Banco de Bogotá</option><option>BBVA</option><option>Banco Caja Social</option><option>Banco Popular</option><option>AV Villas</option><option>Banco de Occidente</option><option>Scotiabank Colpatria</option><option>Banco Agrario</option><option>Otro</option></select>
     <label class="l">Tipo</label>
     <select class="c" id="tipoCuenta"><option>Ahorros</option><option>Corriente</option><option>Nequi / DaviPlata</option><option>Llave Bre-B</option></select>
     <label class="l">Número de cuenta, celular o llave</label><input class="c" id="cuenta" inputmode="numeric">
-    <label class="l">RUT</label>
-    <div class="foto" data-k="rut" data-cap="" data-pdf="1"><img alt=""><div class="ic">📄</div><b>Subir RUT (foto o PDF)</b><span>Si no lo tienes ahora, sigue: lo subes después</span></div>
+    <div id="rutBox"><label class="l">RUT</label>
+    <div class="foto" data-k="rut" data-cap="" data-pdf="1"><img alt=""><div class="ic">📄</div><b>Subir RUT (foto o PDF)</b><span>Si no lo tienes ahora, sigue: lo subes después</span></div></div>
   </section>
 
   <section class="paso" data-p="6">
@@ -142,7 +143,7 @@ input.c:focus,select.c:focus{border-color:var(--blue)}
     <div class="legal" id="txtDatos">Cargando…</div>
     <label class="chk"><input type="checkbox" id="aceptaDatos"><span>Autorizo el tratamiento de mis datos personales, incluida mi foto.</span></label>
     <div class="legal" id="txtContrato">Cargando…</div>
-    <label class="chk"><input type="checkbox" id="aceptaContrato"><span>He leído y acepto el contrato de prestación de servicios independientes.</span></label>
+    <label class="chk" id="chkContrato"><input type="checkbox" id="aceptaContrato"><span>He leído y acepto el contrato de prestación de servicios independientes.</span></label>
     <label class="l">Tu firma</label>
     <div class="pad"><canvas id="pad"></canvas><div class="ln"></div><div class="ph">Firma aquí con tu dedo</div></div>
     <button class="mini" id="borrar">Borrar firma</button>
@@ -152,7 +153,7 @@ input.c:focus,select.c:focus{border-color:var(--blue)}
   </section>
 
   <section class="paso" data-p="7">
-    <div class="ok"><div class="ic">✅</div><h1>¡Registro enviado!</h1><p class="sub" style="margin-top:8px">Te enviamos una copia del contrato a tu correo. Nuestro equipo revisará tu registro y te avisaremos cuando sea aprobado para enviarte tu carnet.</p>
+    <div class="ok"><div class="ic">✅</div><h1>¡Registro enviado!</h1><p class="sub" style="margin-top:8px" id="okTxt">Te enviamos una copia del contrato a tu correo. Nuestro equipo revisará tu registro y te avisaremos cuando sea aprobado para enviarte tu carnet.</p>
     <a class="btn b2" style="display:block;text-decoration:none;margin-top:20px" href="https://wa.me/573226895212">Escribir a M Clean por WhatsApp</a></div>
   </section>
   <div class="err" id="err"></div>
@@ -161,6 +162,7 @@ input.c:focus,select.c:focus{border-color:var(--blue)}
 <div class="cargando" id="carga"><div class="spin"></div><div id="cargaTxt">Enviando…</div></div>
 <input type="file" id="archivo" accept="image/*" style="display:none">
 <script>
+var CL = (new URLSearchParams(location.search).get('cl') || '').toUpperCase().replace(/[^A-Z0-9-]/g, ''), NOMINA = /^CL-\d{6}-\d{6}$/.test(CL), CONTRATO = null;
 var API = 'https://script.google.com/macros/s/AKfycbwmj3prBAsOb77b5QTqPoY673GXdsZhBn0ef_ZaqDuX-9xzFoMCJFAs3Nq2tOeFoz2N/exec';
 var TOT = 6, paso = 0, IMG = {}, SEL = { zona: '', habilidades: [], experiencia: '', equipo: '' }, firmado = false, otpEnviado = false, textosDe = '';
 var TITULOS = ['Bienvenido(a)', 'Paso 1 de 6 · Datos', 'Paso 2 de 6 · Foto', 'Paso 3 de 6 · Documento', 'Paso 4 de 6 · Servicios', 'Paso 5 de 6 · Pagos', 'Paso 6 de 6 · Firma', 'Listo'];
@@ -170,8 +172,8 @@ function api(b) { return fetch(API, { method: 'POST', headers: { 'Content-Type':
 function error(t) { $('err').textContent = t || ''; if (t) $('err').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
 function carga(on, t) { $('carga').classList.toggle('on', !!on); if (t) $('cargaTxt').textContent = t; }
 var CAMPOS = ['nombres', 'apellidos', 'tipoDoc', 'doc', 'fechaNac', 'celular', 'correo', 'ciudad', 'direccion', 'emergNombre', 'emergTel', 'banco', 'tipoCuenta', 'cuenta'];
-function guardarBorrador() { try { var o = {}; CAMPOS.forEach(function (k) { o[k] = $(k).value; }); o.sel = SEL; localStorage.setItem('mc_reg', JSON.stringify(o)); } catch (e) { } }
-function cargarBorrador() { try { var o = JSON.parse(localStorage.getItem('mc_reg') || 'null'); if (!o) return; CAMPOS.forEach(function (k) { if (o[k]) $(k).value = o[k]; }); if (o.sel) SEL = o.sel; } catch (e) { } }
+function guardarBorrador() { try { var o = {}; CAMPOS.forEach(function (k) { o[k] = $(k).value; }); o.sel = SEL; localStorage.setItem(NOMINA ? 'mc_reg_n' : 'mc_reg', JSON.stringify(o)); } catch (e) { } }
+function cargarBorrador() { try { var o = JSON.parse(localStorage.getItem(NOMINA ? 'mc_reg_n' : 'mc_reg') || 'null'); if (!o) return; CAMPOS.forEach(function (k) { if (o[k]) $(k).value = o[k]; }); if (o.sel) SEL = o.sel; } catch (e) { } }
 
 function chips(cont, lista, multi, clave) {
   cont.innerHTML = lista.map(function (x) { return '<button class="chip" data-v="' + x + '">' + x + '</button>'; }).join('');
@@ -230,8 +232,8 @@ function cargarTextos() {
   var d = datos(), clave = JSON.stringify(d);
   if (textosDe === clave) return;
   $('txtContrato').textContent = 'Cargando contrato…';
-  var b = d; b.accion = 'contratoTecnico';
-  api(b).then(function (j) { $('txtDatos').innerHTML = j.autorizacion; $('txtContrato').innerHTML = '<div style="display:flex;gap:12px;align-items:center;border-bottom:4px solid #FFD100;padding-bottom:10px;margin-bottom:12px"><img src="icon-192.png" alt="M Clean" style="width:56px;height:56px;border-radius:12px"><div style="font-size:11px;line-height:1.45;color:#334"><b style="font-size:13px;color:#0D2C54">M CLEAN DESINFECCIÓN Y LIMPIEZA S.A.S.</b><br>NIT 901.380.963-5 · Calle 19 No. 8-34, piso 14, of. 1410, Pereira<br>322 689 5212 · mcleandesinfeccion@gmail.com · www.mclean.com.co</div></div>' + j.contrato; textosDe = clave; })
+  var b = d; b.accion = 'contratoTecnico'; if (NOMINA) b.cl = CL;
+  api(b).then(function (j) { $('txtDatos').innerHTML = j.autorizacion; if (NOMINA) { $('txtContrato').innerHTML = '<h3>Tu contrato de trabajo</h3><p>Ya firmaste tu contrato individual de trabajo por duración de la obra o labor <b>' + CL + '</b> con M Clean Desinfección y Limpieza S.A.S.' + (CONTRATO ? ', como ' + CONTRATO.cargo + (CONTRATO.inicio ? ', con inicio el ' + CONTRATO.inicio : '') : '') + '.</p><p>Este registro solo sirve para expedir tu carnet y darte acceso a la app de técnicos, donde verás los servicios que se te asignen. <b>No es un contrato nuevo</b> y no cambia tu contrato de trabajo.</p>'; textosDe = clave; return; } $('txtContrato').innerHTML = '<div style="display:flex;gap:12px;align-items:center;border-bottom:4px solid #FFD100;padding-bottom:10px;margin-bottom:12px"><img src="icon-192.png" alt="M Clean" style="width:56px;height:56px;border-radius:12px"><div style="font-size:11px;line-height:1.45;color:#334"><b style="font-size:13px;color:#0D2C54">M CLEAN DESINFECCIÓN Y LIMPIEZA S.A.S.</b><br>NIT 901.380.963-5 · Calle 19 No. 8-34, piso 14, of. 1410, Pereira<br>322 689 5212 · mcleandesinfeccion@gmail.com · www.mclean.com.co</div></div>' + j.contrato; textosDe = clave; })
     .catch(function (e) { $('txtContrato').textContent = 'No se pudo cargar el contrato: ' + e.message; });
 }
 
@@ -290,7 +292,7 @@ function firmaPng() {
 /* código */
 $('enviarOtp').onclick = function () {
   var b = this; b.disabled = true; error('');
-  api({ accion: 'otpTecnico', correo: v('correo') }).then(function () {
+  api({ accion: 'otpTecnico', correo: v('correo'), cl: NOMINA ? CL : '' }).then(function () {
     otpEnviado = true; $('otpBox').style.display = 'flex'; b.textContent = 'Reenviar código'; $('otp').focus();
     error(''); $('err').style.color = '#1f9d63'; $('err').textContent = 'Te enviamos un código a ' + v('correo') + '. Revisa también Spam.';
     setTimeout(function () { b.disabled = false; $('err').style.color = ''; }, 30000);
@@ -306,7 +308,7 @@ function ubicacion() {
 }
 function enviar() {
   if (!$('aceptaDatos').checked) return error('Marca la autorización de datos personales.');
-  if (!$('aceptaContrato').checked) return error('Marca que aceptas el contrato.');
+  if (!NOMINA && !$('aceptaContrato').checked) return error('Marca que aceptas el contrato.');
   if (!firmado) return error('Firma con tu dedo en el recuadro.');
   if (!otpEnviado) return error('Toca "Enviar código a mi correo".');
   if (!/^\d{6}$/.test(v('otp'))) return error('Escribe el código de 6 dígitos que llegó a tu correo.');
@@ -314,15 +316,16 @@ function enviar() {
   ubicacion().then(function (geo) {
     carga(true, 'Enviando tu registro… puede tardar un minuto');
     var b = datos();
-    b.accion = 'registroTecnico'; b.otp = v('otp'); b.aceptaDatos = true; b.aceptaContrato = true; b.web = v('web');
+    b.accion = 'registroTecnico'; if (NOMINA) b.cl = CL; b.otp = v('otp'); b.aceptaDatos = true; b.aceptaContrato = true; b.web = v('web');
     b.foto = IMG.foto; b.cedulaFrente = IMG.cedulaFrente; b.cedulaReverso = IMG.cedulaReverso; b.rut = IMG.rut || ''; b.firma = firmaPng(); b.geo = geo; b.ua = navigator.userAgent;
     return api(b);
-  }).then(function () { carga(false); try { localStorage.removeItem('mc_reg'); } catch (e) { } mostrar(7); })
+  }).then(function () { carga(false); try { localStorage.removeItem(NOMINA ? 'mc_reg_n' : 'mc_reg'); } catch (e) { } mostrar(7); })
     .catch(function (e) { carga(false); error(e.message); });
 }
 
 $('sig').onclick = function () {
   if (paso === 6) return enviar();
+  if (NOMINA && paso === 0 && !CONTRATO) return iniciarNomina();
   var e = validar(paso); if (e) return error(e);
   guardarBorrador(); mostrar(paso + 1);
 };
@@ -330,6 +333,30 @@ $('atras').onclick = function () { if (paso > 0) mostrar(paso - 1); };
 window.addEventListener('resize', function () { if (paso === 6) ajustarPad(); });
 Array.prototype.forEach.call(document.querySelectorAll('input.c,select.c'), function (i) { i.addEventListener('change', guardarBorrador); });
 
+function iniciarNomina() {
+  var doc = v('nomDoc').replace(/\D/g, '');
+  if (doc.length < 5) return error('Escribe tu número de cédula.');
+  carga(true, 'Buscando tu contrato…');
+  api({ accion: 'nominaInfo', cl: CL, doc: doc }).then(function (j) {
+    carga(false); CONTRATO = j.contrato; var d = j.datos || {};
+    CAMPOS.forEach(function (k) { if (d[k] && !$(k).value) $(k).value = d[k]; });
+    if (d.zona && !SEL.zona) SEL.zona = d.zona;
+    marcar($('zonas'), false, 'zona'); guardarBorrador(); mostrar(1);
+  }).catch(function (e) { carga(false); error(e.message); });
+}
+function modoNomina() {
+  document.title = 'Registro de técnicos · M Clean';
+  $('tituloApp').textContent = 'Registro de técnicos M Clean';
+  $('h0').textContent = 'Regístrate en la app de técnicos de M Clean';
+  $('sub0').textContent = 'Toma unos 5 minutos. Ten a la mano:';
+  $('nomBox').style.display = '';
+  $('nomTxt').innerHTML = 'Tu contrato de trabajo <b>' + CL + '</b> ya está firmado. Con este registro te expedimos tu <b>carnet</b> y te damos acceso a la <b>app de técnicos</b>, donde verás los servicios que se te asignen. Escribe tu cédula para continuar.';
+  $('liRut').style.display = 'none'; $('tipAliado').style.display = 'none';
+  $('sub5').textContent = 'Confirma la cuenta donde recibes tu pago (la del contrato).';
+  $('rutBox').style.display = 'none'; $('chkContrato').style.display = 'none';
+  $('okTxt').textContent = 'Te enviamos una copia de tu autorización de datos al correo. Revisaremos tu registro y te avisaremos cuando sea aprobado para enviarte tu carnet.';
+}
+if (NOMINA) modoNomina();
 cargarBorrador();
 marcar($('experiencia'), false, 'experiencia'); marcar($('equipo'), false, 'equipo');
 api({ accion: 'contratoTecnico' }).then(function (j) { chips($('zonas'), j.zonas, false, 'zona'); chips($('habilidades'), j.habilidades, true, 'habilidades'); })
