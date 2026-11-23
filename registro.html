@@ -143,6 +143,7 @@ input.c:focus,select.c:focus{border-color:var(--blue)}
     <div class="legal" id="txtDatos">Cargando…</div>
     <label class="chk"><input type="checkbox" id="aceptaDatos"><span>Autorizo el tratamiento de mis datos personales, incluida mi foto.</span></label>
     <div class="legal" id="txtContrato">Cargando…</div>
+    <div id="termBox" style="display:none"><div class="legal" id="txtTerm"></div><label class="chk"><input type="checkbox" id="aceptaTerm"><span>Acepto la terminación por mutuo acuerdo de ese contrato de técnico aliado.</span></label></div>
     <label class="chk" id="chkContrato"><input type="checkbox" id="aceptaContrato"><span>He leído y acepto el contrato de prestación de servicios independientes.</span></label>
     <label class="l">Tu firma</label>
     <div class="pad"><canvas id="pad"></canvas><div class="ln"></div><div class="ph">Firma aquí con tu dedo</div></div>
@@ -309,6 +310,7 @@ function ubicacion() {
 function enviar() {
   if (!$('aceptaDatos').checked) return error('Marca la autorización de datos personales.');
   if (!NOMINA && !$('aceptaContrato').checked) return error('Marca que aceptas el contrato.');
+  if (NOMINA && CONTRATO && CONTRATO.terminaTA && !$('aceptaTerm').checked) return error('Marca que aceptas la terminación del contrato de técnico aliado.');
   if (!firmado) return error('Firma con tu dedo en el recuadro.');
   if (!otpEnviado) return error('Toca "Enviar código a mi correo".');
   if (!/^\d{6}$/.test(v('otp'))) return error('Escribe el código de 6 dígitos que llegó a tu correo.');
@@ -316,7 +318,7 @@ function enviar() {
   ubicacion().then(function (geo) {
     carga(true, 'Enviando tu registro… puede tardar un minuto');
     var b = datos();
-    b.accion = 'registroTecnico'; if (NOMINA) b.cl = CL; b.otp = v('otp'); b.aceptaDatos = true; b.aceptaContrato = true; b.web = v('web');
+    b.accion = 'registroTecnico'; if (NOMINA) { b.cl = CL; b.aceptaTerminacion = !!(CONTRATO && CONTRATO.terminaTA && $('aceptaTerm').checked); } b.otp = v('otp'); b.aceptaDatos = true; b.aceptaContrato = true; b.web = v('web');
     b.foto = IMG.foto; b.cedulaFrente = IMG.cedulaFrente; b.cedulaReverso = IMG.cedulaReverso; b.rut = IMG.rut || ''; b.firma = firmaPng(); b.geo = geo; b.ua = navigator.userAgent;
     return api(b);
   }).then(function () { carga(false); try { localStorage.removeItem(NOMINA ? 'mc_reg_n' : 'mc_reg'); } catch (e) { } mostrar(7); })
@@ -341,6 +343,7 @@ function iniciarNomina() {
     carga(false); CONTRATO = j.contrato; var d = j.datos || {};
     CAMPOS.forEach(function (k) { if (d[k] && !$(k).value) $(k).value = d[k]; });
     if (d.zona && !SEL.zona) SEL.zona = d.zona;
+    if (CONTRATO.terminaTA) { $('termBox').style.display = ''; $('txtTerm').innerHTML = '<h3>Terminación del contrato de técnico aliado ' + CONTRATO.terminaTA + '</h3><p>Yo, ' + ((d.nombres || '') + ' ' + (d.apellidos || '')).toUpperCase() + ', identificado(a) con cédula No. ' + (d.doc || '') + ', acepto dar por terminado de mutuo acuerdo, a partir de la fecha de esta firma, el contrato de prestación de servicios independientes como técnico aliado No. ' + CONTRATO.terminaTA + ' celebrado con M Clean Desinfección y Limpieza S.A.S. (NIT 901.380.963-5). Declaro que en virtud de ese contrato no presté ningún servicio y que no existen obligaciones pendientes entre las partes por ese concepto. Mi única vinculación con M Clean es el contrato individual de trabajo por duración de la obra o labor No. ' + CL + '.</p>'; }
     marcar($('zonas'), false, 'zona'); guardarBorrador(); mostrar(1);
   }).catch(function (e) { carga(false); error(e.message); });
 }
